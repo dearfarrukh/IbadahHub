@@ -497,8 +497,7 @@ function loadPage(p) {
   img.classList.add('hidden');
   document.getElementById('loading').classList.remove('hidden');
 
-  const padded = String(page).padStart(3, '0');
-  img.src = `https://archive.org/download/ALQURANPERPAGEFORMATPNG/page${padded}.png`;
+ img.src = `https://cdn.jsdelivr.net/npm/the-amazing-quran-images/images/${page}.png`;
 
   updateBmBtn();
 }
@@ -509,10 +508,9 @@ function onImgLoad() {
 }
 
 function onImgError() {
-  // Try alternate
   const img = document.getElementById('quran-img');
-  const padded = String(page).padStart(3, '0');
-  if (!img.src.includes('qurancdn')) {
+  if (!img.src.includes('archive.org')) {
+    const padded = String(page).padStart(3, '0');
     img.src = `https://archive.org/download/ALQURANPERPAGEFORMATPNG/page${padded}.png`;
   } else {
     document.getElementById('loading').innerHTML =
