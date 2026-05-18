@@ -403,7 +403,19 @@
 <div class="salah-header">
   <div style="width:38px;"></div>
   <div></div>
-  <button class="header-action-btn" onclick="openSettings()">⚙️</button>
+ <button onclick="openSettings()" style="
+width:38px;
+height:38px;
+border:none;
+border-radius:50%;
+background:white;
+font-size:20px;
+cursor:pointer;
+box-shadow:0 4px 12px rgba(0,0,0,0.1);
+display:flex;
+align-items:center;
+justify-content:center;
+">⚙️</button>
 </div>
 
 <!-- LOCATION -->
@@ -492,7 +504,7 @@
 </nav>
 
 <!-- ══ SETTINGS PANEL ══ -->
-<div class="settings-overlay" id="settings-overlay" onclick="maybeCloseSettings(event)">
+<div class="settings-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
   <div class="settings-panel" id="settings-panel">
 
     <div class="settings-panel-header">
