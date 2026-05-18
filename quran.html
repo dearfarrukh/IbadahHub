@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <title>Quran – IbadahHub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    body { padding-bottom: var(--navbar-height); }
+
+    .quran-title-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 28px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .quran-title-icon { font-size: 44px; margin-bottom: 10px; }
+
+    .quran-title-name {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .quran-title-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Continue reading card */
+    .continue-card {
+      background: linear-gradient(135deg, #1a3a6b, #0d2744);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .continue-card:active { opacity: 0.85; }
+
+    .continue-left { flex: 1; }
+
+    .continue-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .continue-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .continue-sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .continue-arrow {
+      font-size: 32px;
+      color: rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div style="padding:14px 16px; padding-top:calc(env(safe-area-inset-top,16px) + 10px); background:var(--bg); display:flex; align-items:center; gap:12px;">
+  <button class="back-btn" onclick="location.href='index.html'">←</button>
+  <div style="font-size:17px; font-weight:700;">Holy Quran</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content content-with-navbar" style="padding-top:8px;">
+
+  <!-- Title Card -->
+  <div class="quran-title-card">
+    <div class="quran-title-icon">📖</div>
+    <div class="quran-title-name">Holy Quran</div>
+    <div class="quran-title-desc">Continue your daily reading with a clean, peaceful, and premium Quran experience.</div>
+  </div>
+
+  <!-- Continue Reading -->
+  <div class="continue-card" id="continue-card" onclick="continueReading()" style="display:none;">
+    <div class="continue-left">
+      <div class="continue-label">📖 Continue Reading</div>
+      <div class="continue-title" id="continue-title">Last page</div>
+      <div class="continue-sub" id="continue-sub">Tap to continue</div>
+    </div>
+    <div class="continue-arrow">›</div>
+  </div>
+
+  <!-- Section: Audio & Translation -->
+  <div class="section-label">Audio & Translation</div>
+
+  <div class="list-card" onclick="location.href='quran-audio.html'">
+    <div class="list-card-icon" style="background:#e8f0fe; font-size:26px;">🕋</div>
+    <div class="list-card-body">
+      <div class="list-card-title">Quran with Audio & Urdu</div>
+      <div class="list-card-desc">Open Quran recitation and Urdu translation</div>
+    </div>
+    <div class="list-card-arrow">›</div>
+  </div>
+
+  <!-- Section: Read Quran -->
+  <div class="section-label">Read Quran</div>
+
+  <div class="list-card" onclick="location.href='quran-9line.html'">
+    <div class="list-card-icon" style="background:#fff3e0; font-size:26px;">📚</div>
+    <div class="list-card-body">
+      <div class="list-card-title">9 Line Quran</div>
+      <div class="list-card-desc">Read 9 line Mushaf pages</div>
+    </div>
+    <div class="list-card-arrow">›</div>
+  </div>
+
+  <div class="list-card" onclick="location.href='quran-16line.html'">
+    <div class="list-card-icon" style="background:#e8f4fd; font-size:26px;">📘</div>
+    <div class="list-card-body">
+      <div class="list-card-title">16 Line Quran</div>
+      <div class="list-card-desc">Open separate 16 line reader</div>
+    </div>
+    <div class="list-card-arrow">›</div>
+  </div>
+
+  <div class="list-card" onclick="location.href='quran-15line.html'">
+    <div class="list-card-icon" style="background:#e6f9ec; font-size:26px;">📗</div>
+    <div class="list-card-body">
+      <div class="list-card-title">15 Line Quran</div>
+      <div class="list-card-desc">Read by pages (Mushaf style)</div>
+    </div>
+    <div class="list-card-arrow">›</div>
+  </div>
+
+  <!-- Section: Tools -->
+  <div class="section-label">Tools</div>
+
+  <div class="list-card" onclick="location.href='quran-bookmarks.html'">
+    <div class="list-card-icon" style="background:#f3e8ff; font-size:26px;">🔖</div>
+    <div class="list-card-body">
+      <div class="list-card-title">Bookmarks</div>
+      <div class="list-card-desc">Your saved Quran pages</div>
+    </div>
+    <div class="list-card-arrow">›</div>
+  </div>
+
+  <div style="height:10px;"></div>
+
+</div>
+
+<!-- BOTTOM NAVBAR -->
+<nav class="navbar">
+  <div class="nav-item" onclick="location.href='index.html'">
+    <div class="nav-icon-box">🏠</div>
+    <div class="nav-label">Home</div>
+  </div>
+  <div class="nav-item" onclick="location.href='salah.html'">
+    <div class="nav-icon-box">🕌</div>
+    <div class="nav-label">Salah</div>
+  </div>
+  <div class="nav-item" onclick="location.href='tracker.html'">
+    <div class="nav-icon-box">📋</div>
+    <div class="nav-label">Tracker</div>
+  </div>
+  <div class="nav-item active" onclick="location.href='more.html'">
+    <div class="nav-icon-box">•••</div>
+    <div class="nav-label">More</div>
+  </div>
+</nav>
+
+<script>
+// Show continue reading if saved
+function continueReading() {
+  const last9 = localStorage.getItem('quran9line_page');
+  const last15 = localStorage.getItem('quran15line_page');
+  const last16 = localStorage.getItem('quran16line_page');
+  const lastAudio = localStorage.getItem('quranAudio_surah');
+
+  if (last9) location.href = 'quran-9line.html';
+  else if (last15) location.href = 'quran-15line.html';
+  else if (last16) location.href = 'quran-16line.html';
+  else if (lastAudio) location.href = 'quran-audio.html';
+}
+
+function checkContinue() {
+  const last9 = localStorage.getItem('quran9line_page');
+  const last15 = localStorage.getItem('quran15line_page');
+  const last16 = localStorage.getItem('quran16line_page');
+  const lastAudio = localStorage.getItem('quranAudio_surah');
+
+  const card = document.getElementById('continue-card');
+
+  if (last9) {
+    card.style.display = 'flex';
+    document.getElementById('continue-title').textContent = '9 Line Quran — Page ' + last9;
+    document.getElementById('continue-sub').textContent = 'Tap to continue reading';
+  } else if (last15) {
+    card.style.display = 'flex';
+    document.getElementById('continue-title').textContent = '15 Line Quran — Page ' + last15;
+    document.getElementById('continue-sub').textContent = 'Tap to continue reading';
+  } else if (last16) {
+    card.style.display = 'flex';
+    document.getElementById('continue-title').textContent = '16 Line Quran — Page ' + last16;
+    document.getElementById('continue-sub').textContent = 'Tap to continue reading';
+  } else if (lastAudio) {
+    card.style.display = 'flex';
+    document.getElementById('continue-title').textContent = 'Quran Audio — Surah ' + lastAudio;
+    document.getElementById('continue-sub').textContent = 'Tap to continue listening';
+  }
+}
+
+checkContinue();
+</script>
+</body>
+</html>
