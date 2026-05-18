@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <title>Qaza Tracker – IbadahHub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body { padding-bottom: 40px; }
+
+    .qaza-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      padding-top: calc(env(safe-area-inset-top, 16px) + 10px);
+      background: var(--bg);
+    }
+
+    .qaza-header-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      flex: 1;
+    }
+
+    .lock-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .lock-btn:active { transform: scale(0.9); }
+    .lock-btn.locked { background: var(--red); }
+    .lock-btn.unlocked { background: var(--green); }
+
+    /* Tab bar */
+    .qaza-tabs {
+      display: flex;
+      background: var(--border);
+      border-radius: 12px;
+      padding: 3px;
+      margin: 0 16px 16px;
+    }
+
+    .qaza-tab {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .qaza-tab.active {
+      background: white;
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    /* Prayer card */
+    .prayer-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin: 0 16px 14px;
+    }
+
+    .prayer-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .prayer-card-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .prayer-card-date {
+      font-size: 11px;
+      color: var(--text-light);
+    }
+
+    .prayer-totals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .prayer-total-box {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .prayer-total-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .prayer-total-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .prayer-total-num.remaining {
+      color: var(--red);
+    }
+
+    /* Counter row */
+    .counter-row {
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .counter-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      border: none;
+      background: white;
+      font-size: 24px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow);
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .counter-btn:active {
+      transform: scale(0.9);
+      background: var(--bg);
+    }
+
+    .counter-btn.plus {
+      color: var(--text);
+    }
+
+    .counter-mid {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* Progress bar */
+    .qaza-progress {
+      height: 5px;
+      background: var(--border);
+      border-radius: 50px;
+      overflow: hidden;
+    }
+
+    .qaza-progress-fill {
+      height: 100%;
+      border-radius: 50px;
+      background: var(--red);
+      transition: width 0.4s ease;
+    }
+
+    /* Progress tab */
+    .progress-section {
+      margin: 0 16px;
+    }
+
+    .progress-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .progress-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .progress-row-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      width: 80px;
+    }
+
+    .progress-row-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--border);
+      border-radius: 50px;
+      overflow: hidden;
+      margin: 0 12px;
+    }
+
+    .progress-row-fill {
+      height: 100%;
+      border-radius: 50px;
+      background: var(--red);
+      transition: width 0.4s ease;
+    }
+
+    .progress-row-num {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      width: 50px;
+      text-align: right;
+    }
+
+    .total-summary {
+      background: linear-gradient(135deg, #0d1b3e, #1a3a6b);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      color: white;
+      margin-bottom: 14px;
+    }
+
+    .total-summary-title {
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0.7;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .total-summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .total-summary-item {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .total-summary-label {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+
+    .total-summary-num {
+      font-size: 24px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="qaza-header">
+  <button class="back-btn" onclick="location.href='more.html'">←</button>
+  <div class="qaza-header-title">Qaza Tracker</div>
+  <button class="lock-btn locked" id="lock-btn" onclick="toggleLock()">🔒</button>
+</div>
+
+<!-- TABS -->
+<div class="qaza-tabs">
+  <button class="qaza-tab active" id="tab-prayer" onclick="showTab('prayer')">Prayer</button>
+  <button class="qaza-tab" id="tab-progress" onclick="showTab('progress')">Progress</button>
+</div>
+
+<!-- PRAYER TAB -->
+<div id="view-prayer">
+
+  <!-- Fajr -->
+  <div class="prayer-card">
+    <div class="prayer-card-header">
+      <div class="prayer-card-name">Fajr</div>
+      <div class="prayer-card-date" id="date-fajr">—</div>
+    </div>
+    <div class="prayer-totals">
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Total</div>
+        <div class="prayer-total-num" id="total-fajr">0</div>
+      </div>
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Remaining</div>
+        <div class="prayer-total-num remaining" id="remaining-fajr">0</div>
+      </div>
+    </div>
+    <div class="counter-row">
+      <button class="counter-btn" onclick="adjust('fajr', -1)">−</button>
+      <div class="counter-mid" id="today-fajr">0</div>
+      <button class="counter-btn plus" onclick="adjust('fajr', 1)">+</button>
+    </div>
+    <div class="qaza-progress">
+      <div class="qaza-progress-fill" id="prog-fajr" style="width:100%"></div>
+    </div>
+  </div>
+
+  <!-- Dhuhr -->
+  <div class="prayer-card">
+    <div class="prayer-card-header">
+      <div class="prayer-card-name">Dhuhr</div>
+      <div class="prayer-card-date" id="date-dhuhr">—</div>
+    </div>
+    <div class="prayer-totals">
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Total</div>
+        <div class="prayer-total-num" id="total-dhuhr">0</div>
+      </div>
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Remaining</div>
+        <div class="prayer-total-num remaining" id="remaining-dhuhr">0</div>
+      </div>
+    </div>
+    <div class="counter-row">
+      <button class="counter-btn" onclick="adjust('dhuhr', -1)">−</button>
+      <div class="counter-mid" id="today-dhuhr">0</div>
+      <button class="counter-btn plus" onclick="adjust('dhuhr', 1)">+</button>
+    </div>
+    <div class="qaza-progress">
+      <div class="qaza-progress-fill" id="prog-dhuhr" style="width:100%"></div>
+    </div>
+  </div>
+
+  <!-- Asr -->
+  <div class="prayer-card">
+    <div class="prayer-card-header">
+      <div class="prayer-card-name">Asr</div>
+      <div class="prayer-card-date" id="date-asr">—</div>
+    </div>
+    <div class="prayer-totals">
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Total</div>
+        <div class="prayer-total-num" id="total-asr">0</div>
+      </div>
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Remaining</div>
+        <div class="prayer-total-num remaining" id="remaining-asr">0</div>
+      </div>
+    </div>
+    <div class="counter-row">
+      <button class="counter-btn" onclick="adjust('asr', -1)">−</button>
+      <div class="counter-mid" id="today-asr">0</div>
+      <button class="counter-btn plus" onclick="adjust('asr', 1)">+</button>
+    </div>
+    <div class="qaza-progress">
+      <div class="qaza-progress-fill" id="prog-asr" style="width:100%"></div>
+    </div>
+  </div>
+
+  <!-- Maghrib -->
+  <div class="prayer-card">
+    <div class="prayer-card-header">
+      <div class="prayer-card-name">Maghrib</div>
+      <div class="prayer-card-date" id="date-maghrib">—</div>
+    </div>
+    <div class="prayer-totals">
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Total</div>
+        <div class="prayer-total-num" id="total-maghrib">0</div>
+      </div>
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Remaining</div>
+        <div class="prayer-total-num remaining" id="remaining-maghrib">0</div>
+      </div>
+    </div>
+    <div class="counter-row">
+      <button class="counter-btn" onclick="adjust('maghrib', -1)">−</button>
+      <div class="counter-mid" id="today-maghrib">0</div>
+      <button class="counter-btn plus" onclick="adjust('maghrib', 1)">+</button>
+    </div>
+    <div class="qaza-progress">
+      <div class="qaza-progress-fill" id="prog-maghrib" style="width:100%"></div>
+    </div>
+  </div>
+
+  <!-- Isha -->
+  <div class="prayer-card">
+    <div class="prayer-card-header">
+      <div class="prayer-card-name">Isha</div>
+      <div class="prayer-card-date" id="date-isha">—</div>
+    </div>
+    <div class="prayer-totals">
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Total</div>
+        <div class="prayer-total-num" id="total-isha">0</div>
+      </div>
+      <div class="prayer-total-box">
+        <div class="prayer-total-label">Remaining</div>
+        <div class="prayer-total-num remaining" id="remaining-isha">0</div>
+      </div>
+    </div>
+    <div class="counter-row">
+      <button class="counter-btn" onclick="adjust('isha', -1)">−</button>
+      <div class="counter-mid" id="today-isha">0</div>
+      <button class="counter-btn plus" onclick="adjust('isha', 1)">+</button>
+    </div>
+    <div class="qaza-progress">
+      <div class="qaza-progress-fill" id="prog-isha" style="width:100%"></div>
+    </div>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>
+
+<!-- PROGRESS TAB -->
+<div id="view-progress" class="hidden progress-section">
+
+  <!-- Total Summary -->
+  <div class="total-summary">
+    <div class="total-summary-title">Overall Summary</div>
+    <div class="total-summary-grid">
+      <div class="total-summary-item">
+        <div class="total-summary-label">Total Qaza</div>
+        <div class="total-summary-num" id="grand-total">0</div>
+      </div>
+      <div class="total-summary-item">
+        <div class="total-summary-label">Remaining</div>
+        <div class="total-summary-num" id="grand-remaining">0</div>
+      </div>
+      <div class="total-summary-item">
+        <div class="total-summary-label">Completed</div>
+        <div class="total-summary-num" id="grand-completed">0</div>
+      </div>
+      <div class="total-summary-item">
+        <div class="total-summary-label">Progress</div>
+        <div class="total-summary-num" id="grand-percent">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Per prayer progress -->
+  <div class="progress-card">
+    <div class="progress-card-title">📊 Per Prayer</div>
+    <div id="progress-rows"></div>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>
+
+<script>
+const prayers = ['fajr','dhuhr','asr','maghrib','isha'];
+let locked = localStorage.getItem('qazaLocked') === 'true';
+
+// ── DATA ──
+function getData() {
+  return JSON.parse(localStorage.getItem('qazaData') || '{}');
+}
+
+function saveData(d) {
+  localStorage.setItem('qazaData', JSON.stringify(d));
+}
+
+// ── TOGGLE LOCK ──
+function toggleLock() {
+  locked = !locked;
+  localStorage.setItem('qazaLocked', locked);
+  updateLockBtn();
+}
+
+function updateLockBtn() {
+  const btn = document.getElementById('lock-btn');
+  if (locked) {
+    btn.textContent = '🔒';
+    btn.classList.add('locked');
+    btn.classList.remove('unlocked');
+  } else {
+    btn.textContent = '🔓';
+    btn.classList.remove('locked');
+    btn.classList.add('unlocked');
+  }
+}
+
+// ── ADJUST ──
+function adjust(prayer, dir) {
+  if (locked && dir > 0) {
+    showToast('🔒 Unlock to add prayers');
+    return;
+  }
+  const d = getData();
+  if (!d[prayer]) d[prayer] = { total: 0, completed: 0, lastDate: '' };
+
+  if (dir > 0) {
+    d[prayer].total += 1;
+  } else {
+    if (d[prayer].total <= 0) return;
+    d[prayer].total -= 1;
+    if (d[prayer].completed > d[prayer].total) {
+      d[prayer].completed = d[prayer].total;
+    }
+  }
+
+  d[prayer].lastDate = new Date().toLocaleString();
+  saveData(d);
+  render();
+}
+
+// ── RENDER ──
+function render() {
+  const d = getData();
+  let grandTotal = 0, grandCompleted = 0;
+
+  prayers.forEach(p => {
+    const pd = d[p] || { total: 0, completed: 0, lastDate: '' };
+    const remaining = Math.max(pd.total - pd.completed, 0);
+    const todayDone = pd.completed || 0;
+
+    document.getElementById('total-' + p).textContent = pd.total;
+    document.getElementById('remaining-' + p).textContent = remaining;
+    document.getElementById('today-' + p).textContent = todayDone;
+    document.getElementById('date-' + p).textContent = pd.lastDate || '—';
+
+    const pct = pd.total > 0 ? (remaining / pd.total * 100) : 0;
+    document.getElementById('prog-' + p).style.width = pct + '%';
+
+    grandTotal += pd.total;
+    grandCompleted += pd.completed || 0;
+  });
+
+  const grandRemaining = Math.max(grandTotal - grandCompleted, 0);
+  const grandPct = grandTotal > 0 ? Math.round(grandCompleted / grandTotal * 100) : 0;
+
+  document.getElementById('grand-total').textContent = grandTotal;
+  document.getElementById('grand-remaining').textContent = grandRemaining;
+  document.getElementById('grand-completed').textContent = grandCompleted;
+  document.getElementById('grand-percent').textContent = grandPct + '%';
+
+  // Progress rows
+  const rows = document.getElementById('progress-rows');
+  rows.innerHTML = '';
+  prayers.forEach(p => {
+    const pd = d[p] || { total: 0, completed: 0 };
+    const pct = pd.total > 0 ? (pd.completed / pd.total * 100) : 0;
+    const name = p.charAt(0).toUpperCase() + p.slice(1);
+    rows.innerHTML += `
+      <div class="progress-row">
+        <div class="progress-row-name">${name}</div>
+        <div class="progress-row-bar">
+          <div class="progress-row-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="progress-row-num">${pd.completed||0}/${pd.total}</div>
+      </div>`;
+  });
+}
+
+// ── TABS ──
+function showTab(tab) {
+  document.getElementById('view-prayer').classList.toggle('hidden', tab !== 'prayer');
+  document.getElementById('view-progress').classList.toggle('hidden', tab !== 'progress');
+  document.getElementById('tab-prayer').classList.toggle('active', tab === 'prayer');
+  document.getElementById('tab-progress').classList.toggle('active', tab === 'progress');
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.className = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── INIT ──
+updateLockBtn();
+render();
+</script>
+</body>
+</html>
