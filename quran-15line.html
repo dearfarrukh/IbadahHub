@@ -402,7 +402,7 @@ function loadPage(p) {
 
   // 15 line quran — padded 3 digits
   const padded = String(currentPage).padStart(3, '0');
-  img.src = `https://qurancdn.com/images/quran/pages/page${padded}.png`;
+  img.src = `https://archive.org/download/ALQURANPERPAGEFORMATPNG/page${padded}.png`;
 
   // Bookmark state
   updateBookmarkBtn();
@@ -418,7 +418,7 @@ function imgError() {
   const padded = String(currentPage).padStart(3, '0');
   const img = document.getElementById('quran-img');
   if (!img.src.includes('tanzil')) {
-    img.src = `https://tanzil.net/res/img/quran/hafs/15lines/${padded}.png`;
+    img.src = `https://archive.org/download/ALQURANPERPAGEFORMATPNG/page${padded}.png`;
   } else {
     document.getElementById('page-loading').innerHTML =
       '<div style="color:rgba(255,255,255,0.5); text-align:center; padding:20px;">Page image unavailable.<br>Check your internet connection.</div>';
