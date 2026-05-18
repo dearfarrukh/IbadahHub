@@ -109,16 +109,19 @@
     .sun-time { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
 
     /* ── SETTINGS PANEL ── */
-    .settings-overlay {
+   .settings-overlay {
       display: none;
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.3);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
-      z-index: 200;
+      z-index: 9999;
     }
 
+    .settings-overlay.open {
+      display: block !important;
+    }
     .settings-panel {
       position: absolute;
       top: 0; right: 0;
@@ -945,14 +948,22 @@ function pickLocation(i) {
 // SETTINGS PANEL
 // ══════════════════════════
 function openSettings() {
-  document.getElementById('settings-overlay').classList.add('open');
+  const overlay = document.getElementById('settings-overlay');
+  overlay.style.display = 'block';
+  overlay.style.zIndex = '9999';
+  setTimeout(function(){
+    overlay.classList.add('open');
+  }, 10);
   updateSettingsUI();
 }
 
 function closeSettings() {
-  document.getElementById('settings-overlay').classList.remove('open');
+  const overlay = document.getElementById('settings-overlay');
+  overlay.classList.remove('open');
+  setTimeout(function(){
+    overlay.style.display = 'none';
+  }, 300);
 }
-
 function maybeCloseSettings(e) {
   if (e.target === document.getElementById('settings-overlay')) closeSettings();
 }
