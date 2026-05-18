@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <title>Duas – IbadahHub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); min-height:100vh; font-family:'Inter',sans-serif; }
+
+    .view { display:none; }
+    .view.active { display:block; }
+
+    /* ══ HEADER ══ */
+    .page-header {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 10px);
+      background:white;
+      box-shadow:0 1px 0 var(--border);
+      position:sticky; top:0; z-index:50;
+    }
+
+    .header-title-text { font-size:17px; font-weight:700; flex:1; }
+
+    /* ══ SEARCH BAR ══ */
+    .search-bar {
+      padding:12px 16px;
+      background:white;
+      border-bottom:1px solid var(--border);
+    }
+
+    .search-input {
+      width:100%; padding:10px 16px;
+      border-radius:12px; border:none;
+      background:var(--bg); font-size:15px;
+      font-family:'Inter',sans-serif; outline:none;
+      color:var(--text);
+    }
+
+    /* ══ CATEGORY TABS ══ */
+    .cat-scroll {
+      display:flex; gap:8px;
+      padding:12px 16px;
+      overflow-x:auto; background:white;
+      border-bottom:1px solid var(--border);
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+    }
+
+    .cat-scroll::-webkit-scrollbar { display:none; }
+
+    .cat-chip {
+      padding:7px 16px;
+      border-radius:50px; border:none;
+      font-size:13px; font-weight:600;
+      white-space:nowrap; cursor:pointer;
+      transition:all 0.15s;
+      font-family:'Inter',sans-serif;
+      -webkit-user-select:none; user-select:none;
+      background:var(--bg); color:var(--text-secondary);
+    }
+
+    .cat-chip.active { background:var(--primary); color:white; }
+    .cat-chip:active { opacity:0.8; }
+
+    /* ══ DUA LIST ══ */
+    .dua-list { padding:12px 16px; padding-bottom:40px; }
+
+    .dua-card {
+      background:white; border-radius:var(--radius-lg);
+      box-shadow:var(--shadow); margin-bottom:12px;
+      overflow:hidden; cursor:pointer;
+      transition:transform 0.15s;
+      -webkit-user-select:none; user-select:none;
+    }
+
+    .dua-card:active { transform:scale(0.99); }
+
+    .dua-card-header {
+      display:flex; align-items:center;
+      padding:16px 18px; gap:12px;
+    }
+
+    .dua-cat-dot {
+      width:10px; height:10px; border-radius:50%;
+      flex-shrink:0;
+    }
+
+    .dua-title { font-size:15px; font-weight:700; color:var(--text); flex:1; }
+
+    .dua-fav-btn {
+      width:32px; height:32px; border-radius:50%;
+      border:none; background:var(--bg);
+      font-size:16px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.15s; flex-shrink:0;
+    }
+
+    .dua-fav-btn.on { background:#fff3e0; }
+
+    .dua-arabic-preview {
+      font-family:'Scheherazade New',serif;
+      font-size:18px; line-height:1.9;
+      text-align:right; direction:rtl;
+      color:var(--text); padding:0 18px 16px;
+      border-top:1px solid var(--border);
+      padding-top:12px;
+    }
+
+    .dua-cat-label {
+      font-size:11px; font-weight:600;
+      color:var(--text-secondary);
+      background:var(--bg); border-radius:50px;
+      padding:3px 10px; flex-shrink:0;
+    }
+
+    /* ══ DUA DETAIL ══ */
+    .detail-header {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 10px);
+      background:white;
+      box-shadow:0 1px 0 var(--border);
+      position:sticky; top:0; z-index:50;
+    }
+
+    .detail-content { padding:16px; padding-bottom:40px; }
+
+    .detail-title-card {
+      background:linear-gradient(135deg,#1a3a6b,#0d2744);
+      border-radius:var(--radius-lg);
+      padding:20px; margin-bottom:14px;
+      text-align:center;
+    }
+
+    .detail-title { font-size:20px; font-weight:800; color:white; margin-bottom:6px; }
+    .detail-cat { font-size:13px; color:rgba(255,255,255,0.6); }
+
+    .detail-card {
+      background:white; border-radius:var(--radius-lg);
+      padding:20px; box-shadow:var(--shadow); margin-bottom:12px;
+    }
+
+    .detail-section-label {
+      font-size:11px; font-weight:700;
+      color:var(--text-secondary);
+      text-transform:uppercase; letter-spacing:0.5px;
+      margin-bottom:12px;
+    }
+
+    .detail-arabic {
+      font-family:'Scheherazade New',serif;
+      font-size:28px; line-height:2;
+      text-align:right; direction:rtl;
+      color:var(--text);
+    }
+
+    .detail-urdu {
+      font-family:'Noto Nastaliq Urdu',serif;
+      font-size:16px; line-height:2.4;
+      text-align:right; direction:rtl;
+      color:var(--text-secondary);
+    }
+
+    .detail-english {
+      font-size:15px; line-height:1.8;
+      color:var(--text-secondary); font-style:italic;
+    }
+
+    .detail-reference {
+      font-size:12px; color:var(--text-light);
+      text-align:center; padding-top:12px;
+      border-top:1px solid var(--border);
+      font-family:'Scheherazade New',serif;
+      direction:rtl;
+    }
+
+    .detail-actions {
+      display:flex; gap:10px; margin-top:14px;
+    }
+
+    .detail-action-btn {
+      flex:1; padding:12px;
+      border-radius:12px; border:none;
+      font-size:14px; font-weight:700;
+      cursor:pointer; transition:all 0.15s;
+      font-family:'Inter',sans-serif;
+      display:flex; align-items:center;
+      justify-content:center; gap:6px;
+      -webkit-user-select:none; user-select:none;
+    }
+
+    .detail-action-btn:active { transform:scale(0.96); }
+
+    /* Empty state */
+    .empty-state {
+      text-align:center; padding:60px 24px;
+    }
+
+    .empty-icon { font-size:52px; margin-bottom:14px; opacity:0.4; }
+    .empty-title { font-size:17px; font-weight:700; color:var(--text); margin-bottom:8px; }
+    .empty-text { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+
+    /* Toast */
+    .toast {
+      position:fixed; bottom:30px; left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:rgba(28,28,30,0.95); color:white;
+      padding:12px 22px; border-radius:50px;
+      font-size:14px; font-weight:500; z-index:9999;
+      opacity:0; transition:all 0.3s ease;
+      white-space:nowrap; pointer-events:none;
+    }
+
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- ══ VIEW: DUA LIST ══ -->
+<div class="view active" id="view-list">
+
+  <div class="page-header">
+    <button class="back-btn" onclick="location.href='more.html'">←</button>
+    <div class="header-title-text">Duas</div>
+    <button class="back-btn" onclick="showFavorites()" title="Favorites">❤️</button>
+  </div>
+
+  <div class="search-bar">
+    <input class="search-input" id="search-input"
+      placeholder="🔍 Search duas..."
+      oninput="filterDuas()"/>
+  </div>
+
+  <div class="cat-scroll" id="cat-bar"></div>
+
+  <div class="dua-list" id="dua-list"></div>
+
+</div>
+
+<!-- ══ VIEW: DUA DETAIL ══ -->
+<div class="view" id="view-detail" style="min-height:100vh;">
+
+  <div class="detail-header">
+    <button class="back-btn" onclick="showView('view-list')">←</button>
+    <div class="header-title-text" id="detail-header-title">Dua</div>
+    <button class="dua-fav-btn" id="detail-fav-btn" onclick="toggleDetailFav()">🤍</button>
+  </div>
+
+  <div class="detail-content">
+
+    <div class="detail-title-card">
+      <div class="detail-title" id="d-title">Dua</div>
+      <div class="detail-cat" id="d-cat">Category</div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-section-label">Arabic</div>
+      <div class="detail-arabic" id="d-arabic"></div>
+    </div>
+
+    <div class="detail-card" id="d-urdu-card">
+      <div class="detail-section-label">Urdu Translation</div>
+      <div class="detail-urdu" id="d-urdu"></div>
+    </div>
+
+    <div class="detail-card" id="d-english-card">
+      <div class="detail-section-label">English Translation</div>
+      <div class="detail-english" id="d-english"></div>
+    </div>
+
+    <div class="detail-card" id="d-explanation-card">
+      <div class="detail-section-label">Explanation</div>
+      <div class="detail-english" id="d-explanation"></div>
+      <div class="detail-reference" id="d-reference"></div>
+    </div>
+
+    <div class="detail-actions">
+      <button class="detail-action-btn" style="background:#e6f9ec; color:var(--green);"
+        onclick="copyDua()">📋 Copy</button>
+      <button class="detail-action-btn" style="background:#e8f0fe; color:var(--primary);"
+        onclick="shareDua()">🔗 Share</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════
+// DUA DATA
+// ══════════════════════════════
+const duas = [
+  {
+    id:1, cat:'Morning',
+    title:'Morning Dua — Waking Up',
+    arabic:'اَلْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ',
+    urdu:'تمام تعریفیں اللہ کے لیے ہیں جس نے ہمیں موت کے بعد زندہ کیا اور اسی کی طرف اٹھنا ہے۔',
+    english:'All praise is for Allah who gave us life after having taken it from us and unto Him is the resurrection.',
+    explanation:'Recite this dua immediately upon waking up in the morning.',
+    reference:'صحیح البخاری'
+  },
+  {
+    id:2, cat:'Morning',
+    title:'Morning Dua — Protection',
+    arabic:'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ',
+    urdu:'اللہ کے نام کے ساتھ جس کے نام کے ساتھ زمین و آسمان میں کوئی چیز نقصان نہیں دیتی اور وہ سننے والا جاننے والا ہے۔',
+    english:'In the name of Allah with whose name nothing can cause harm on earth or in heaven, and He is the All-Hearing, All-Knowing.',
+    explanation:'Recite this three times every morning and evening for protection.',
+    reference:'سنن ابی داود'
+  },
+  {
+    id:3, cat:'Evening',
+    title:'Evening Dua — Protection',
+    arabic:'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ',
+    urdu:'ہم نے شام کی اور اللہ کی بادشاہی نے شام کی، تمام تعریفیں اللہ کے لیے ہیں، اللہ کے سوا کوئی معبود نہیں وہ اکیلا ہے اس کا کوئی شریک نہیں۔',
+    english:'We have reached the evening and at this very time unto Allah belongs all sovereignty, and all praise is for Allah. None has the right to be worshipped except Allah, alone.',
+    explanation:'This dua is recited in the evening as an act of remembrance.',
+    reference:'صحیح مسلم'
+  },
+  {
+    id:4, cat:'Salah',
+    title:'Before Salah — Adhan Dua',
+    arabic:'اللَّهُمَّ رَبَّ هَذِهِ الدَّعْوَةِ التَّامَّةِ وَالصَّلَاةِ الْقَائِمَةِ آتِ مُحَمَّدًا الْوَسِيلَةَ وَالْفَضِيلَةَ',
+    urdu:'اے اللہ اس کامل دعوت اور قائم ہونے والی نماز کے رب، محمدﷺ کو وسیلہ اور فضیلت عطا فرما۔',
+    english:'O Allah, Lord of this perfect call and of the prayer to be offered, grant Muhammad the privilege and also the eminence.',
+    explanation:'Recite after hearing the Adhan (call to prayer).',
+    reference:'صحیح البخاری'
+  },
+  {
+    id:5, cat:'Salah',
+    title:'Dua after Salah',
+    arabic:'اللَّهُمَّ أَنْتَ السَّلَامُ وَمِنْكَ السَّلَامُ تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ',
+    urdu:'اے اللہ تو سلامتی ہے اور تجھ ہی سے سلامتی ہے، تو بابرکت ہے اے جلال و اکرام والے۔',
+    english:'O Allah, You are Peace and from You comes peace. Blessed are You, O Owner of majesty and honor.',
+    explanation:'Recite this immediately after completing the Salah.',
+    reference:'صحیح مسلم'
+  },
+  {
+    id:6, cat:'Food',
+    title:'Before Eating',
+    arabic:'بِسْمِ اللَّهِ وَعَلَى بَرَكَةِ اللَّهِ',
+    urdu:'اللہ کے نام کے ساتھ اور اللہ کی برکت کے ساتھ۔',
+    english:'In the name of Allah and with the blessings of Allah.',
+    explanation:'Say this before starting to eat any food.',
+    reference:'سنن ابی داود'
+  },
+  {
+    id:7, cat:'Food',
+    title:'After Eating',
+    arabic:'اَلْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنَا وَسَقَانَا وَجَعَلَنَا مِنَ الْمُسْلِمِينَ',
+    urdu:'تمام تعریفیں اللہ کے لیے ہیں جس نے ہمیں کھلایا، پلایا اور ہمیں مسلمانوں میں سے بنایا۔',
+    english:'All praise is for Allah who fed us and gave us drink and made us Muslims.',
+    explanation:'Recite this after finishing your meal.',
+    reference:'سنن ابی داود'
+  },
+  {
+    id:8, cat:'Travel',
+    title:'Dua for Travel',
+    arabic:'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',
+    urdu:'پاک ہے وہ جس نے ہمارے لیے اسے مسخر کیا اور ہم اسے قابو کرنے والے نہ تھے اور بیشک ہم اپنے رب کی طرف لوٹنے والے ہیں۔',
+    english:'Glory be to Him who has subjected this to us, and we could never have it by our efforts, and verily, to our Lord we are to return.',
+    explanation:'Recite when mounting or boarding any vehicle or transport.',
+    reference:'القرآن 43:13-14'
+  },
+  {
+    id:9, cat:'Home',
+    title:'Entering Home',
+    arabic:'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلَجِ وَخَيْرَ الْمَخْرَجِ بِسْمِ اللَّهِ وَلَجْنَا وَبِسْمِ اللَّهِ خَرَجْنَا وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا',
+    urdu:'اے اللہ میں تجھ سے داخل ہونے کی بھلائی اور نکلنے کی بھلائی مانگتا ہوں، اللہ کے نام پر داخل ہوئے اور اللہ کے نام پر نکلے اور اللہ پر بھروسہ کیا۔',
+    english:'O Allah, I ask You for goodness upon entering and goodness upon leaving. In the name of Allah we enter, in the name of Allah we leave, and upon Allah our Lord we rely.',
+    explanation:'Recite upon entering your home.',
+    reference:'سنن ابی داود'
+  },
+  {
+    id:10, cat:'Home',
+    title:'Leaving Home',
+    arabic:'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
+    urdu:'اللہ کے نام پر، اللہ پر بھروسہ کیا، اللہ کے بغیر نہ کوئی طاقت ہے نہ قوت۔',
+    english:'In the name of Allah, I place my trust in Allah, and there is no might nor power except with Allah.',
+    explanation:'Recite when leaving your home for protection throughout the day.',
+    reference:'سنن ابی داود'
+  },
+  {
+    id:11, cat:'Forgiveness',
+    title:'Seeking Forgiveness — Sayyidul Istighfar',
+    arabic:'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ',
+    urdu:'اے اللہ تو میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے مجھے پیدا کیا اور میں تیرا بندہ ہوں اور میں اپنی طاقت کے مطابق تیرے عہد و وعدے پر قائم ہوں۔',
+    english:'O Allah, You are my Lord, none has the right to be worshipped except You. You created me and I am your servant and I abide by your covenant and promise as best I can.',
+    explanation:'The master of supplications for forgiveness. Recite in morning and evening.',
+    reference:'صحیح البخاری'
+  },
+  {
+    id:12, cat:'Forgiveness',
+    title:'Short Istighfar',
+    arabic:'أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ',
+    urdu:'میں اللہ عظیم سے مغفرت مانگتا ہوں جس کے سوا کوئی معبود نہیں، وہ زندہ قائم رہنے والا ہے، اور میں اس کی طرف توبہ کرتا ہوں۔',
+    english:'I seek forgiveness from Allah the Magnificent, beside whom there is no deity, the Ever-Living, the Sustainer, and I repent to Him.',
+    explanation:'Recite this dua for seeking forgiveness from Allah.',
+    reference:'سنن الترمذی'
+  },
+  {
+    id:13, cat:'Hardship',
+    title:'Dua in Difficulty',
+    arabic:'لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
+    urdu:'تیرے سوا کوئی معبود نہیں، تو پاک ہے، بیشک میں ظالموں میں سے تھا۔',
+    english:'There is none worthy of worship except You, glory be to You. Indeed, I have been of the wrongdoers.',
+    explanation:'The dua of Prophet Yunus (AS) when he was in the belly of the whale. Highly effective in times of hardship.',
+    reference:'القرآن 21:87'
+  },
+  {
+    id:14, cat:'Hardship',
+    title:'Dua for Anxiety',
+    arabic:'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ وَالْعَجْزِ وَالْكَسَلِ',
+    urdu:'اے اللہ میں تیری پناہ مانگتا ہوں غم، حزن، عاجزی اور سستی سے۔',
+    english:'O Allah, I seek refuge in you from worry and grief, from helplessness and laziness.',
+    explanation:'Recite when feeling anxious, worried, or distressed.',
+    reference:'صحیح البخاری'
+  },
+  {
+    id:15, cat:'Sleep',
+    title:'Before Sleeping',
+    arabic:'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+    urdu:'اے اللہ تیرے نام پر مرتا اور جیتا ہوں۔',
+    english:'In Your name O Allah, I die and I live.',
+    explanation:'Recite before going to sleep every night.',
+    reference:'صحیح البخاری'
+  },
+  {
+    id:16, cat:'Sleep',
+    title:'Dua for Bad Dream',
+    arabic:'أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ غَضَبِهِ وَعِقَابِهِ وَشَرِّ عِبَادِهِ وَمِنْ هَمَزَاتِ الشَّيَاطِينِ',
+    urdu:'میں اللہ کے کامل کلمات کی پناہ لیتا ہوں اس کے غضب، سزا، اس کے بندوں کی برائی اور شیطانوں کے وسوسوں سے۔',
+    english:'I seek refuge in the perfect words of Allah from His anger and punishment, from the evil of His servants and from the madness of devils.',
+    explanation:'Recite upon waking from a bad dream and spit to your left three times.',
+    reference:'سنن ابی داود'
+  },
+  {
+    id:17, cat:'Quran',
+    title:'Before Reading Quran',
+    arabic:'أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ',
+    urdu:'میں شیطان مردود سے اللہ کی پناہ لیتا ہوں، اللہ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔',
+    english:'I seek refuge with Allah from the accursed devil. In the name of Allah, the Most Gracious, the Most Merciful.',
+    explanation:'Always recite this before beginning to read the Quran.',
+    reference:'القرآن 16:98'
+  },
+  {
+    id:18, cat:'Family',
+    title:'Dua for Parents',
+    arabic:'رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا',
+    urdu:'اے میرے رب ان دونوں پر رحم فرما جیسا انہوں نے مجھے بچپن میں پالا۔',
+    english:'My Lord, have mercy upon them as they brought me up when I was small.',
+    explanation:'Recite this dua for your parents after every prayer.',
+    reference:'القرآن 17:24'
+  },
+  {
+    id:19, cat:'Family',
+    title:'Dua for Righteous Children',
+    arabic:'رَبِّ هَبْ لِي مِنَ الصَّالِحِينَ',
+    urdu:'اے میرے رب مجھے نیک اولاد عطا فرما۔',
+    english:'My Lord, grant me from the righteous.',
+    explanation:'The dua of Prophet Ibrahim (AS) asking for righteous children.',
+    reference:'القرآن 37:100'
+  },
+  {
+    id:20, cat:'Rizq',
+    title:'Dua for Rizq (Sustenance)',
+    arabic:'اللَّهُمَّ اكْفِنِي بِحَلَالِكَ عَنْ حَرَامِكَ وَأَغْنِنِي بِفَضْلِكَ عَمَّنْ سِوَاكَ',
+    urdu:'اے اللہ مجھے اپنے حلال سے حرام سے بے نیاز کر دے اور اپنے فضل سے مجھے اپنے سوا سب سے غنی کر دے۔',
+    english:'O Allah, suffice me with what You have allowed instead of what You have forbidden, and make me independent of all others besides You.',
+    explanation:'A powerful dua for halal provision and financial ease.',
+    reference:'سنن الترمذی'
+  }
+];
+
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+const categories = ['All', ...new Set(duas.map(d => d.cat))];
+let currentCat = 'All';
+let currentDuaId = null;
+let searchQuery = '';
+
+// ══════════════════════════════
+// VIEW MANAGEMENT
+// ══════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════
+// RENDER CATEGORIES
+// ══════════════════════════════
+function renderCats() {
+  const bar = document.getElementById('cat-bar');
+  bar.innerHTML = categories.map(c => `
+    <button class="cat-chip ${c === currentCat ? 'active' : ''}"
+      onclick="selectCat('${c}')">${c}</button>
+  `).join('');
+}
+
+function selectCat(cat) {
+  currentCat = cat;
+  renderCats();
+  renderDuas();
+}
+
+// ══════════════════════════════
+// RENDER DUAS
+// ══════════════════════════════
+const catColors = {
+  Morning:'#f59e0b', Evening:'#6366f1', Salah:'#0ea5e9',
+  Food:'#22c55e', Travel:'#f97316', Home:'#8b5cf6',
+  Forgiveness:'#ec4899', Hardship:'#ef4444',
+  Sleep:'#14b8a6', Quran:'#3b82f6', Family:'#f43f5e', Rizq:'#10b981'
+};
+
+function renderDuas() {
+  const favs = getFavs();
+  let filtered = duas;
+
+  if (currentCat !== 'All') {
+    filtered = filtered.filter(d => d.cat === currentCat);
+  }
+
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    filtered = filtered.filter(d =>
+      d.title.toLowerCase().includes(q) ||
+      d.urdu.includes(q) ||
+      d.english.toLowerCase().includes(q)
+    );
+  }
+
+  const container = document.getElementById('dua-list');
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🤲</div>
+        <div class="empty-title">No duas found</div>
+        <div class="empty-text">Try a different search or category</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(d => `
+    <div class="dua-card" onclick="openDua(${d.id})">
+      <div class="dua-card-header">
+        <div class="dua-cat-dot" style="background:${catColors[d.cat] || '#888'}"></div>
+        <div class="dua-title">${d.title}</div>
+        <div class="dua-cat-label">${d.cat}</div>
+        <button class="dua-fav-btn ${favs.includes(d.id) ? 'on' : ''}"
+          id="fav-${d.id}"
+          onclick="event.stopPropagation(); toggleFav(${d.id})">
+          ${favs.includes(d.id) ? '❤️' : '🤍'}
+        </button>
+      </div>
+      <div class="dua-arabic-preview">${d.arabic.substring(0, 80)}${d.arabic.length > 80 ? '...' : ''}</div>
+    </div>
+  `).join('');
+}
+
+function filterDuas() {
+  searchQuery = document.getElementById('search-input').value;
+  renderDuas();
+}
+
+// ══════════════════════════════
+// OPEN DUA DETAIL
+// ══════════════════════════════
+function openDua(id) {
+  const d = duas.find(x => x.id === id);
+  if (!d) return;
+  currentDuaId = id;
+
+  document.getElementById('detail-header-title').textContent = d.title;
+  document.getElementById('d-title').textContent   = d.title;
+  document.getElementById('d-cat').textContent     = d.cat;
+  document.getElementById('d-arabic').textContent  = d.arabic;
+  document.getElementById('d-urdu').textContent    = d.urdu;
+  document.getElementById('d-english').textContent = d.english;
+  document.getElementById('d-explanation').textContent = d.explanation || '';
+  document.getElementById('d-reference').textContent   = d.reference || '';
+
+  // Hide empty sections
+  document.getElementById('d-urdu-card').style.display    = d.urdu ? 'block' : 'none';
+  document.getElementById('d-english-card').style.display = d.english ? 'block' : 'none';
+  document.getElementById('d-explanation-card').style.display = (d.explanation || d.reference) ? 'block' : 'none';
+
+  // Fav button
+  const favs = getFavs();
+  const favBtn = document.getElementById('detail-fav-btn');
+  favBtn.textContent = favs.includes(id) ? '❤️' : '🤍';
+
+  showView('view-detail');
+}
+
+// ══════════════════════════════
+// FAVORITES
+// ══════════════════════════════
+function getFavs() {
+  return JSON.parse(localStorage.getItem('duaFavorites') || '[]');
+}
+
+function toggleFav(id) {
+  let favs = getFavs();
+  const idx = favs.indexOf(id);
+  if (idx === -1) {
+    favs.push(id);
+    showToast('❤️ Added to favorites');
+  } else {
+    favs.splice(idx, 1);
+    showToast('Removed from favorites');
+  }
+  localStorage.setItem('duaFavorites', JSON.stringify(favs));
+
+  // Update buttons
+  const btn = document.getElementById('fav-' + id);
+  if (btn) {
+    btn.textContent = favs.includes(id) ? '❤️' : '🤍';
+    btn.classList.toggle('on', favs.includes(id));
+  }
+}
+
+function toggleDetailFav() {
+  if (!currentDuaId) return;
+  toggleFav(currentDuaId);
+  const favs = getFavs();
+  document.getElementById('detail-fav-btn').textContent = favs.includes(currentDuaId) ? '❤️' : '🤍';
+}
+
+function showFavorites() {
+  currentCat = 'All';
+  searchQuery = '';
+  document.getElementById('search-input').value = '';
+  const favs = getFavs();
+
+  const container = document.getElementById('dua-list');
+
+  if (favs.length === 0) {
+    renderCats();
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🤍</div>
+        <div class="empty-title">No Favorites Yet</div>
+        <div class="empty-text">Tap the 🤍 heart icon on any dua to save it here.</div>
+      </div>`;
+    return;
+  }
+
+  const favDuas = duas.filter(d => favs.includes(d.id));
+  renderCats();
+
+  container.innerHTML = `
+    <div style="padding:8px 0 4px; font-size:13px; font-weight:700; color:var(--text-secondary); text-transform:uppercase; letter-spacing:0.5px;">
+      ❤️ Favorites (${favDuas.length})
+    </div>
+  ` + favDuas.map(d => `
+    <div class="dua-card" onclick="openDua(${d.id})">
+      <div class="dua-card-header">
+        <div class="dua-cat-dot" style="background:${catColors[d.cat] || '#888'}"></div>
+        <div class="dua-title">${d.title}</div>
+        <div class="dua-cat-label">${d.cat}</div>
+        <button class="dua-fav-btn on" onclick="event.stopPropagation(); toggleFav(${d.id})">❤️</button>
+      </div>
+      <div class="dua-arabic-preview">${d.arabic.substring(0,80)}...</div>
+    </div>
+  `).join('');
+}
+
+// ══════════════════════════════
+// COPY & SHARE
+// ══════════════════════════════
+function copyDua() {
+  const d = duas.find(x => x.id === currentDuaId);
+  if (!d) return;
+  const text = `${d.title}\n\n${d.arabic}\n\n${d.urdu}\n\n${d.english}\n\n${d.reference}`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('📋 Copied to clipboard!'));
+  } else {
+    showToast('Copy not supported on this device');
+  }
+}
+
+function shareDua() {
+  const d = duas.find(x => x.id === currentDuaId);
+  if (!d) return;
+  const text = `${d.title}\n\n${d.arabic}\n\n${d.english}`;
+  if (navigator.share) {
+    navigator.share({ title: d.title, text: text });
+  } else {
+    copyDua();
+  }
+}
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+renderCats();
+renderDuas();
+</script>
+</body>
+</html>
