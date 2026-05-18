@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <title>Salah Times – IbadahHub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body { padding-bottom: var(--navbar-height); }
+
+    .salah-header {
+      padding: 12px 16px;
+      padding-top: calc(env(safe-area-inset-top, 16px) + 12px);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .location-block {
+      text-align: center;
+      padding: 8px 16px 4px;
+    }
+
+    .location-city {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .location-tap {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .location-method {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    /* Prayer list card */
+    .prayer-list-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .prayer-list-title {
+      font-size: 17px;
+      font-weight: 700;
+      text-align: center;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .prayer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .prayer-row:last-child { border-bottom: none; }
+
+    .prayer-row.current {
+      background: #f0f7ff;
+    }
+
+    .prayer-row-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .prayer-emoji { font-size: 24px; }
+
+    .prayer-row-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .prayer-row-time {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .prayer-row.current .prayer-row-name,
+    .prayer-row.current .prayer-row-time {
+      color: var(--primary);
+    }
+
+    /* Sunrise / Sunset cards */
+    .sun-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .sun-card {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .sun-icon { font-size: 32px; margin-bottom: 8px; }
+    .sun-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+    .sun-time { font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="salah-header">
+  <div style="width:38px;"></div>
+  <div></div>
+  <button class="header-action-btn" onclick="location.href='settings.html'">⚙️</button>
+</div>
+
+<!-- LOCATION -->
+<div class="location-block">
+  <div class="location-city" id="city-name">Loading...</div>
+  <div class="location-tap" onclick="changeLocation()">🔍 Tap to change location</div>
+  <div class="location-method">Live Salah Times – Hanafi</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content content-with-navbar" style="padding-top:12px;">
+
+  <!-- Date Navigator -->
+  <div class="date-nav">
+    <button class="date-nav-btn" onclick="changeDay(-1)">‹</button>
+    <div class="date-nav-center">
+      <div class="date-nav-main" id="nav-date">Monday, May 18</div>
+      <div class="date-nav-sub" id="nav-hijri">Loading...</div>
+    </div>
+    <button class="date-nav-btn" onclick="changeDay(1)">›</button>
+  </div>
+
+  <!-- Prayer Times List -->
+  <div class="prayer-list-card">
+    <div class="prayer-list-title">Salah Times</div>
+    <div class="prayer-row" id="row-fajr">
+      <div class="prayer-row-left">
+        <div class="prayer-emoji">🌄</div>
+        <div class="prayer-row-name">Fajr</div>
+      </div>
+      <div class="prayer-row-time" id="time-fajr">--:--</div>
+    </div>
+    <div class="prayer-row" id="row-sunrise">
+      <div class="prayer-row-left">
+        <div class="prayer-emoji">🌅</div>
+        <div class="prayer-row-name">Sunrise</div>
+      </div>
+      <div class="prayer-row-time" id="time-sunrise">--:--</div>
+    </div>
+    <div class="prayer-row" id="row-dhuhr">
+      <div class="prayer-row-left">
+        <div class="prayer-emoji">☀️</div>
+        <div class="prayer-row-name">Dhuhr</div>
+      </div>
+      <div class="prayer-row-time" id="time-dhuhr">--:--</div>
+    </div>
+    <div class="prayer-row" id="row-asr">
+      <div class="prayer-row-left">
+        <div class="prayer-emoji">🌤️</div>
+        <div class="prayer-row-name">Asr</div>
+      </div>
+      <div class="prayer-row-time" id="time-asr">--:--</div>
+    </div>
+    <div class="prayer-row" id="row-maghrib">
+      <div class="prayer-row-left">
+        <div class="prayer-emoji">🌆</div>
+        <div class="prayer-row-name">Maghrib</div>
+      </div>
+      <div class="prayer-row-time" id="time-maghrib">--:--</div>
+    </div>
+    <div class="prayer-row" id="row-isha">
+      <div class="prayer-row-left">
+        <div class="prayer-emoji">🌙</div>
+        <div class="prayer-row-name">Isha</div>
+      </div>
+      <div class="prayer-row-time" id="time-isha">--:--</div>
+    </div>
+  </div>
+
+  <!-- Sunrise / Sunset -->
+  <div class="sun-grid">
+    <div class="sun-card">
+      <div class="sun-icon">🌅</div>
+      <div class="sun-label">Sunrise</div>
+      <div class="sun-time" id="sun-rise">--:--</div>
+    </div>
+    <div class="sun-card">
+      <div class="sun-icon">🌇</div>
+      <div class="sun-label">Sunset</div>
+      <div class="sun-time" id="sun-set">--:--</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAVBAR -->
+<nav class="navbar">
+  <div class="nav-item" onclick="location.href='index.html'">
+    <div class="nav-icon-box">🏠</div>
+    <div class="nav-label">Home</div>
+  </div>
+  <div class="nav-item active" onclick="location.href='salah.html'">
+    <div class="nav-icon-box">🕌</div>
+    <div class="nav-label">Salah</div>
+  </div>
+  <div class="nav-item" onclick="location.href='tracker.html'">
+    <div class="nav-icon-box">📋</div>
+    <div class="nav-label">Tracker</div>
+  </div>
+  <div class="nav-item" onclick="location.href='more.html'">
+    <div class="nav-icon-box">•••</div>
+    <div class="nav-label">More</div>
+  </div>
+</nav>
+
+<script>
+let currentDate = new Date();
+let userLat = localStorage.getItem('userLat');
+let userLon = localStorage.getItem('userLon');
+
+// ── FORMAT TIME 12H ──
+function fmt(t) {
+  if (!t) return '--:--';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+// ── SET DATE DISPLAY ──
+function setDateDisplay() {
+  const opts = { weekday:'long', month:'long', day:'numeric' };
+  document.getElementById('nav-date').textContent =
+    currentDate.toLocaleDateString('en-US', opts);
+  try {
+    const hijri = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
+      day:'numeric', month:'long', year:'numeric'
+    }).format(currentDate);
+    document.getElementById('nav-hijri').textContent = hijri;
+  } catch(e) {
+    document.getElementById('nav-hijri').textContent = 'Islamic Calendar';
+  }
+}
+
+// ── CHANGE DAY ──
+function changeDay(dir) {
+  currentDate.setDate(currentDate.getDate() + dir);
+  setDateDisplay();
+  loadTimes();
+}
+
+// ── LOAD PRAYER TIMES ──
+function loadTimes() {
+  const d = currentDate.getDate();
+  const m = currentDate.getMonth() + 1;
+  const y = currentDate.getFullYear();
+
+  if (!userLat || !userLon) {
+    getLocation();
+    return;
+  }
+
+  fetch(`https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${userLat}&longitude=${userLon}&method=2`)
+    .then(r => r.json())
+    .then(data => {
+      const t = data.data.timings;
+      document.getElementById('time-fajr').textContent = fmt(t.Fajr);
+      document.getElementById('time-sunrise').textContent = fmt(t.Sunrise);
+      document.getElementById('time-dhuhr').textContent = fmt(t.Dhuhr);
+      document.getElementById('time-asr').textContent = fmt(t.Asr);
+      document.getElementById('time-maghrib').textContent = fmt(t.Maghrib);
+      document.getElementById('time-isha').textContent = fmt(t.Isha);
+      document.getElementById('sun-rise').textContent = fmt(t.Sunrise);
+      document.getElementById('sun-set').textContent = fmt(t.Maghrib);
+      highlightCurrent(t);
+    })
+    .catch(() => {
+      const saved = localStorage.getItem('prayerTimes');
+      if (saved) {
+        const t = JSON.parse(saved);
+        document.getElementById('time-fajr').textContent = fmt(t.Fajr);
+        document.getElementById('time-sunrise').textContent = fmt(t.Sunrise);
+        document.getElementById('time-dhuhr').textContent = fmt(t.Dhuhr);
+        document.getElementById('time-asr').textContent = fmt(t.Asr);
+        document.getElementById('time-maghrib').textContent = fmt(t.Maghrib);
+        document.getElementById('time-isha').textContent = fmt(t.Isha);
+        document.getElementById('sun-rise').textContent = fmt(t.Sunrise);
+        document.getElementById('sun-set').textContent = fmt(t.Maghrib);
+      }
+    });
+}
+
+// ── HIGHLIGHT CURRENT PRAYER ──
+function highlightCurrent(t) {
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const prayers = [
+    { id:'row-fajr', time: t.Fajr },
+    { id:'row-sunrise', time: t.Sunrise },
+    { id:'row-dhuhr', time: t.Dhuhr },
+    { id:'row-asr', time: t.Asr },
+    { id:'row-maghrib', time: t.Maghrib },
+    { id:'row-isha', time: t.Isha }
+  ];
+  let currentIdx = 0;
+  prayers.forEach((p, i) => {
+    const [h, m] = p.time.split(':').map(Number);
+    if (nowMin >= h * 60 + m) currentIdx = i;
+  });
+  prayers.forEach((p, i) => {
+    const row = document.getElementById(p.id);
+    if (i === currentIdx) row.classList.add('current');
+    else row.classList.remove('current');
+  });
+}
+
+// ── GET LOCATION ──
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      userLat = pos.coords.latitude;
+      userLon = pos.coords.longitude;
+      localStorage.setItem('userLat', userLat);
+      localStorage.setItem('userLon', userLon);
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`)
+        .then(r => r.json())
+        .then(d => {
+          const city = d.address.city || d.address.town || d.address.village || 'Your City';
+          document.getElementById('city-name').textContent = city;
+          localStorage.setItem('userCity', city);
+        });
+      loadTimes();
+    }, () => {
+      document.getElementById('city-name').textContent = 'Location unavailable';
+    });
+  }
+}
+
+function changeLocation() {
+  localStorage.removeItem('userLat');
+  localStorage.removeItem('userLon');
+  localStorage.removeItem('userCity');
+  userLat = null;
+  userLon = null;
+  getLocation();
+}
+
+// ── INIT ──
+const savedCity = localStorage.getItem('userCity');
+if (savedCity) document.getElementById('city-name').textContent = savedCity;
+
+setDateDisplay();
+
+if (userLat && userLon) {
+  loadTimes();
+} else {
+  getLocation();
+}
+</script>
+</body>
+</html>
