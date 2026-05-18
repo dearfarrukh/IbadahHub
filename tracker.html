@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Tracker – IbadahHub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body {
+      padding-bottom: var(--navbar-height);
+      background: linear-gradient(170deg, #0d1b3e 0%, #1a3a6b 45%, #0d2744 100%);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .tracker-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px 16px 16px;
+      padding-top: calc(env(safe-area-inset-top, 20px) + 16px);
+    }
+
+    .tracker-header-icon { font-size: 32px; }
+
+    .tracker-header-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    /* Content area — white rounded top */
+    .tracker-body {
+      background: var(--bg);
+      border-radius: 28px 28px 0 0;
+      min-height: calc(100vh - 120px);
+      padding: 20px 16px;
+      padding-bottom: calc(var(--navbar-height) + 20px);
+    }
+
+    /* Salah checkboxes */
+    .salah-section {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .salah-section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .salah-checks {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .salah-check-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .salah-check-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: center;
+    }
+
+    .salah-checkbox {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.2s ease;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .salah-checkbox.checked {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
+    /* Daily Tasks */
+    .tasks-section {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .tasks-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .task-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+
+    .task-row:last-child { border-bottom: none; }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .task-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .task-name.done {
+      text-decoration: line-through;
+      color: var(--text-light);
+    }
+
+    .task-pdf-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .task-checkbox {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .task-checkbox.checked {
+      background: var(--green);
+      border-color: var(--green);
+      color: white;
+    }
+
+    /* Progress summary */
+    .summary-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .summary-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .summary-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .summary-count {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="tracker-header">
+  <div class="tracker-header-icon">📗</div>
+  <div class="tracker-header-title">Ibadah Tracker</div>
+</div>
+
+<!-- BODY -->
+<div class="tracker-body">
+
+  <!-- Date Navigator -->
+  <div class="date-nav">
+    <button class="date-nav-btn" onclick="changeDay(-1)">‹</button>
+    <div class="date-nav-center">
+      <div class="date-nav-main" id="nav-date">Monday, May 18, 2026</div>
+      <div class="date-nav-sub" id="nav-hijri">Loading...</div>
+    </div>
+    <button class="date-nav-btn" onclick="changeDay(1)">›</button>
+  </div>
+
+  <!-- Daily Salah -->
+  <div class="salah-section">
+    <div class="salah-section-title">🕌 Daily Salah</div>
+    <div class="salah-checks">
+      <div class="salah-check-item">
+        <div class="salah-check-label">Fajr</div>
+        <div class="salah-checkbox" id="s-fajr" onclick="toggleSalah('fajr')"></div>
+      </div>
+      <div class="salah-check-item">
+        <div class="salah-check-label">Dhuhur</div>
+        <div class="salah-checkbox" id="s-dhuhr" onclick="toggleSalah('dhuhr')"></div>
+      </div>
+      <div class="salah-check-item">
+        <div class="salah-check-label">Asr</div>
+        <div class="salah-checkbox" id="s-asr" onclick="toggleSalah('asr')"></div>
+      </div>
+      <div class="salah-check-item">
+        <div class="salah-check-label">Maghrib</div>
+        <div class="salah-checkbox" id="s-maghrib" onclick="toggleSalah('maghrib')"></div>
+      </div>
+      <div class="salah-check-item">
+        <div class="salah-check-label">Isha</div>
+        <div class="salah-checkbox" id="s-isha" onclick="toggleSalah('isha')"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Summary -->
+  <div class="summary-card">
+    <div class="summary-title">📊 Today's Progress</div>
+    <div class="summary-row">
+      <div class="summary-label">Salah completed</div>
+      <div class="summary-count" id="salah-count">0 / 5</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill green" id="salah-progress" style="width:0%"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="summary-row">
+      <div class="summary-label">Tasks completed</div>
+      <div class="summary-count" id="task-count">0 / 9</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="task-progress" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Daily Tasks -->
+  <div class="tasks-section">
+    <div class="tasks-title">📝 Daily Tasks</div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-mulk">Surah Mulk</div>
+        <button class="task-pdf-btn">📄 PDF</button>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-mulk" onclick="toggleTask('mulk')"></div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-sajdah">Surah Sajdah</div>
+        <button class="task-pdf-btn">📄 PDF</button>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-sajdah" onclick="toggleTask('sajdah')"></div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-yaseen">Surah Yaseen</div>
+        <button class="task-pdf-btn">📄 PDF</button>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-yaseen" onclick="toggleTask('yaseen')"></div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-rehman">Surah Rehman</div>
+        <button class="task-pdf-btn">📄 PDF</button>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-rehman" onclick="toggleTask('rehman')"></div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-taghabun">Surah Taghabun</div>
+        <button class="task-pdf-btn">📄 PDF</button>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-taghabun" onclick="toggleTask('taghabun')"></div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-waqiya">Surah Waqiya</div>
+        <button class="task-pdf-btn">📄 PDF</button>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-waqiya" onclick="toggleTask('waqiya')"></div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-ikhlas">Surah Ikhlas</div>
+        <button class="task-pdf-btn">📄 PDF</button>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-ikhlas" onclick="toggleTask('ikhlas')"></div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-nas">Surah Ad Duha to Surah Al Nas</div>
+        <button class="task-pdf-btn">📄 PDF</button>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-nas" onclick="toggleTask('nas')"></div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-left">
+        <div class="task-name" id="tn-class">Quran Class</div>
+        <span style="font-size:18px;">📖</span>
+      </div>
+      <div class="task-checkbox" id="t-class" onclick="toggleTask('class')"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- BOTTOM NAVBAR -->
+<nav class="navbar">
+  <div class="nav-item" onclick="location.href='index.html'">
+    <div class="nav-icon-box">🏠</div>
+    <div class="nav-label">Home</div>
+  </div>
+  <div class="nav-item" onclick="location.href='salah.html'">
+    <div class="nav-icon-box">🕌</div>
+    <div class="nav-label">Salah</div>
+  </div>
+  <div class="nav-item active" onclick="location.href='tracker.html'">
+    <div class="nav-icon-box">📋</div>
+    <div class="nav-label">Tracker</div>
+  </div>
+  <div class="nav-item" onclick="location.href='more.html'">
+    <div class="nav-icon-box">•••</div>
+    <div class="nav-label">More</div>
+  </div>
+</nav>
+
+<script>
+let currentDate = new Date();
+
+// ── DATE KEY for saving per day ──
+function dateKey(d) {
+  return d.toISOString().split('T')[0];
+}
+
+// ── SET DATE DISPLAY ──
+function setDateDisplay() {
+  const opts = { weekday:'long', month:'long', day:'numeric', year:'numeric' };
+  document.getElementById('nav-date').textContent =
+    currentDate.toLocaleDateString('en-US', opts);
+  try {
+    const hijri = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
+      day:'numeric', month:'long', year:'numeric'
+    }).format(currentDate);
+    document.getElementById('nav-hijri').textContent = hijri;
+  } catch(e) {
+    document.getElementById('nav-hijri').textContent = 'Islamic Calendar';
+  }
+}
+
+// ── CHANGE DAY ──
+function changeDay(dir) {
+  currentDate.setDate(currentDate.getDate() + dir);
+  setDateDisplay();
+  loadDay();
+}
+
+// ── SALAH ──
+const salahKeys = ['fajr','dhuhr','asr','maghrib','isha'];
+
+function toggleSalah(name) {
+  const key = 'salah_' + dateKey(currentDate);
+  const data = JSON.parse(localStorage.getItem(key) || '{}');
+  data[name] = !data[name];
+  localStorage.setItem(key, JSON.stringify(data));
+  renderSalah(data);
+}
+
+function renderSalah(data) {
+  let done = 0;
+  salahKeys.forEach(k => {
+    const el = document.getElementById('s-' + k);
+    if (data[k]) {
+      el.classList.add('checked');
+      el.textContent = '✓';
+      done++;
+    } else {
+      el.classList.remove('checked');
+      el.textContent = '';
+    }
+  });
+  document.getElementById('salah-count').textContent = done + ' / 5';
+  document.getElementById('salah-progress').style.width = (done / 5 * 100) + '%';
+}
+
+// ── TASKS ──
+const taskKeys = ['mulk','sajdah','yaseen','rehman','taghabun','waqiya','ikhlas','nas','class'];
+
+function toggleTask(name) {
+  const key = 'tasks_' + dateKey(currentDate);
+  const data = JSON.parse(localStorage.getItem(key) || '{}');
+  data[name] = !data[name];
+  localStorage.setItem(key, JSON.stringify(data));
+  renderTasks(data);
+}
+
+function renderTasks(data) {
+  let done = 0;
+  taskKeys.forEach(k => {
+    const cb = document.getElementById('t-' + k);
+    const nm = document.getElementById('tn-' + k);
+    if (data[k]) {
+      cb.classList.add('checked');
+      cb.textContent = '✓';
+      nm.classList.add('done');
+      done++;
+    } else {
+      cb.classList.remove('checked');
+      cb.textContent = '';
+      nm.classList.remove('done');
+    }
+  });
+  document.getElementById('task-count').textContent = done + ' / ' + taskKeys.length;
+  document.getElementById('task-progress').style.width = (done / taskKeys.length * 100) + '%';
+}
+
+// ── LOAD DAY DATA ──
+function loadDay() {
+  const salahData = JSON.parse(localStorage.getItem('salah_' + dateKey(currentDate)) || '{}');
+  const taskData = JSON.parse(localStorage.getItem('tasks_' + dateKey(currentDate)) || '{}');
+  renderSalah(salahData);
+  renderTasks(taskData);
+}
+
+// ── INIT ──
+setDateDisplay();
+loadDay();
+</script>
+</body>
+</html>
