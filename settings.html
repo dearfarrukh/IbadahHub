@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <title>Settings – IbadahHub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); min-height:100vh; font-family:'Inter',sans-serif; padding-bottom:40px; }
+
+    .page-header {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 10px);
+      background:white;
+      box-shadow:0 1px 0 var(--border);
+      margin-bottom:16px;
+    }
+
+    .header-title { font-size:17px; font-weight:700; flex:1; text-align:center; }
+
+    /* App info card */
+    .app-card {
+      background:linear-gradient(135deg,#1a3a6b,#0d2744);
+      border-radius:var(--radius-lg);
+      padding:24px 20px;
+      margin:0 16px 20px;
+      text-align:center;
+      position:relative; overflow:hidden;
+    }
+
+    .app-card::before {
+      content:'☪️';
+      position:absolute;
+      font-size:100px; opacity:0.05;
+      right:-10px; bottom:-10px;
+    }
+
+    .app-icon { font-size:52px; margin-bottom:10px; }
+    .app-name { font-size:22px; font-weight:800; color:white; margin-bottom:4px; }
+    .app-version { font-size:13px; color:rgba(255,255,255,0.5); }
+    .app-tagline { font-size:13px; color:rgba(255,255,255,0.6); margin-top:6px; }
+
+    /* Settings section */
+    .settings-section {
+      margin:0 16px 20px;
+    }
+
+    .section-header {
+      font-size:13px; font-weight:700;
+      color:var(--text-secondary);
+      text-transform:uppercase;
+      letter-spacing:0.5px;
+      margin-bottom:8px;
+      padding-left:4px;
+    }
+
+    .settings-group {
+      background:white;
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .settings-row {
+      display:flex; align-items:center;
+      padding:15px 18px;
+      border-bottom:1px solid var(--border);
+      gap:14px;
+      cursor:pointer;
+      transition:background 0.15s;
+      -webkit-user-select:none; user-select:none;
+    }
+
+    .settings-row:last-child { border-bottom:none; }
+    .settings-row:active { background:var(--bg); }
+
+    .settings-row.no-tap { cursor:default; }
+    .settings-row.no-tap:active { background:white; }
+
+    .row-icon {
+      width:36px; height:36px;
+      border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; flex-shrink:0;
+    }
+
+    .row-body { flex:1; }
+
+    .row-title {
+      font-size:15px; font-weight:600;
+      color:var(--text);
+    }
+
+    .row-sub {
+      font-size:12px; color:var(--text-secondary);
+      margin-top:2px;
+    }
+
+    .row-arrow { font-size:18px; color:var(--text-light); }
+
+    /* Toggle switch */
+    .toggle-switch {
+      position:relative;
+      width:51px; height:31px;
+      flex-shrink:0;
+    }
+
+    .toggle-switch input { display:none; }
+
+    .toggle-track {
+      position:absolute; inset:0;
+      border-radius:50px;
+      background:var(--border);
+      cursor:pointer;
+      transition:background 0.25s;
+    }
+
+    .toggle-switch input:checked + .toggle-track {
+      background:var(--green);
+    }
+
+    .toggle-thumb {
+      position:absolute;
+      width:27px; height:27px;
+      border-radius:50%;
+      background:white;
+      top:2px; left:2px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.2);
+      transition:transform 0.25s;
+      pointer-events:none;
+    }
+
+    .toggle-switch input:checked ~ .toggle-thumb {
+      transform:translateX(20px);
+    }
+
+    /* Select dropdown style */
+    .row-value {
+      font-size:14px; font-weight:600;
+      color:var(--primary);
+    }
+
+    /* Data usage card */
+    .data-card {
+      background:white;
+      border-radius:var(--radius-lg);
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .data-row {
+      display:flex; align-items:center;
+      justify-content:space-between;
+      padding:10px 0;
+      border-bottom:1px solid var(--border);
+    }
+
+    .data-row:last-child { border-bottom:none; }
+
+    .data-label { font-size:14px; font-weight:600; color:var(--text); display:flex; align-items:center; gap:8px; }
+    .data-size { font-size:13px; font-weight:700; color:var(--primary); }
+
+    /* Danger zone */
+    .danger-btn {
+      background:white;
+      border-radius:var(--radius);
+      padding:15px 18px;
+      box-shadow:var(--shadow);
+      display:flex; align-items:center; gap:14px;
+      cursor:pointer; transition:background 0.15s;
+      border:none; width:100%;
+      text-align:left; font-family:'Inter',sans-serif;
+      margin-bottom:8px;
+      -webkit-user-select:none; user-select:none;
+    }
+
+    .danger-btn:active { background:#fff5f5; }
+
+    .danger-icon {
+      width:36px; height:36px; border-radius:10px;
+      background:#ffe8e8;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; flex-shrink:0;
+    }
+
+    .danger-title { font-size:15px; font-weight:600; color:var(--red); }
+    .danger-sub { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+
+    /* Backup/Restore */
+    .backup-btn {
+      background:white;
+      border-radius:var(--radius);
+      padding:15px 18px;
+      box-shadow:var(--shadow);
+      display:flex; align-items:center; gap:14px;
+      cursor:pointer; transition:background 0.15s;
+      border:none; width:100%;
+      text-align:left; font-family:'Inter',sans-serif;
+      margin-bottom:8px;
+      -webkit-user-select:none; user-select:none;
+    }
+
+    .backup-btn:active { background:var(--bg); }
+
+    .backup-icon {
+      width:36px; height:36px; border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; flex-shrink:0;
+    }
+
+    .backup-title { font-size:15px; font-weight:600; color:var(--text); }
+    .backup-sub { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+
+    /* Modal */
+    .modal-bg {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.5); z-index:200;
+      display:flex; align-items:flex-end;
+      opacity:0; pointer-events:none; transition:opacity 0.3s;
+    }
+
+    .modal-bg.show { opacity:1; pointer-events:all; }
+
+    .modal-box {
+      background:white; border-radius:24px 24px 0 0;
+      padding:20px;
+      padding-bottom:calc(env(safe-area-inset-bottom,20px) + 20px);
+      width:100%;
+      transform:translateY(100%); transition:transform 0.3s ease;
+    }
+
+    .modal-bg.show .modal-box { transform:translateY(0); }
+    .modal-handle { width:36px; height:4px; background:var(--border); border-radius:50px; margin:0 auto 18px; }
+    .modal-title { font-size:18px; font-weight:700; text-align:center; margin-bottom:6px; }
+    .modal-sub { font-size:14px; color:var(--text-secondary); text-align:center; margin-bottom:20px; }
+
+    /* Toast */
+    .toast {
+      position:fixed; bottom:30px; left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:rgba(28,28,30,0.95); color:white;
+      padding:12px 22px; border-radius:50px;
+      font-size:14px; font-weight:500; z-index:9999;
+      opacity:0; transition:all 0.3s ease;
+      white-space:nowrap; pointer-events:none;
+    }
+
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <button class="back-btn" onclick="location.href='index.html'">←</button>
+  <div class="header-title">Settings</div>
+  <div style="width:38px;"></div>
+</div>
+
+<!-- APP CARD -->
+<div class="app-card">
+  <div class="app-icon">☪️</div>
+  <div class="app-name">IbadahHub</div>
+  <div class="app-tagline">Your daily Islamic worship companion</div>
+  <div class="app-version">Version 1.0.0</div>
+</div>
+
+<!-- PRAYER SETTINGS -->
+<div class="settings-section">
+  <div class="section-header">Prayer Settings</div>
+  <div class="settings-group">
+
+    <div class="settings-row" onclick="showCalcMethod()">
+      <div class="row-icon" style="background:#e8f0fe;">🕌</div>
+      <div class="row-body">
+        <div class="row-title">Calculation Method</div>
+        <div class="row-sub" id="calc-method-val">Muslim World League</div>
+      </div>
+      <div class="row-arrow">›</div>
+    </div>
+
+    <div class="settings-row" onclick="showMadhab()">
+      <div class="row-icon" style="background:#f3e8ff;">📚</div>
+      <div class="row-body">
+        <div class="row-title">Madhab (Asr Time)</div>
+        <div class="row-sub" id="madhab-val">Hanafi</div>
+      </div>
+      <div class="row-arrow">›</div>
+    </div>
+
+    <div class="settings-row no-tap">
+      <div class="row-icon" style="background:#e6f9ec;">🔔</div>
+      <div class="row-body">
+        <div class="row-title">Prayer Notifications</div>
+        <div class="row-sub">Remind me at prayer time</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="toggle-notif" onchange="saveSetting('notifications', this.checked)"/>
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+
+  </div>
+</div>
+
+<!-- QURAN SETTINGS -->
+<div class="settings-section">
+  <div class="section-header">Quran Settings</div>
+  <div class="settings-group">
+
+    <div class="settings-row" onclick="showReciter()">
+      <div class="row-icon" style="background:#e6f9ec;">🎙️</div>
+      <div class="row-body">
+        <div class="row-title">Reciter</div>
+        <div class="row-sub" id="reciter-val">Mishary Rashid Alafasy</div>
+      </div>
+      <div class="row-arrow">›</div>
+    </div>
+
+    <div class="settings-row no-tap">
+      <div class="row-icon" style="background:#fff3e0;">🇵🇰</div>
+      <div class="row-body">
+        <div class="row-title">Urdu Translation</div>
+        <div class="row-sub">Show by default in Quran Audio</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="toggle-urdu" checked onchange="saveSetting('showUrdu', this.checked)"/>
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+
+    <div class="settings-row no-tap">
+      <div class="row-icon" style="background:#e8f0fe;">🇬🇧</div>
+      <div class="row-body">
+        <div class="row-title">English Translation</div>
+        <div class="row-sub">Show by default in Quran Audio</div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="toggle-english" checked onchange="saveSetting('showEnglish', this.checked)"/>
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+
+  </div>
+</div>
+
+<!-- LOCATION -->
+<div class="settings-section">
+  <div class="section-header">Location</div>
+  <div class="settings-group">
+
+    <div class="settings-row no-tap">
+      <div class="row-icon" style="background:#e8f0fe;">📍</div>
+      <div class="row-body">
+        <div class="row-title">Saved Location</div>
+        <div class="row-sub" id="saved-location">Not set</div>
+      </div>
+    </div>
+
+    <div class="settings-row" onclick="resetLocation()">
+      <div class="row-icon" style="background:#ffe8e8;">🔄</div>
+      <div class="row-body">
+        <div class="row-title">Reset Location</div>
+        <div class="row-sub">Re-detect your location</div>
+      </div>
+      <div class="row-arrow">›</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BACKUP & RESTORE -->
+<div class="settings-section">
+  <div class="section-header">Backup & Restore</div>
+
+  <button class="backup-btn" onclick="backupData()">
+    <div class="backup-icon" style="background:#e6f9ec;">⬆️</div>
+    <div>
+      <div class="backup-title">Export Backup</div>
+      <div class="backup-sub">Save all your data to a file</div>
+    </div>
+  </button>
+
+  <button class="backup-btn" onclick="document.getElementById('restore-input').click()">
+    <div class="backup-icon" style="background:#e8f0fe;">⬇️</div>
+    <div>
+      <div class="backup-title">Restore Backup</div>
+      <div class="backup-sub">Load data from a backup file</div>
+    </div>
+  </button>
+
+  <input type="file" id="restore-input" accept=".json" style="display:none;" onchange="restoreData(event)"/>
+</div>
+
+<!-- DATA USAGE -->
+<div class="settings-section">
+  <div class="section-header">Saved Data</div>
+  <div class="data-card">
+    <div class="data-row">
+      <div class="data-label">🔖 Quran Bookmarks</div>
+      <div class="data-size" id="data-qbm">0</div>
+    </div>
+    <div class="data-row">
+      <div class="data-label">📿 Azkar List</div>
+      <div class="data-size" id="data-azkar">0 items</div>
+    </div>
+    <div class="data-row">
+      <div class="data-label">🤲 Dua Favorites</div>
+      <div class="data-size" id="data-dua">0</div>
+    </div>
+    <div class="data-row">
+      <div class="data-label">📋 Qaza Data</div>
+      <div class="data-size" id="data-qaza">Saved</div>
+    </div>
+    <div class="data-row">
+      <div class="data-label">📊 Tracker Data</div>
+      <div class="data-size" id="data-tracker">Saved</div>
+    </div>
+  </div>
+</div>
+
+<!-- DANGER ZONE -->
+<div class="settings-section">
+  <div class="section-header">Danger Zone</div>
+
+  <button class="danger-btn" onclick="clearData('bookmarks')">
+    <div class="danger-icon">🔖</div>
+    <div>
+      <div class="danger-title">Clear Quran Bookmarks</div>
+      <div class="danger-sub">Remove all saved Quran pages</div>
+    </div>
+  </button>
+
+  <button class="danger-btn" onclick="clearData('azkar')">
+    <div class="danger-icon">📿</div>
+    <div>
+      <div class="danger-title">Reset Azkar Progress</div>
+      <div class="danger-sub">Reset all zikr counts to zero</div>
+    </div>
+  </button>
+
+  <button class="danger-btn" onclick="clearData('tracker')">
+    <div class="danger-icon">📋</div>
+    <div>
+      <div class="danger-title">Clear Tracker Data</div>
+      <div class="danger-sub">Remove all daily tracking records</div>
+    </div>
+  </button>
+
+  <button class="danger-btn" onclick="clearData('all')">
+    <div class="danger-icon">⚠️</div>
+    <div>
+      <div class="danger-title">Clear ALL Data</div>
+      <div class="danger-sub">⚠️ This cannot be undone!</div>
+    </div>
+  </button>
+
+</div>
+
+<!-- ABOUT -->
+<div class="settings-section">
+  <div class="section-header">About</div>
+  <div class="settings-group">
+
+    <div class="settings-row no-tap">
+      <div class="row-icon" style="background:#e6f9ec;">📱</div>
+      <div class="row-body">
+        <div class="row-title">App Version</div>
+        <div class="row-sub">IbadahHub v1.0.0</div>
+      </div>
+      <div class="row-value">1.0.0</div>
+    </div>
+
+    <div class="settings-row no-tap">
+      <div class="row-icon" style="background:#fff3e0;">🕌</div>
+      <div class="row-body">
+        <div class="row-title">Prayer Data</div>
+        <div class="row-sub">Powered by AlAdhan API</div>
+      </div>
+    </div>
+
+    <div class="settings-row no-tap">
+      <div class="row-icon" style="background:#e8f0fe;">📖</div>
+      <div class="row-body">
+        <div class="row-title">Quran Data</div>
+        <div class="row-sub">Powered by AlQuran.cloud API</div>
+      </div>
+    </div>
+
+    <div class="settings-row no-tap">
+      <div class="row-icon" style="background:#f3e8ff;">🎧</div>
+      <div class="row-body">
+        <div class="row-title">Audio</div>
+        <div class="row-sub">Powered by Islamic Network CDN</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CALCULATION METHOD MODAL -->
+<div class="modal-bg" id="calc-modal" onclick="closeModal('calc-modal',event)">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Calculation Method</div>
+    <div class="modal-sub">Choose your prayer time calculation method</div>
+    <div id="calc-options"></div>
+  </div>
+</div>
+
+<!-- MADHAB MODAL -->
+<div class="modal-bg" id="madhab-modal" onclick="closeModal('madhab-modal',event)">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Madhab</div>
+    <div class="modal-sub">Affects Asr prayer time calculation</div>
+    <div id="madhab-options"></div>
+  </div>
+</div>
+
+<!-- RECITER MODAL -->
+<div class="modal-bg" id="reciter-modal" onclick="closeModal('reciter-modal',event)">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Select Reciter</div>
+    <div class="modal-sub">For Quran Audio playback</div>
+    <div id="reciter-options"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════
+// SETTINGS DATA
+// ══════════════════════════════
+const calcMethods = [
+  {id:2,  name:'Muslim World League',        sub:'MWL — Global'},
+  {id:1,  name:'University of Islamic Sciences', sub:'Karachi — South Asia'},
+  {id:3,  name:'Islamic Society of North America', sub:'ISNA — North America'},
+  {id:4,  name:'Umm Al-Qura University',     sub:'Makkah — Saudi Arabia'},
+  {id:5,  name:'Egyptian General Authority', sub:'Egypt'},
+  {id:7,  name:'Institute of Geophysics',    sub:'Tehran — Iran'},
+  {id:8,  name:'Gulf Region',               sub:'Gulf countries'},
+  {id:9,  name:'Kuwait',                    sub:'Kuwait'},
+  {id:10, name:'Qatar',                     sub:'Qatar'},
+  {id:11, name:'Majlis Ugama Islam',         sub:'Singapore'},
+  {id:12, name:'Union Organization France',  sub:'France'},
+  {id:13, name:'Diyanet İşleri Başkanlığı',  sub:'Turkey'},
+  {id:14, name:'Spiritual Administration',   sub:'Russia'},
+];
+
+const madhabList = [
+  {id:'Hanafi', name:'Hanafi', sub:'Standard in South Asia & Turkey'},
+  {id:'Shafi',  name:'Shafi / Maliki / Hanbali', sub:'Standard in Arab world'},
+];
+
+const reciters = [
+  {id:'ar.alafasy',    name:'Mishary Rashid Alafasy',   sub:'Kuwait — Most popular'},
+  {id:'ar.abdurrahmaansudais', name:'Abdul Rahman Al-Sudais', sub:'Imam of Masjid Al-Haram'},
+  {id:'ar.minshawi',   name:'Mohamed Siddiq El-Minshawi', sub:'Egypt — Classic recitation'},
+  {id:'ar.husary',     name:'Mahmoud Khalil Al-Husary',  sub:'Egypt — Tajweed master'},
+  {id:'ar.mahermuaiqly', name:'Maher Al-Mueaqly',       sub:'Saudi Arabia'},
+];
+
+// ══════════════════════════════
+// LOAD SETTINGS
+// ══════════════════════════════
+function loadSettings() {
+  const calcId  = localStorage.getItem('prayerMethod') || '2';
+  const madhab  = localStorage.getItem('prayerMadhab') || 'Hanafi';
+  const reciter = localStorage.getItem('quranReciter') || 'ar.alafasy';
+
+  const calcName = calcMethods.find(m => String(m.id) === String(calcId))?.name || 'Muslim World League';
+  const recName  = reciters.find(r => r.id === reciter)?.name || 'Mishary Rashid Alafasy';
+
+  document.getElementById('calc-method-val').textContent = calcName;
+  document.getElementById('madhab-val').textContent      = madhab;
+  document.getElementById('reciter-val').textContent     = recName;
+
+  // Toggles
+  const notif   = localStorage.getItem('notifications') === 'true';
+  const urdu    = localStorage.getItem('showUrdu')    !== 'false';
+  const english = localStorage.getItem('showEnglish') !== 'false';
+
+  document.getElementById('toggle-notif').checked   = notif;
+  document.getElementById('toggle-urdu').checked    = urdu;
+  document.getElementById('toggle-english').checked = english;
+
+  // Location
+  const city = localStorage.getItem('userCity') || 'Not set';
+  document.getElementById('saved-location').textContent = city;
+
+  // Data counts
+  const bm15  = JSON.parse(localStorage.getItem('quran15bookmarks') || '[]').length;
+  const bm16  = JSON.parse(localStorage.getItem('quran16bookmarks') || '[]').length;
+  const bmAudio = JSON.parse(localStorage.getItem('quranAudioBookmarks') || '[]').length;
+  document.getElementById('data-qbm').textContent = (bm15 + bm16 + bmAudio) + ' bookmarks';
+
+  const azkar = JSON.parse(localStorage.getItem('azkarList') || '[]').length;
+  document.getElementById('data-azkar').textContent = azkar + ' items';
+
+  const favs = JSON.parse(localStorage.getItem('duaFavorites') || '[]').length;
+  document.getElementById('data-dua').textContent = favs + ' favorites';
+}
+
+function saveSetting(key, value) {
+  localStorage.setItem(key, value);
+  showToast('✅ Saved');
+}
+
+// ══════════════════════════════
+// MODALS
+// ══════════════════════════════
+function showCalcMethod() {
+  const current = localStorage.getItem('prayerMethod') || '2';
+  document.getElementById('calc-options').innerHTML = calcMethods.map(m => `
+    <div class="settings-row" onclick="selectCalcMethod(${m.id},'${m.name}')">
+      <div class="row-body">
+        <div class="row-title">${m.name}</div>
+        <div class="row-sub">${m.sub}</div>
+      </div>
+      ${String(m.id) === String(current) ? '<div style="color:var(--green);font-size:20px;">✓</div>' : ''}
+    </div>
+  `).join('');
+  document.getElementById('calc-modal').classList.add('show');
+}
+
+function selectCalcMethod(id, name) {
+  localStorage.setItem('prayerMethod', id);
+  document.getElementById('calc-method-val').textContent = name;
+  closeModal('calc-modal');
+  showToast('✅ Method set to ' + name);
+}
+
+function showMadhab() {
+  const current = localStorage.getItem('prayerMadhab') || 'Hanafi';
+  document.getElementById('madhab-options').innerHTML = madhabList.map(m => `
+    <div class="settings-row" onclick="selectMadhab('${m.id}','${m.name}')">
+      <div class="row-body">
+        <div class="row-title">${m.name}</div>
+        <div class="row-sub">${m.sub}</div>
+      </div>
+      ${m.id === current ? '<div style="color:var(--green);font-size:20px;">✓</div>' : ''}
+    </div>
+  `).join('');
+  document.getElementById('madhab-modal').classList.add('show');
+}
+
+function selectMadhab(id, name) {
+  localStorage.setItem('prayerMadhab', id);
+  document.getElementById('madhab-val').textContent = name;
+  closeModal('madhab-modal');
+  showToast('✅ Madhab set to ' + name);
+}
+
+function showReciter() {
+  const current = localStorage.getItem('quranReciter') || 'ar.alafasy';
+  document.getElementById('reciter-options').innerHTML = reciters.map(r => `
+    <div class="settings-row" onclick="selectReciter('${r.id}','${r.name}')">
+      <div class="row-body">
+        <div class="row-title">${r.name}</div>
+        <div class="row-sub">${r.sub}</div>
+      </div>
+      ${r.id === current ? '<div style="color:var(--green);font-size:20px;">✓</div>' : ''}
+    </div>
+  `).join('');
+  document.getElementById('reciter-modal').classList.add('show');
+}
+
+function selectReciter(id, name) {
+  localStorage.setItem('quranReciter', id);
+  document.getElementById('reciter-val').textContent = name;
+  closeModal('reciter-modal');
+  showToast('✅ Reciter set to ' + name);
+}
+
+function closeModal(id, e) {
+  if (!e || e.target === document.getElementById(id)) {
+    document.getElementById(id).classList.remove('show');
+  }
+}
+
+// ══════════════════════════════
+// LOCATION
+// ══════════════════════════════
+function resetLocation() {
+  if (!confirm('Reset your saved location? Prayer times will re-detect on next open.')) return;
+  localStorage.removeItem('userLat');
+  localStorage.removeItem('userLon');
+  localStorage.removeItem('userCity');
+  localStorage.removeItem('prayerTimes');
+  document.getElementById('saved-location').textContent = 'Not set';
+  showToast('📍 Location reset');
+}
+
+// ══════════════════════════════
+// BACKUP & RESTORE
+// ══════════════════════════════
+function backupData() {
+  const keys = [
+    'quran15bookmarks','quran16bookmarks','quranAudioBookmarks',
+    'quranAudio_state','quran15line_page','quran16line_page',
+    'azkarList','duaFavorites','qazaData','tasbihCount','tasbihGoal',
+    'prayerMethod','prayerMadhab','quranReciter',
+    'showUrdu','showEnglish','notifications'
+  ];
+
+  // Also get tracker data (all dates)
+  const backup = { version:'1.0', date: new Date().toISOString(), data:{} };
+
+  // Get all localStorage keys
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    backup.data[key] = localStorage.getItem(key);
+  }
+
+  const json = JSON.stringify(backup, null, 2);
+  const blob = new Blob([json], { type:'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'IbadahHub_Backup_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Backup exported!');
+}
+
+function restoreData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const backup = JSON.parse(e.target.result);
+      if (!backup.data) { showToast('❌ Invalid backup file'); return; }
+
+      if (!confirm('Restore this backup? Your current data will be replaced.')) return;
+
+      Object.entries(backup.data).forEach(([key, value]) => {
+        localStorage.setItem(key, value);
+      });
+
+      loadSettings();
+      showToast('✅ Backup restored!');
+    } catch(err) {
+      showToast('❌ Could not read backup file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ══════════════════════════════
+// CLEAR DATA
+// ══════════════════════════════
+function clearData(type) {
+  const messages = {
+    bookmarks: 'Clear all Quran bookmarks?',
+    azkar:     'Reset all Azkar progress to zero?',
+    tracker:   'Clear all tracker data?',
+    all:       '⚠️ Clear ALL app data? This cannot be undone!'
+  };
+
+  if (!confirm(messages[type])) return;
+
+  if (type === 'bookmarks') {
+    localStorage.removeItem('quran15bookmarks');
+    localStorage.removeItem('quran16bookmarks');
+    localStorage.removeItem('quranAudioBookmarks');
+    showToast('🔖 Bookmarks cleared');
+  } else if (type === 'azkar') {
+    const list = JSON.parse(localStorage.getItem('azkarList') || '[]');
+    list.forEach(z => z.count = 0);
+    localStorage.setItem('azkarList', JSON.stringify(list));
+    showToast('📿 Azkar reset');
+  } else if (type === 'tracker') {
+    // Only clear tracker keys (salah_ and tasks_ prefixed)
+    const toRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k.startsWith('salah_') || k.startsWith('tasks_')) toRemove.push(k);
+    }
+    toRemove.forEach(k => localStorage.removeItem(k));
+    showToast('📋 Tracker data cleared');
+  } else if (type === 'all') {
+    localStorage.clear();
+    showToast('✅ All data cleared');
+    setTimeout(() => location.href = 'index.html', 1500);
+  }
+
+  loadSettings();
+}
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+loadSettings();
+</script>
+</body>
+</html>
