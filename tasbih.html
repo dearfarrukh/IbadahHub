@@ -7,311 +7,522 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <title>Tasbih – IbadahHub</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
     body {
-      background: linear-gradient(170deg, #0d1b3e 0%, #1a3a6b 50%, #0d2744 100%);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      min-height:100vh;
+      font-family:'Inter',sans-serif;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
     }
 
-    /* Header */
+    /* ══ THEME VARIABLES ══ */
+    body.theme-dark {
+      background:linear-gradient(170deg,#0d1b3e 0%,#1a3a6b 50%,#0d2744 100%);
+    }
+
+    body.theme-gold {
+      background:#0a0a1a;
+    }
+
+    /* ══ HEADER ══ */
     .tasbih-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      padding-top: calc(env(safe-area-inset-top, 16px) + 10px);
+      display:flex; align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 10px);
+      position:relative; z-index:10;
     }
 
-    .tasbih-header-center {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 18px;
-      font-weight: 700;
-      color: white;
+    .theme-dark .tasbih-header { /* transparent */ }
+    .theme-gold .tasbih-header { /* transparent */ }
+
+    .header-btn {
+      width:38px; height:38px; border-radius:50%;
+      background:rgba(255,255,255,0.15);
+      border:1px solid rgba(255,255,255,0.2);
+      color:white; font-size:16px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.15s; -webkit-user-select:none; user-select:none;
+    }
+
+    .header-btn:active { background:rgba(255,255,255,0.25); transform:scale(0.9); }
+
+    .header-title {
+      font-size:18px; font-weight:700; color:white;
+      display:flex; align-items:center; gap:8px;
+    }
+
+    /* Style switch button */
+    .style-switch-btn {
+      display:flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.15);
+      border:1px solid rgba(255,255,255,0.25);
+      border-radius:50px; padding:7px 14px;
+      color:white; font-size:12px; font-weight:700;
+      cursor:pointer; transition:all 0.15s;
+      -webkit-user-select:none; user-select:none;
+      font-family:'Inter',sans-serif;
+    }
+
+    .style-switch-btn:active { transform:scale(0.95); }
+
+    /* ══ GOLD BACKGROUND PATTERN ══ */
+    .gold-bg {
+      display:none;
+      position:fixed; inset:0; z-index:0;
+      overflow:hidden;
+    }
+
+    .theme-gold .gold-bg { display:block; }
+
+    .gold-pattern {
+      position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(180,130,30,0.4) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 100%, rgba(120,80,10,0.3) 0%, transparent 60%),
+        linear-gradient(180deg, #0d0d1f 0%, #1a1205 50%, #0d0d1f 100%);
+    }
+
+    /* Gold border top */
+    .gold-border-top {
+      position:absolute; top:0; left:0; right:0; height:8px;
+      background:linear-gradient(90deg,
+        transparent, #c9a84c, #f0d060, #c9a84c,
+        #a07830, #c9a84c, #f0d060, #c9a84c, transparent);
+    }
+
+    /* Gold border bottom */
+    .gold-border-bottom {
+      position:absolute; bottom:0; left:0; right:0; height:8px;
+      background:linear-gradient(90deg,
+        transparent, #c9a84c, #f0d060, #c9a84c,
+        #a07830, #c9a84c, #f0d060, #c9a84c, transparent);
+    }
+
+    /* Gold corner ornaments */
+    .gold-ornament {
+      position:absolute; font-size:48px;
+      opacity:0.25; line-height:1;
+    }
+
+    .gold-ornament.tl { top:60px; left:8px; }
+    .gold-ornament.tr { top:60px; right:8px; transform:scaleX(-1); }
+    .gold-ornament.bl { bottom:60px; left:8px; transform:scaleY(-1); }
+    .gold-ornament.br { bottom:60px; right:8px; transform:scale(-1,-1); }
+
+    /* Gold SVG arabesque border */
+    .gold-side-left {
+      position:absolute; left:0; top:50%;
+      transform:translateY(-50%);
+      width:32px; opacity:0.3;
+    }
+
+    .gold-side-right {
+      position:absolute; right:0; top:50%;
+      transform:translateY(-50%) scaleX(-1);
+      width:32px; opacity:0.3;
+    }
+
+    /* ══ CONTENT ══ */
+    .tasbih-content {
+      position:relative; z-index:5;
+      flex:1; display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      padding:0 16px;
+      gap:16px;
+    }
+
+    /* Bismillah */
+    .bismillah {
+      font-family:'Scheherazade New',serif;
+      font-size:20px; color:rgba(255,255,255,0.7);
+      text-align:center; direction:rtl;
+    }
+
+    .theme-gold .bismillah {
+      color:#f0d060; text-shadow:0 0 20px rgba(240,208,96,0.5);
     }
 
     /* Title card */
-    .tasbih-title-card {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: var(--radius-lg);
-      padding: 16px 20px;
-      text-align: center;
-      margin: 0 16px 14px;
+    .title-card {
+      background:rgba(255,255,255,0.12);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:var(--radius-lg);
+      padding:14px 24px;
+      text-align:center;
+      width:100%; max-width:340px;
     }
 
-    .tasbih-title-text {
-      font-size: 20px;
-      font-weight: 700;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+    .theme-gold .title-card {
+      background:rgba(201,168,76,0.15);
+      border-color:rgba(201,168,76,0.4);
     }
+
+    .title-card-text {
+      font-size:18px; font-weight:700; color:white;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+
+    .theme-gold .title-card-text { color:#f0d060; }
 
     /* Goal selector */
     .goal-card {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: var(--radius-lg);
-      padding: 8px;
-      margin: 0 16px 16px;
-      display: flex;
-      gap: 6px;
+      background:rgba(255,255,255,0.12);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:var(--radius-lg);
+      padding:6px;
+      display:flex; gap:4px;
+      width:100%; max-width:340px;
+    }
+
+    .theme-gold .goal-card {
+      background:rgba(201,168,76,0.1);
+      border-color:rgba(201,168,76,0.35);
     }
 
     .goal-btn {
-      flex: 1;
-      padding: 12px 8px;
-      border-radius: 12px;
-      border: none;
-      background: transparent;
-      font-size: 16px;
-      font-weight: 700;
-      color: rgba(255,255,255,0.6);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: 'Inter', sans-serif;
-      -webkit-user-select: none;
-      user-select: none;
+      flex:1; padding:11px 8px;
+      border-radius:10px; border:none;
+      background:transparent;
+      font-size:16px; font-weight:700;
+      color:rgba(255,255,255,0.6);
+      cursor:pointer; transition:all 0.2s;
+      font-family:'Inter',sans-serif;
+      -webkit-user-select:none; user-select:none;
     }
 
     .goal-btn.active {
-      background: var(--green);
-      color: white;
-      box-shadow: 0 4px 12px rgba(52,199,89,0.4);
+      background:var(--green);
+      color:white;
+      box-shadow:0 4px 12px rgba(52,199,89,0.4);
     }
 
-    .goal-btn:active { transform: scale(0.95); }
+    .theme-gold .goal-btn.active {
+      background:linear-gradient(135deg,#c9a84c,#f0d060);
+      color:#1a1205;
+      box-shadow:0 4px 16px rgba(201,168,76,0.5);
+    }
 
-    /* Counter area */
+    .goal-btn:active { transform:scale(0.95); }
+
+    /* ══ COUNTER CARD ══ */
     .counter-card {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: var(--radius-lg);
-      margin: 0 16px 16px;
-      padding: 24px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      cursor: pointer;
-      -webkit-user-select: none;
-      user-select: none;
-      flex: 1;
+      background:rgba(255,255,255,0.12);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:var(--radius-lg);
+      padding:20px;
+      display:flex; flex-direction:column;
+      align-items:center; gap:16px;
+      cursor:pointer;
+      -webkit-user-select:none; user-select:none;
+      transition:background 0.15s;
+      width:100%; max-width:340px;
     }
 
-    .counter-card:active {
-      background: rgba(255,255,255,0.18);
+    .counter-card:active { background:rgba(255,255,255,0.18); }
+
+    .theme-gold .counter-card {
+      background:rgba(201,168,76,0.1);
+      border-color:rgba(201,168,76,0.3);
+    }
+
+    .theme-gold .counter-card:active {
+      background:rgba(201,168,76,0.2);
     }
 
     /* Number display */
-    .counter-number-box {
-      background: rgba(255,255,255,0.15);
-      border-radius: 16px;
-      padding: 12px 40px;
-      font-size: 52px;
-      font-weight: 800;
-      color: white;
-      letter-spacing: -2px;
-      min-width: 140px;
-      text-align: center;
+    .counter-num-box {
+      background:rgba(255,255,255,0.15);
+      border-radius:14px; padding:10px 36px;
+      font-size:48px; font-weight:800;
+      color:white; letter-spacing:-2px;
+      min-width:130px; text-align:center;
     }
 
-    /* SVG ring */
+    .theme-gold .counter-num-box {
+      background:rgba(0,0,0,0.3);
+      color:#f0d060;
+      border:1px solid rgba(201,168,76,0.3);
+      text-shadow:0 0 20px rgba(240,208,96,0.6);
+    }
+
+    /* SVG Ring */
     .ring-wrap {
-      position: relative;
-      width: 200px;
-      height: 200px;
+      position:relative; width:190px; height:190px;
     }
 
     .ring-wrap svg {
-      transform: rotate(-90deg);
-      width: 200px;
-      height: 200px;
+      transform:rotate(-90deg);
+      width:190px; height:190px;
     }
 
     .ring-track {
-      fill: none;
-      stroke: rgba(255,255,255,0.15);
-      stroke-width: 10;
+      fill:none;
+      stroke:rgba(255,255,255,0.12);
+      stroke-width:10;
+    }
+
+    .theme-gold .ring-track {
+      stroke:rgba(201,168,76,0.15);
     }
 
     .ring-fill {
-      fill: none;
-      stroke: var(--green);
-      stroke-width: 10;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.3s ease;
+      fill:none;
+      stroke:var(--green);
+      stroke-width:10;
+      stroke-linecap:round;
+      transition:stroke-dashoffset 0.3s ease;
     }
 
-    .ring-center-text {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
+    .theme-gold .ring-fill {
+      stroke:url(#goldGradient);
+    }
+
+    .ring-center {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:4px;
     }
 
     .ring-fraction {
-      font-size: 28px;
-      font-weight: 800;
-      color: white;
-      letter-spacing: -0.5px;
+      font-size:26px; font-weight:800;
+      color:white; letter-spacing:-0.5px;
     }
 
-    /* Tick marks on ring */
-    .ring-ticks {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
+    .theme-gold .ring-fraction {
+      color:#f0d060;
+      text-shadow:0 0 16px rgba(240,208,96,0.5);
     }
+
+    .dhikr-name-label {
+      font-size:12px; font-weight:600;
+      color:rgba(255,255,255,0.6);
+      text-align:center;
+    }
+
+    .theme-gold .dhikr-name-label { color:rgba(240,208,96,0.7); }
+
+    /* Tick marks */
+    .ring-ticks { position:absolute; inset:0; }
 
     /* Reset button */
     .reset-btn {
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 50px;
-      padding: 13px 40px;
-      font-size: 16px;
-      font-weight: 700;
-      color: white;
-      cursor: pointer;
-      margin: 0 16px 32px;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.15s ease;
-      -webkit-user-select: none;
-      user-select: none;
+      background:rgba(255,255,255,0.15);
+      border:1px solid rgba(255,255,255,0.25);
+      border-radius:50px;
+      padding:13px 40px;
+      font-size:16px; font-weight:700;
+      color:white; cursor:pointer;
+      font-family:'Inter',sans-serif;
+      transition:all 0.15s;
+      -webkit-user-select:none; user-select:none;
+      width:100%; max-width:340px;
     }
 
     .reset-btn:active {
-      background: rgba(255,255,255,0.25);
-      transform: scale(0.96);
+      background:rgba(255,255,255,0.25);
+      transform:scale(0.96);
     }
 
-    /* Dhikr name selector */
-    .dhikr-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(255,255,255,0.7);
-      text-align: center;
-      margin-top: 4px;
+    .theme-gold .reset-btn {
+      background:rgba(201,168,76,0.15);
+      border-color:rgba(201,168,76,0.4);
+      color:#f0d060;
     }
 
-    /* Completion flash */
-    @keyframes completePulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+    /* ══ GOLD FRAME AROUND COUNTER ══ */
+    .gold-frame {
+      display:none;
+      position:absolute;
+      inset:-12px;
+      border-radius:32px;
+      pointer-events:none;
     }
 
-    .pulse { animation: completePulse 0.4s ease; }
+    .theme-gold .gold-frame { display:block; }
+
+    .gold-frame-inner {
+      position:absolute; inset:0;
+      border-radius:32px;
+      border:2px solid rgba(201,168,76,0.5);
+      box-shadow:
+        0 0 20px rgba(201,168,76,0.15),
+        inset 0 0 20px rgba(201,168,76,0.05);
+    }
+
+    /* Gold corner dots */
+    .gold-corner {
+      position:absolute; width:10px; height:10px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#f0d060,#c9a84c);
+    }
+
+    .gold-corner.tl { top:-1px; left:-1px; }
+    .gold-corner.tr { top:-1px; right:-1px; }
+    .gold-corner.bl { bottom:-1px; left:-1px; }
+    .gold-corner.br { bottom:-1px; right:-1px; }
+
+    /* Pulse animation on tap */
+    @keyframes tapPulse {
+      0% { transform:scale(1); }
+      50% { transform:scale(1.02); }
+      100% { transform:scale(1); }
+    }
+
+    .tap-pulse { animation:tapPulse 0.25s ease; }
+
+    /* Theme transition */
+    body { transition:background 0.4s ease; }
+    .counter-card, .title-card, .goal-card, .goal-btn,
+    .counter-num-box, .ring-fraction, .reset-btn, .bismillah
+    { transition:all 0.3s ease; }
   </style>
 </head>
-<body>
+<body class="theme-dark">
+
+<!-- Gold background (shown in gold theme) -->
+<div class="gold-bg">
+  <div class="gold-pattern"></div>
+  <div class="gold-border-top"></div>
+  <div class="gold-border-bottom"></div>
+  <div class="gold-ornament tl">✦</div>
+  <div class="gold-ornament tr">✦</div>
+  <div class="gold-ornament bl">✦</div>
+  <div class="gold-ornament br">✦</div>
+</div>
 
 <!-- HEADER -->
 <div class="tasbih-header">
-  <button class="back-btn" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2);" onclick="location.href='more.html'">
-    <span style="color:white;">←</span>
-  </button>
-  <div class="tasbih-header-center">
+  <button class="header-btn" onclick="location.href='more.html'">←</button>
+
+  <div class="header-title">
     <span>📿</span>
     <span>Tasbih</span>
   </div>
-  <button class="header-action-btn" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2);" onclick="location.href='settings.html'">
-    <span>⚙️</span>
+
+  <!-- Style switch -->
+  <button class="style-switch-btn" onclick="toggleTheme()" id="theme-btn">
+    🎨 Classic
   </button>
 </div>
 
-<!-- TITLE CARD -->
-<div class="tasbih-title-card">
-  <div class="tasbih-title-text">📿 Tasbih Counter</div>
-</div>
+<!-- CONTENT -->
+<div class="tasbih-content">
 
-<!-- GOAL SELECTOR -->
-<div class="goal-card">
-  <button class="goal-btn active" id="goal-33" onclick="setGoal(33)">33</button>
-  <button class="goal-btn" id="goal-100" onclick="setGoal(100)">100</button>
-  <button class="goal-btn" id="goal-inf" onclick="setGoal(0)">∞</button>
-</div>
+  <!-- Bismillah -->
+  <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
 
-<!-- COUNTER CARD — tap anywhere to count -->
-<div class="counter-card" id="counter-card" onclick="tap()">
-
-  <!-- Number box -->
-  <div class="counter-number-box" id="counter-num">0</div>
-
-  <!-- Ring -->
-  <div class="ring-wrap" id="ring-wrap">
-    <svg viewBox="0 0 200 200">
-      <!-- Tick marks -->
-      <g id="ticks"></g>
-      <!-- Track -->
-      <circle class="ring-track" cx="100" cy="100" r="85"/>
-      <!-- Fill -->
-      <circle class="ring-fill" id="ring-fill" cx="100" cy="100" r="85"
-        stroke-dasharray="534"
-        stroke-dashoffset="534"/>
-    </svg>
-    <div class="ring-center-text">
-      <div class="ring-fraction" id="ring-fraction">0 / 33</div>
-      <div class="dhikr-name" id="dhikr-name">SubhanAllah</div>
-    </div>
+  <!-- Title card -->
+  <div class="title-card">
+    <div class="title-card-text">📿 Tasbih Counter</div>
   </div>
 
+  <!-- Goal selector -->
+  <div class="goal-card">
+    <button class="goal-btn active" id="goal-33"  onclick="setGoal(33)">33</button>
+    <button class="goal-btn"        id="goal-100" onclick="setGoal(100)">100</button>
+    <button class="goal-btn"        id="goal-inf" onclick="setGoal(0)">∞</button>
+  </div>
+
+  <!-- Counter card — tap to count -->
+  <div class="counter-card" id="counter-card" onclick="tap()">
+
+    <!-- Gold frame (gold theme only) -->
+    <div class="gold-frame">
+      <div class="gold-frame-inner"></div>
+      <div class="gold-corner tl"></div>
+      <div class="gold-corner tr"></div>
+      <div class="gold-corner bl"></div>
+      <div class="gold-corner br"></div>
+    </div>
+
+    <!-- Number -->
+    <div class="counter-num-box" id="counter-num">0</div>
+
+    <!-- Ring -->
+    <div class="ring-wrap" id="ring-wrap">
+      <svg viewBox="0 0 190 190">
+        <defs>
+          <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%"   stop-color="#f0d060"/>
+            <stop offset="50%"  stop-color="#c9a84c"/>
+            <stop offset="100%" stop-color="#f0d060"/>
+          </linearGradient>
+        </defs>
+        <!-- Tick marks -->
+        <g id="ticks"></g>
+        <!-- Track -->
+        <circle class="ring-track" cx="95" cy="95" r="80"/>
+        <!-- Fill -->
+        <circle class="ring-fill" id="ring-fill" cx="95" cy="95" r="80"
+          stroke-dasharray="503"
+          stroke-dashoffset="503"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-fraction" id="ring-fraction">0 / 33</div>
+        <div class="dhikr-name-label" id="dhikr-label">SubhanAllah</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Reset -->
+  <button class="reset-btn" onclick="resetCounter()">Reset</button>
+
 </div>
 
-<!-- RESET -->
-<button class="reset-btn" onclick="resetCounter()">Reset</button>
-
 <script>
-const CIRCUMFERENCE = 2 * Math.PI * 85; // ~534
+const CIRC = 2 * Math.PI * 80; // ~503
 
-let count = 0;
-let goal = 33;
+let count  = 0;
+let goal   = 33;
+let theme  = 'dark';
 
 const dhikrList = [
-  'SubhanAllah',
-  'Alhamdulillah',
-  'AllahuAkbar',
-  'La ilaha illallah',
-  'Astaghfirullah',
+  'SubhanAllah','Alhamdulillah','AllahuAkbar',
+  'La ilaha illallah','Astaghfirullah',
   'SubhanAllahi wa bihamdihi'
 ];
 
 let currentDhikr = localStorage.getItem('tasbihDhikr') || dhikrList[0];
 
-// ── DRAW TICK MARKS ──
+// ── DRAW TICKS ──
 function drawTicks() {
   const g = document.getElementById('ticks');
-  const total = 33;
-  const r = 85;
-  for (let i = 0; i < total; i++) {
-    const angle = (i / total) * 2 * Math.PI - Math.PI / 2;
-    const x1 = 100 + (r - 6) * Math.cos(angle);
-    const y1 = 100 + (r - 6) * Math.sin(angle);
-    const x2 = 100 + (r + 6) * Math.cos(angle);
-    const y2 = 100 + (r + 6) * Math.sin(angle);
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-    line.setAttribute('stroke', 'rgba(255,255,255,0.2)');
-    line.setAttribute('stroke-width', '1.5');
+  for (let i = 0; i < 33; i++) {
+    const angle = (i / 33) * 2 * Math.PI;
+    const r = 80;
+    const x1 = 95 + (r - 5) * Math.cos(angle);
+    const y1 = 95 + (r - 5) * Math.sin(angle);
+    const x2 = 95 + (r + 5) * Math.cos(angle);
+    const y2 = 95 + (r + 5) * Math.sin(angle);
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    line.setAttribute('stroke','rgba(255,255,255,0.15)');
+    line.setAttribute('stroke-width','1.5');
     g.appendChild(line);
   }
+}
+
+// ── THEME TOGGLE ──
+function toggleTheme() {
+  theme = theme === 'dark' ? 'gold' : 'dark';
+  document.body.className = 'theme-' + theme;
+  const btn = document.getElementById('theme-btn');
+  btn.textContent = theme === 'dark' ? '🎨 Classic' : '🌙 Modern';
+  localStorage.setItem('tasbihTheme', theme);
 }
 
 // ── SET GOAL ──
@@ -320,9 +531,8 @@ function setGoal(g) {
   ['33','100','inf'].forEach(k => {
     document.getElementById('goal-' + k).classList.remove('active');
   });
-  if (g === 33) document.getElementById('goal-33').classList.add('active');
-  else if (g === 100) document.getElementById('goal-100').classList.add('active');
-  else document.getElementById('goal-inf').classList.add('active');
+  const key = g === 33 ? '33' : g === 100 ? '100' : 'inf';
+  document.getElementById('goal-' + key).classList.add('active');
   count = 0;
   localStorage.setItem('tasbihGoal', goal);
   updateDisplay();
@@ -331,15 +541,17 @@ function setGoal(g) {
 // ── TAP ──
 function tap() {
   count++;
-  // Vibrate if supported
-  if (navigator.vibrate) navigator.vibrate(30);
+  if (navigator.vibrate) navigator.vibrate(25);
+
+  // Pulse animation
+  const card = document.getElementById('counter-card');
+  card.classList.remove('tap-pulse');
+  void card.offsetWidth;
+  card.classList.add('tap-pulse');
 
   if (goal > 0 && count >= goal) {
     count = 0;
-    // Flash pulse
-    const card = document.getElementById('counter-card');
-    card.classList.add('pulse');
-    setTimeout(() => card.classList.remove('pulse'), 400);
+    setTimeout(() => card.classList.remove('tap-pulse'), 300);
   }
 
   localStorage.setItem('tasbihCount', count);
@@ -359,38 +571,32 @@ function updateDisplay() {
 
   const effectiveGoal = goal > 0 ? goal : 100;
   const progress = Math.min(count / effectiveGoal, 1);
-  const offset = CIRCUMFERENCE - progress * CIRCUMFERENCE;
+  const offset   = CIRC - progress * CIRC;
+
   document.getElementById('ring-fill').style.strokeDashoffset = offset;
-
-  if (goal === 0) {
-    document.getElementById('ring-fraction').textContent = count + ' / ∞';
-  } else {
-    document.getElementById('ring-fraction').textContent = count + ' / ' + goal;
-  }
-
-  document.getElementById('dhikr-name').textContent = currentDhikr;
-
-  // Change ring color near completion
-  const fill = document.getElementById('ring-fill');
-  if (goal > 0 && count >= goal * 0.8) {
-    fill.style.stroke = '#34c759';
-  } else {
-    fill.style.stroke = '#34c759';
-  }
+  document.getElementById('ring-fraction').textContent =
+    goal === 0 ? count + ' / ∞' : count + ' / ' + goal;
+  document.getElementById('dhikr-label').textContent = currentDhikr;
 }
 
 // ── INIT ──
 drawTicks();
-goal = parseInt(localStorage.getItem('tasbihGoal') || '33');
+
+// Load saved state
+theme = localStorage.getItem('tasbihTheme') || 'dark';
+document.body.className = 'theme-' + theme;
+document.getElementById('theme-btn').textContent =
+  theme === 'dark' ? '🎨 Classic' : '🌙 Modern';
+
+goal  = parseInt(localStorage.getItem('tasbihGoal')  || '33');
 count = parseInt(localStorage.getItem('tasbihCount') || '0');
 
 // Set active goal button
 ['33','100','inf'].forEach(k => {
   document.getElementById('goal-' + k).classList.remove('active');
 });
-if (goal === 33) document.getElementById('goal-33').classList.add('active');
-else if (goal === 100) document.getElementById('goal-100').classList.add('active');
-else document.getElementById('goal-inf').classList.add('active');
+const gkey = goal === 33 ? '33' : goal === 100 ? '100' : 'inf';
+document.getElementById('goal-' + gkey).classList.add('active');
 
 updateDisplay();
 </script>
