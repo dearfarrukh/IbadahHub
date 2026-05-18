@@ -7,434 +7,667 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <title>Daily Azkar – IbadahHub</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
   <style>
-    body { padding-bottom: 100px; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); min-height:100vh; font-family:'Inter',sans-serif; }
 
+    /* ══ VIEWS ══ */
+    .view { display:none; }
+    .view.active { display:block; }
+
+    /* ══ HEADER ══ */
     .azkar-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      padding-top: calc(env(safe-area-inset-top, 16px) + 10px);
-      background: var(--bg);
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 10px);
+      background:white;
+      box-shadow:0 1px 0 var(--border);
+      position:sticky; top:0; z-index:50;
     }
 
     .azkar-header-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-      text-align: center;
-      flex: 1;
+      font-size:17px; font-weight:700;
+      color:var(--text); text-align:center; flex:1;
     }
 
-    /* Zikr card */
-    .zikr-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow);
-      margin: 0 16px 12px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    /* ══ ZIKR LIST ══ */
+    .zikr-list {
+      padding:12px 16px 120px;
     }
+
+    /* ══ ZIKR CARD ══ */
+    .zikr-card {
+      background:white;
+      border-radius:20px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      margin-bottom:12px;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      transition:transform 0.15s;
+      -webkit-user-select:none; user-select:none;
+    }
+
+    .zikr-card:active { transform:scale(0.98); }
 
     /* Progress ring */
     .zikr-ring {
-      position: relative;
-      width: 54px;
-      height: 54px;
-      flex-shrink: 0;
+      width:54px; height:54px;
+      border-radius:50%;
+      flex-shrink:0;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
-    .zikr-ring svg {
-      transform: rotate(-90deg);
-      width: 54px;
-      height: 54px;
+    .zikr-ring-svg {
+      position:absolute;
+      inset:0;
+      transform:rotate(-90deg);
+    }
+
+    .zikr-ring-bg {
+      fill:none;
+      stroke:var(--border);
+      stroke-width:4;
+    }
+
+    .zikr-ring-fill {
+      fill:none;
+      stroke:var(--green);
+      stroke-width:4;
+      stroke-linecap:round;
+      transition:stroke-dashoffset 0.4s ease;
     }
 
     .zikr-ring-text {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-secondary);
+      font-size:13px; font-weight:800;
+      color:var(--text-secondary);
+      position:relative; z-index:1;
     }
 
-    .zikr-ring-text.done-text {
-      font-size: 20px;
-      color: var(--green);
+    .zikr-ring-text.done { color:var(--green); font-size:18px; }
+
+    /* Card body */
+    .zikr-body { flex:1; min-width:0; }
+
+    .zikr-title {
+      font-size:15px; font-weight:700;
+      color:var(--text); margin-bottom:4px;
+      line-height:1.3;
     }
 
-    /* Body */
-    .zikr-body { flex: 1; min-width: 0; }
-
-    .zikr-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 4px;
-      line-height: 1.3;
+    .zikr-arabic-small {
+      font-family:'Scheherazade New',serif;
+      font-size:15px; color:var(--text-secondary);
+      direction:rtl; text-align:right;
+      line-height:1.6; margin-bottom:4px;
     }
 
-    .zikr-arabic {
-      font-family: 'Scheherazade New', serif;
-      font-size: 16px;
-      line-height: 1.8;
-      text-align: right;
-      direction: rtl;
-      color: var(--text-secondary);
-      margin-bottom: 4px;
+    .zikr-progress-text {
+      font-size:12px; font-weight:700;
+      color:var(--text-secondary);
     }
 
-    .zikr-done-label {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--green);
-    }
+    .zikr-progress-text.done { color:var(--green); }
 
-    .zikr-count-label {
-      font-size: 12px;
-      color: var(--text-light);
-    }
-
-    /* Right side buttons */
-    .zikr-right {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
+    /* Card actions */
+    .zikr-actions {
+      display:flex; flex-direction:column;
+      align-items:center; gap:8px; flex-shrink:0;
     }
 
     .zikr-menu-btn {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: none;
-      background: var(--bg);
-      color: var(--text-secondary);
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width:32px; height:32px; border-radius:50%;
+      border:none; background:var(--bg);
+      color:var(--text-secondary); font-size:16px;
+      cursor:pointer; display:flex;
+      align-items:center; justify-content:center;
+      font-weight:700;
     }
 
-    .zikr-play-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: none;
-      background: #1c1c1e;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s;
-      -webkit-user-select: none;
-      user-select: none;
+    .zikr-start-btn {
+      width:40px; height:40px; border-radius:50%;
+      border:none; background:#1c1c1e;
+      color:white; font-size:14px;
+      cursor:pointer; display:flex;
+      align-items:center; justify-content:center;
+      box-shadow:0 4px 12px rgba(0,0,0,0.2);
+      transition:transform 0.15s;
+      -webkit-user-select:none; user-select:none;
     }
 
-    .zikr-play-btn:active { transform: scale(0.9); }
+    .zikr-start-btn:active { transform:scale(0.9); }
 
-    /* Bottom buttons */
-    .bottom-actions {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 24px;
-      padding-bottom: calc(env(safe-area-inset-bottom, 16px) + 16px);
-      background: rgba(242,242,247,0.95);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border-top: 1px solid var(--border);
+    /* ══ FLOATING BUTTONS ══ */
+    .float-actions {
+      position:fixed;
+      bottom:calc(20px + env(safe-area-inset-bottom,0px));
+      left:0; right:0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 20px;
+      pointer-events:none;
+      z-index:40;
     }
 
-    .bottom-round-btn {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-      background: white;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow);
-      transition: transform 0.15s;
-      -webkit-user-select: none;
-      user-select: none;
+    .float-btn {
+      width:56px; height:56px;
+      border-radius:50%; border:none;
+      cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 8px 24px rgba(0,0,0,0.16);
+      pointer-events:auto;
+      font-size:22px;
+      transition:transform 0.15s;
+      -webkit-user-select:none; user-select:none;
     }
 
-    .bottom-round-btn:active { transform: scale(0.9); }
+    .float-btn:active { transform:scale(0.9); }
 
-    .bottom-add-btn {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-      background: #1c1c1e;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: var(--shadow-md);
-      transition: transform 0.15s;
-      -webkit-user-select: none;
-      user-select: none;
+    .float-reset-btn {
+      background:white;
+      color:var(--text);
+      border:1px solid var(--border);
+      font-size:24px; font-weight:700;
     }
 
-    .bottom-add-btn:active { transform: scale(0.9); }
-
-    /* Add zikr modal */
-    .add-modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      z-index: 1000;
-      display: flex;
-      align-items: flex-end;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
+    .float-add-btn {
+      background:#1c1c1e;
+      color:white;
+      font-size:28px;
     }
 
-    .add-modal-overlay.show {
-      opacity: 1;
-      pointer-events: all;
+    /* ══ DETAIL VIEW ══ */
+    #view-detail {
+      min-height:100vh;
+      padding-bottom:40px;
     }
 
-    .add-modal {
-      background: white;
-      border-radius: 24px 24px 0 0;
-      padding: 20px;
-      padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
-      width: 100%;
-      transform: translateY(100%);
-      transition: transform 0.3s ease;
+    .detail-header {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 10px);
+      background:white;
+      box-shadow:0 1px 0 var(--border);
+      position:sticky; top:0; z-index:50;
     }
 
-    .add-modal-overlay.show .add-modal {
-      transform: translateY(0);
-    }
+    .detail-content { padding:14px 16px; }
 
-    .add-modal-handle {
-      width: 36px;
-      height: 4px;
-      background: var(--border);
-      border-radius: 50px;
-      margin: 0 auto 20px;
-    }
-
-    .add-modal-title {
-      font-size: 18px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 13px 16px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      font-size: 15px;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin-bottom: 12px;
-      outline: none;
-    }
-
-    .form-input:focus {
-      border-color: var(--primary);
-    }
-
-    /* Zikr detail page */
-    #zikr-detail-page {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: var(--bg);
-      z-index: 500;
-      overflow-y: auto;
-      padding-bottom: 40px;
-    }
-
-    #zikr-detail-page.show { display: block; }
-
+    /* Detail info card */
     .detail-info-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: 24px 20px;
-      margin: 0 16px 14px;
-      box-shadow: var(--shadow);
+      background:white;
+      border-radius:20px;
+      padding:22px 20px;
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
+      text-align:center;
     }
 
-    .detail-name {
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--text);
-      margin-bottom: 8px;
+    .detail-title {
+      font-size:22px; font-weight:800;
+      color:var(--text); margin-bottom:10px;
+      letter-spacing:-0.3px;
     }
 
-    .detail-target {
-      display: inline-block;
-      background: var(--bg);
-      border-radius: 50px;
-      padding: 5px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
+    .detail-target-badge {
+      display:inline-block;
+      background:var(--bg);
+      border-radius:50px;
+      padding:5px 16px;
+      font-size:13px; font-weight:700;
+      color:var(--text-secondary);
+      margin-bottom:18px;
     }
 
-    .detail-urdu {
-      font-family: 'Noto Nastaliq Urdu', serif;
-      font-size: 18px;
-      line-height: 2.4;
-      text-align: right;
-      direction: rtl;
-      color: var(--text);
-      margin-bottom: 14px;
+    .detail-hadith {
+      font-size:16px; line-height:1.8;
+      color:var(--text); margin-bottom:18px;
+      text-align:right; direction:rtl;
+      font-family:'Noto Nastaliq Urdu',serif;
     }
 
     .detail-arabic {
-      font-family: 'Scheherazade New', serif;
-      font-size: 26px;
-      line-height: 2;
-      text-align: right;
-      direction: rtl;
-      color: var(--text);
-      margin-bottom: 14px;
+      font-family:'Scheherazade New',serif;
+      font-size:28px; line-height:2;
+      text-align:right; direction:rtl;
+      color:var(--text); margin-bottom:16px;
     }
 
-    .detail-translation {
-      font-size: 15px;
-      line-height: 1.7;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
+    .detail-arabic img {
+      width:100%; max-width:100%;
+      height:auto; display:block;
+      border-radius:14px; object-fit:contain;
     }
 
-    .detail-reference {
-      font-size: 12px;
-      color: var(--text-light);
-      text-align: center;
-      direction: rtl;
-      font-family: 'Scheherazade New', serif;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
+    .detail-meaning {
+      font-size:16px; line-height:1.8;
+      color:var(--text-secondary);
+      text-align:right; direction:rtl;
+      font-family:'Noto Nastaliq Urdu',serif;
+      margin-bottom:12px;
     }
 
+    .detail-ref {
+      font-size:13px; color:var(--text-light);
+      padding-top:12px;
+      border-top:1px solid var(--border);
+      font-family:'Scheherazade New',serif;
+      direction:rtl; text-align:right;
+    }
+
+    /* Detail counter card */
     .detail-counter-card {
-      background: white;
-      border-radius: var(--radius-lg);
-      padding: 32px 20px 24px;
-      margin: 0 16px 14px;
-      box-shadow: var(--shadow);
-      text-align: center;
-      cursor: pointer;
-      -webkit-user-select: none;
-      user-select: none;
+      background:white;
+      border-radius:20px;
+      padding:28px 20px 24px;
+      box-shadow:var(--shadow);
+      text-align:center;
+      cursor:pointer;
+      -webkit-user-select:none; user-select:none;
+      display:flex; flex-direction:column;
+      align-items:center; min-height:240px;
     }
 
-    .detail-counter-card:active {
-      background: #f9f9f9;
-    }
+    .detail-counter-card:active { background:#f9f9f9; }
 
-    .detail-fraction {
-      font-size: 52px;
-      font-weight: 800;
-      color: var(--green);
-      letter-spacing: -2px;
-      margin-bottom: 8px;
+    .detail-count-text {
+      font-size:58px; font-weight:800;
+      color:var(--green);
+      letter-spacing:-2px;
+      margin-bottom:8px;
     }
 
     .detail-tap-hint {
-      font-size: 15px;
-      color: var(--text-light);
-      margin-bottom: 16px;
+      font-size:16px; color:var(--text-light);
+      margin-bottom:24px; flex:1;
+      display:flex; align-items:center;
     }
 
     .detail-reset-btn {
-      background: var(--red);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 13px 40px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
+      background:var(--red); color:white;
+      border:none; border-radius:50px;
+      padding:13px 40px;
+      font-size:15px; font-weight:700;
+      cursor:pointer;
+      font-family:'Inter',sans-serif;
+      transition:opacity 0.15s;
     }
 
-    .detail-reset-btn:active { opacity: 0.85; }
+    .detail-reset-btn:active { opacity:0.85; }
+
+    /* ══ MODALS ══ */
+    .modal-bg {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.45);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+      z-index:200;
+      display:flex; align-items:center; justify-content:center;
+      padding:20px;
+      opacity:0; pointer-events:none;
+      transition:opacity 0.25s;
+    }
+
+    .modal-bg.show { opacity:1; pointer-events:all; }
+
+    .modal-card {
+      background:white;
+      border-radius:24px;
+      padding:24px 20px 18px;
+      width:100%; max-width:340px;
+      box-shadow:0 24px 56px rgba(0,0,0,0.18);
+      transform:scale(0.92);
+      transition:transform 0.25s;
+    }
+
+    .modal-bg.show .modal-card { transform:scale(1); }
+
+    .modal-icon {
+      width:56px; height:56px;
+      border-radius:50%; background:var(--bg);
+      display:flex; align-items:center; justify-content:center;
+      font-size:24px; margin:0 auto 14px;
+    }
+
+    .modal-title {
+      font-size:20px; font-weight:800;
+      color:var(--text); text-align:center;
+      margin-bottom:8px;
+    }
+
+    .modal-text {
+      font-size:14px; color:var(--text-secondary);
+      text-align:center; line-height:1.6;
+      margin-bottom:18px;
+    }
+
+    .modal-input {
+      width:100%; padding:13px 16px;
+      border-radius:12px; border:none;
+      background:var(--bg);
+      font-size:16px; font-family:'Inter',sans-serif;
+      outline:none; margin-bottom:10px;
+      color:var(--text);
+    }
+
+    .modal-textarea {
+      width:100%; padding:13px 16px;
+      border-radius:12px; border:none;
+      background:var(--bg);
+      font-size:18px; font-family:'Scheherazade New',serif;
+      direction:rtl; text-align:right;
+      min-height:80px; outline:none;
+      margin-bottom:10px; color:var(--text);
+      resize:none;
+    }
+
+    .modal-btn-primary {
+      width:100%; padding:15px;
+      border-radius:14px; border:none;
+      background:#1c1c1e; color:white;
+      font-size:16px; font-weight:700;
+      cursor:pointer; margin-bottom:8px;
+      font-family:'Inter',sans-serif;
+      transition:opacity 0.15s;
+    }
+
+    .modal-btn-primary:active { opacity:0.85; }
+
+    .modal-btn-light {
+      width:100%; padding:13px;
+      border-radius:14px; border:none;
+      background:var(--bg); color:var(--text-secondary);
+      font-size:15px; font-weight:700;
+      cursor:pointer; margin-bottom:8px;
+      font-family:'Inter',sans-serif;
+    }
+
+    .modal-btn-danger {
+      width:100%; padding:15px;
+      border-radius:14px; border:none;
+      background:var(--red); color:white;
+      font-size:16px; font-weight:700;
+      cursor:pointer; margin-bottom:8px;
+      font-family:'Inter',sans-serif;
+    }
+
+    .modal-btn-green {
+      width:100%; padding:15px;
+      border-radius:14px; border:none;
+      background:var(--green); color:white;
+      font-size:16px; font-weight:700;
+      cursor:pointer; margin-bottom:8px;
+      font-family:'Inter',sans-serif;
+    }
+
+    /* Bottom sheet modal */
+    .sheet-bg {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.4);
+      z-index:200;
+      display:flex; align-items:flex-end;
+      opacity:0; pointer-events:none;
+      transition:opacity 0.25s;
+    }
+
+    .sheet-bg.show { opacity:1; pointer-events:all; }
+
+    .sheet-card {
+      background:white;
+      border-radius:24px 24px 0 0;
+      padding:20px 20px;
+      padding-bottom:calc(env(safe-area-inset-bottom,20px) + 20px);
+      width:100%;
+      transform:translateY(100%);
+      transition:transform 0.3s ease;
+    }
+
+    .sheet-bg.show .sheet-card { transform:translateY(0); }
+
+    .sheet-handle {
+      width:36px; height:4px;
+      background:var(--border); border-radius:50px;
+      margin:0 auto 18px;
+    }
+
+    /* Context menu */
+    .ctx-bg {
+      position:fixed; inset:0; z-index:300;
+      display:none;
+    }
+
+    .ctx-menu {
+      position:fixed;
+      background:white;
+      border-radius:16px;
+      box-shadow:0 16px 40px rgba(0,0,0,0.18);
+      overflow:hidden;
+      min-width:180px;
+      border:1px solid var(--border);
+    }
+
+    .ctx-btn {
+      width:100%; padding:14px 16px;
+      border:none; background:transparent;
+      text-align:left; font-size:15px;
+      font-weight:600; color:var(--text);
+      cursor:pointer; border-bottom:1px solid var(--border);
+      font-family:'Inter',sans-serif;
+    }
+
+    .ctx-btn:last-child { border-bottom:none; }
+    .ctx-btn:active { background:var(--bg); }
+    .ctx-btn.danger { color:var(--red); }
+
+    /* Target reached sheet */
+    .target-sheet {
+      text-align:center;
+    }
+
+    .target-emoji {
+      font-size:52px; margin-bottom:12px;
+    }
+
+    .target-title {
+      font-size:22px; font-weight:800;
+      color:#f5b301; margin-bottom:6px;
+    }
+
+    .target-sub {
+      font-size:15px; color:var(--text-secondary);
+      margin-bottom:6px;
+    }
+
+    .target-name {
+      font-size:17px; font-weight:700;
+      color:var(--text); margin-bottom:20px;
+    }
+
+    .target-btns {
+      display:flex; gap:10px;
+    }
+
+    .target-btn {
+      flex:1; padding:14px;
+      border-radius:14px; border:none;
+      font-size:15px; font-weight:700;
+      cursor:pointer; font-family:'Inter',sans-serif;
+    }
+
+    /* Toast */
+    .toast {
+      position:fixed; bottom:90px; left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:rgba(28,28,30,0.95); color:white;
+      padding:12px 22px; border-radius:50px;
+      font-size:14px; font-weight:500;
+      z-index:9999; opacity:0;
+      transition:all 0.3s ease;
+      white-space:nowrap; pointer-events:none;
+    }
+
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="azkar-header">
-  <button class="back-btn" onclick="location.href='more.html'">←</button>
-  <div class="azkar-header-title">Daily Azkar</div>
-  <div style="width:38px;"></div>
-</div>
+<!-- ══════════════════════════
+     VIEW: MAIN LIST
+══════════════════════════ -->
+<div class="view active" id="view-main">
 
-<!-- ZIKR LIST -->
-<div id="zikr-list" style="padding-top:8px;"></div>
-
-<!-- BOTTOM ACTIONS -->
-<div class="bottom-actions">
-  <button class="bottom-round-btn" onclick="resetAll()" title="Reset all">🔄</button>
-  <button class="bottom-add-btn" onclick="openAddModal()">+</button>
-</div>
-
-<!-- ADD ZIKR MODAL -->
-<div class="add-modal-overlay" id="add-modal-overlay" onclick="closeAddModal(event)">
-  <div class="add-modal">
-    <div class="add-modal-handle"></div>
-    <div class="add-modal-title">Add New Zikr</div>
-    <input class="form-input" id="new-zikr-name" placeholder="Name (e.g. SubhanAllah)" />
-    <input class="form-input" id="new-zikr-arabic" placeholder="Arabic text (optional)" style="font-family:'Scheherazade New',serif; font-size:18px; direction:rtl;"/>
-    <input class="form-input" id="new-zikr-urdu" placeholder="Urdu/explanation (optional)" style="font-family:'Noto Nastaliq Urdu',serif; direction:rtl;"/>
-    <input class="form-input" id="new-zikr-target" placeholder="Target count (e.g. 33)" type="number"/>
-    <button class="btn btn-primary btn-full" style="margin-top:4px;" onclick="addZikr()">Add Zikr</button>
-  </div>
-</div>
-
-<!-- ZIKR DETAIL PAGE -->
-<div id="zikr-detail-page">
   <div class="azkar-header">
-    <button class="back-btn" onclick="closeDetail()">←</button>
+    <button class="back-btn" onclick="location.href='more.html'">←</button>
+    <div class="azkar-header-title">Daily Azkar</div>
+    <div style="width:38px;"></div>
+  </div>
+
+  <div class="zikr-list" id="zikr-list"></div>
+
+  <!-- Floating buttons -->
+  <div class="float-actions">
+    <button class="float-btn float-reset-btn" onclick="openResetAllModal()" title="Reset all">↻</button>
+    <button class="float-btn float-add-btn" onclick="openAddModal()">＋</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════
+     VIEW: DETAIL
+══════════════════════════ -->
+<div class="view" id="view-detail">
+
+  <div class="detail-header">
+    <button class="back-btn" onclick="showView('view-main'); renderList();">←</button>
     <div class="azkar-header-title" id="detail-header-title">Zikr</div>
     <div style="width:38px;"></div>
   </div>
 
-  <div class="detail-info-card">
-    <div class="detail-name" id="detail-name"></div>
-    <div class="detail-target" id="detail-target"></div>
-    <div class="detail-arabic" id="detail-arabic"></div>
-    <div class="detail-urdu" id="detail-urdu"></div>
-    <div class="detail-reference" id="detail-reference"></div>
-  </div>
+  <div class="detail-content">
 
-  <div class="detail-counter-card" onclick="detailTap()">
-    <div class="detail-fraction" id="detail-fraction">0 / 33</div>
-    <div class="detail-tap-hint">Tap Anywhere</div>
-    <button class="detail-reset-btn" onclick="event.stopPropagation(); detailReset()">Reset</button>
+    <div class="detail-info-card">
+      <div class="detail-title" id="d-title"></div>
+      <div class="detail-target-badge" id="d-target">Target 33</div>
+      <div class="detail-hadith" id="d-hadith"></div>
+      <div class="detail-arabic" id="d-arabic"></div>
+      <div class="detail-meaning" id="d-meaning"></div>
+      <div class="detail-ref" id="d-ref"></div>
+    </div>
+
+    <div class="detail-counter-card" onclick="tapCount()">
+      <div class="detail-count-text" id="d-count">0 / 33</div>
+      <div class="detail-tap-hint">Tap Anywhere</div>
+      <button class="detail-reset-btn"
+        onclick="event.stopPropagation(); resetCurrentZikr()">Reset</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     CONTEXT MENU
+══════════════════════════ -->
+<div class="ctx-bg" id="ctx-bg" onclick="closeCtx()">
+  <div class="ctx-menu" id="ctx-menu">
+    <button class="ctx-btn" onclick="ctxEditTarget()">✏️ Edit Target</button>
+    <button class="ctx-btn" id="ctx-done-btn" onclick="ctxMarkDone()">✅ Mark as Done</button>
+    <button class="ctx-btn hidden" id="ctx-edit-btn" onclick="ctxEditCustom()">📝 Edit Zikr</button>
+    <button class="ctx-btn danger hidden" id="ctx-delete-btn" onclick="ctxDeleteCustom()">🗑 Delete Zikr</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     MODAL: ADD ZIKR
+══════════════════════════ -->
+<div class="modal-bg" id="add-modal" onclick="closeModal('add-modal',event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-title">Add Your Zikr</div>
+    <div class="modal-text">Add a custom zikr to your daily list</div>
+    <input class="modal-input" id="add-name" placeholder="Name (e.g. SubhanAllah)"/>
+    <textarea class="modal-textarea" id="add-arabic" placeholder="Arabic text (optional)"></textarea>
+    <input class="modal-input" id="add-target" type="number" placeholder="Target count (e.g. 33)"/>
+    <button class="modal-btn-primary" onclick="saveNewZikr()">Add Zikr</button>
+    <button class="modal-btn-light" onclick="closeModal('add-modal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     MODAL: EDIT ZIKR
+══════════════════════════ -->
+<div class="modal-bg" id="edit-modal" onclick="closeModal('edit-modal',event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-title">Edit Zikr</div>
+    <input class="modal-input" id="edit-name" placeholder="Name"/>
+    <textarea class="modal-textarea" id="edit-arabic" placeholder="Arabic text (optional)"></textarea>
+    <input class="modal-input" id="edit-target" type="number" placeholder="Target count"/>
+    <button class="modal-btn-primary" onclick="saveEditZikr()">Update</button>
+    <button class="modal-btn-light" onclick="closeModal('edit-modal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     MODAL: EDIT TARGET
+══════════════════════════ -->
+<div class="modal-bg" id="target-modal" onclick="closeModal('target-modal',event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-title">Edit Target</div>
+    <div class="modal-text" id="target-modal-sub">Choose a target</div>
+    <button class="modal-btn-primary" onclick="setTarget(33)">33</button>
+    <button class="modal-btn-light" style="background:#e8f0fe;color:var(--primary);" onclick="setTarget(100)">100</button>
+    <input class="modal-input" id="custom-target-input" type="number" placeholder="Custom number..."/>
+    <button class="modal-btn-light" onclick="setCustomTarget()">Save Custom</button>
+    <button class="modal-btn-light" onclick="closeModal('target-modal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     MODAL: RESET ALL
+══════════════════════════ -->
+<div class="modal-bg" id="reset-modal" onclick="closeModal('reset-modal',event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-icon">↻</div>
+    <div class="modal-title">Reset All Zikr?</div>
+    <div class="modal-text">This will reset all counts to 0. Your targets will stay the same.</div>
+    <button class="modal-btn-danger" onclick="confirmResetAll()">Reset All</button>
+    <button class="modal-btn-light" onclick="closeModal('reset-modal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     MODAL: MARK DONE
+══════════════════════════ -->
+<div class="modal-bg" id="done-modal" onclick="closeModal('done-modal',event)">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-icon">✓</div>
+    <div class="modal-title" id="done-modal-title">Mark as Done?</div>
+    <div class="modal-text" id="done-modal-text">This will show the checkmark for today.</div>
+    <button class="modal-btn-green" id="done-modal-btn" onclick="confirmDone()">Mark as Done</button>
+    <button class="modal-btn-light" onclick="closeModal('done-modal')">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════
+     SHEET: TARGET REACHED
+══════════════════════════ -->
+<div class="sheet-bg" id="target-sheet" onclick="event.stopPropagation()">
+  <div class="sheet-card target-sheet">
+    <div class="sheet-handle"></div>
+    <div class="target-emoji">🌟</div>
+    <div class="target-title">Target Reached!</div>
+    <div class="target-sub">MashaAllah you completed</div>
+    <div class="target-name" id="target-reached-name"></div>
+    <div class="target-btns">
+      <button class="target-btn" style="background:var(--bg);color:var(--text);"
+        onclick="continueAfterTarget()">Continue</button>
+      <button class="target-btn" style="background:#f5b301;color:white;"
+        onclick="resetAfterTarget()">Reset ↺</button>
+    </div>
   </div>
 </div>
 
@@ -442,220 +675,577 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── DEFAULT ZIKR DATA ──
-const defaultZikr = [
+// ══════════════════════════════
+// BUILT-IN ZIKR DATA
+// ══════════════════════════════
+const BUILTIN = [
   {
-    id: 'subhan',
-    name: 'SubhanAllahi wa bihamdihi',
-    arabic: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
-    urdu: 'نبی صلی اللہ علیہ وآلہ وسلم نے فرمایا: دو کلمے زبان پر ہلکے ہیں لیکن میزان میں انتہائی وزنی اور اللہ تعالیٰ کو از حد محبوب ہیں',
-    reference: 'صحیح البخاری، حدیث: 6682',
-    target: 33,
-    count: 0
+    id:'subhanallah',
+    title:'SubhanAllahi wa bihamdihi',
+    arabic:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
+    hadith:'نبی صلی اللہ علیہ وآلہ وسلم نے فرمایا: دو کلمے زبان پر ہلکے ہیں لیکن میزان میں انتہائی وزنی اور اللہ تعالیٰ کو از حد محبوب ہیں',
+    arabicFull:'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ\nسُبْحَانَ اللَّهِ الْعَظِيمِ',
+    meaning:'پاک ہے اللہ اپنی خوبیوں سمیت، پاک ہے اللہ بہت عظمت والا',
+    ref:'صحیح البخاری، حدیث: 6682',
+    defaultTarget:100
   },
   {
-    id: 'lahawla',
-    name: 'La hawla wa la quwwata illa billah',
-    arabic: 'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللَّهِ',
-    urdu: 'اللہ کے سوا نہ کوئی طاقت ہے نہ قوت',
-    reference: 'متفق علیہ',
-    target: 33,
-    count: 0
+    id:'lahawla',
+    title:'La hawla wa la quwwata illa billah',
+    arabic:'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ',
+    hadith:'نبی صلی اللہ علیہ وآلہ وسلم نے فرمایا: کیا میں تمہیں جنت کے خزانوں میں سے ایک خزانے کے متعلق نہ بتاؤں؟',
+    arabicFull:'لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللّٰهِ الْعَلِيِّ الْعَظِيمِ',
+    meaning:'گناہ سے بچنے کی ہمت ہے نہ نیکی کرنے کی طاقت مگر اللہ ہی کی توفیق سے',
+    ref:'صحیح البخاری، حدیث: 6409',
+    defaultTarget:33
   },
   {
-    id: 'farghi',
-    name: 'Farghi Rizq',
-    arabic: 'رَبَّنَا أَنزِلْ عَلَيْنَا مَائِدَةً',
-    urdu: 'اے ہمارے رب ہم پر آسمان سے خوان نعمت نازل فرما',
-    reference: 'القرآن 5:114',
-    target: 33,
-    count: 0
+    id:'farghirizq',
+    title:'Farghi Rizq',
+    arabic:'رَبَّنَا أَنزِلْ عَلَيْنَا مَائِدَةً',
+    hadith:'Farghi Rizq — Dua for sustenance and provision',
+    arabicFull:'رَبَّنَا أَنزِلْ عَلَيْنَا مَائِدَةً مِّنَ السَّمَاءِ تَكُونُ لَنَا عِيدًا لِّأَوَّلِنَا وَآخِرِنَا وَآيَةً مِّنكَ ۖ وَارْزُقْنَا وَأَنتَ خَيْرُ الرَّازِقِينَ',
+    meaning:'اے ہمارے رب! ہم پر آسمان سے خوان نازل فرما جو ہمارے اگلوں اور پچھلوں کے لیے عید ہو اور تیری طرف سے نشانی ہو، اور ہمیں رزق عطا فرما، اور تو بہترین رزق دینے والا ہے',
+    ref:'القرآن — سورۃ المائدہ، آیت 114',
+    defaultTarget:33
   },
   {
-    id: 'alhamd',
-    name: 'Alhamdulillah',
-    arabic: 'اَلْحَمْدُ لِلَّهِ',
-    urdu: 'تمام تعریفیں اللہ کے لیے ہیں',
-    reference: 'القرآن 1:2',
-    target: 33,
-    count: 0
+    id:'alhamdulillah',
+    title:'Alhamdulillah',
+    arabic:'اَلْحَمْدُ لِلَّهِ',
+    hadith:'الحمد للہ کہنا میزان کو بھر دیتا ہے',
+    arabicFull:'اَلْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
+    meaning:'تمام تعریفیں اللہ ہی کے لیے ہیں جو تمام جہانوں کا رب ہے',
+    ref:'صحیح مسلم، حدیث: 223',
+    defaultTarget:33
+  },
+  {
+    id:'subhanallahi',
+    title:'SubhanAllah',
+    arabic:'سُبْحَانَ اللَّهِ',
+    hadith:'سبحان اللہ کہنا نیکیوں سے میزان کو بھر دیتا ہے',
+    arabicFull:'سُبْحَانَ اللَّهِ',
+    meaning:'پاک ہے اللہ ہر عیب سے',
+    ref:'صحیح مسلم، حدیث: 223',
+    defaultTarget:33
+  },
+  {
+    id:'allahuakbar',
+    title:'Allahu Akbar',
+    arabic:'اللَّهُ أَكْبَرُ',
+    hadith:'اللہ اکبر کہنا آسمان و زمین کو بھر دیتا ہے',
+    arabicFull:'اللَّهُ أَكْبَرُ كَبِيرًا',
+    meaning:'اللہ سب سے بڑا ہے',
+    ref:'صحیح مسلم، حدیث: 223',
+    defaultTarget:33
+  },
+  {
+    id:'astaghfirullah',
+    title:'Astaghfirullah',
+    arabic:'أَسْتَغْفِرُ اللَّهَ',
+    hadith:'نبی صلی اللہ علیہ وسلم دن میں 100 مرتبہ استغفار فرماتے تھے',
+    arabicFull:'أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ',
+    meaning:'میں اللہ سے مغفرت مانگتا ہوں اور اس کی طرف توبہ کرتا ہوں',
+    ref:'صحیح البخاری، حدیث: 6307',
+    defaultTarget:100
+  },
+  {
+    id:'salawat',
+    title:'Salawat on Prophet ﷺ',
+    arabic:'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ',
+    hadith:'جو مجھ پر ایک بار درود پڑھے اللہ اس پر دس رحمتیں نازل فرمائے',
+    arabicFull:'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ',
+    meaning:'اے اللہ محمد ﷺ پر اور آل محمد پر رحمتیں نازل فرما',
+    ref:'صحیح مسلم، حدیث: 408',
+    defaultTarget:100
   }
 ];
 
-let currentDetailId = null;
+// ══════════════════════════════
+// STATE
+// ══════════════════════════════
+let currentZikrId = null;
+let currentCount = 0;
+let currentTarget = 33;
+let continuePast = false;
+let ctxZikrId = null;
+let editingId = null;
+let targetEditId = null;
+let doneEditId = null;
 
-// ── LOAD ZIKR ──
-function loadZikr() {
-  const saved = localStorage.getItem('azkarList');
-  if (saved) return JSON.parse(saved);
-  localStorage.setItem('azkarList', JSON.stringify(defaultZikr));
-  return defaultZikr;
+// ══════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════
+const key = {
+  count:  id => 'zikr_count_' + id,
+  target: id => 'zikr_target_' + id,
+  done:   id => 'zikr_done_' + id,
+};
+
+function getCount(id)  { return parseInt(localStorage.getItem(key.count(id)) || '0'); }
+function getTarget(id) { return parseInt(localStorage.getItem(key.target(id)) || getDefaultTarget(id) || '33'); }
+function getDone(id)   { return localStorage.getItem(key.done(id)) === 'true'; }
+
+function getDefaultTarget(id) {
+  const b = BUILTIN.find(x => x.id === id);
+  return b ? String(b.defaultTarget) : '33';
 }
 
-function saveZikr(list) {
-  localStorage.setItem('azkarList', JSON.stringify(list));
+function saveCount(id, v)  { localStorage.setItem(key.count(id), v); }
+function saveTarget(id, v) { localStorage.setItem(key.target(id), v); }
+function saveDone(id, v)   {
+  if (v) localStorage.setItem(key.done(id), 'true');
+  else localStorage.removeItem(key.done(id));
 }
 
-// ── RENDER LIST ──
+// ══════════════════════════════
+// CUSTOM ZIKR
+// ══════════════════════════════
+function getCustomList() {
+  try { return JSON.parse(localStorage.getItem('customZikrList') || '[]'); } catch(e) { return []; }
+}
+
+function saveCustomList(list) {
+  localStorage.setItem('customZikrList', JSON.stringify(list));
+}
+
+function isCustom(id) { return String(id).startsWith('custom_'); }
+
+// ══════════════════════════════
+// VIEW
+// ══════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ══════════════════════════════
+// RENDER LIST
+// ══════════════════════════════
 function renderList() {
-  const list = loadZikr();
   const container = document.getElementById('zikr-list');
   container.innerHTML = '';
 
-  list.forEach(z => {
-    const isDone = z.count >= z.target;
-    const pct = Math.min(z.count / z.target, 1);
-    const circumference = 2 * Math.PI * 22;
-    const offset = circumference - pct * circumference;
+  const allZikr = [...BUILTIN, ...getCustomList().map(c => ({
+    id: c.id,
+    title: c.name,
+    arabic: c.arabic || '',
+    hadith: '',
+    arabicFull: c.arabic || '',
+    meaning: '',
+    ref: 'Custom Zikr',
+    defaultTarget: c.target || 33
+  }))];
 
-    const card = document.createElement('div');
-    card.className = 'zikr-card';
-    card.innerHTML = `
-      <!-- Ring -->
-      <div class="zikr-ring">
-        <svg viewBox="0 0 54 54">
-          <circle cx="27" cy="27" r="22" fill="none"
-            stroke="#e5e5ea" stroke-width="4"/>
-          <circle cx="27" cy="27" r="22" fill="none"
-            stroke="${isDone ? '#34c759' : '#34c759'}"
-            stroke-width="4"
-            stroke-linecap="round"
-            stroke-dasharray="${circumference}"
-            stroke-dashoffset="${isDone ? 0 : offset}"
-            style="transition:stroke-dashoffset 0.3s ease;"/>
-        </svg>
-        <div class="zikr-ring-text ${isDone ? 'done-text' : ''}">
-          ${isDone ? '✓' : z.count}
-        </div>
-      </div>
-
-      <!-- Body -->
-      <div class="zikr-body" onclick="openDetail('${z.id}')" style="cursor:pointer;">
-        <div class="zikr-name">${z.name}</div>
-        <div class="zikr-arabic">${z.arabic}</div>
-        ${isDone
-          ? '<div class="zikr-done-label">Done</div>'
-          : `<div class="zikr-count-label">${z.count} / ${z.target}</div>`
-        }
-      </div>
-
-      <!-- Right -->
-      <div class="zikr-right">
-        <button class="zikr-menu-btn" onclick="deleteZikr('${z.id}')">✕</button>
-        <button class="zikr-play-btn" onclick="openDetail('${z.id}')">▶</button>
-      </div>
-    `;
-    container.appendChild(card);
+  allZikr.forEach(z => {
+    container.appendChild(createZikrCard(z));
   });
 }
 
-// ── OPEN DETAIL ──
-function openDetail(id) {
-  const list = loadZikr();
-  const z = list.find(x => x.id === id);
-  if (!z) return;
-  currentDetailId = id;
+// ══════════════════════════════
+// CREATE ZIKR CARD
+// ══════════════════════════════
+function createZikrCard(z) {
+  const count  = getCount(z.id);
+  const target = getTarget(z.id);
+  const done   = getDone(z.id);
+  const pct    = Math.min(count / target, 1);
+  const circ   = 2 * Math.PI * 23;
+  const offset = circ - pct * circ;
+  const isDone = done || count >= target;
 
-  document.getElementById('detail-header-title').textContent = z.name;
-  document.getElementById('detail-name').textContent = z.name;
-  document.getElementById('detail-target').textContent = 'Target ' + z.target;
-  document.getElementById('detail-arabic').textContent = z.arabic;
-  document.getElementById('detail-urdu').textContent = z.urdu;
-  document.getElementById('detail-reference').textContent = z.reference;
-  updateDetailCounter(z);
+  const div = document.createElement('div');
+  div.className = 'zikr-card';
+  div.id = 'zcard-' + z.id;
 
-  document.getElementById('zikr-detail-page').classList.add('show');
+  div.innerHTML = `
+    <!-- Ring -->
+    <div class="zikr-ring">
+      <svg class="zikr-ring-svg" viewBox="0 0 54 54">
+        <circle class="zikr-ring-bg" cx="27" cy="27" r="23"/>
+        <circle class="zikr-ring-fill" cx="27" cy="27" r="23"
+          stroke-dasharray="${circ}"
+          stroke-dashoffset="${isDone ? 0 : offset}"
+          id="ring-fill-${z.id}"/>
+      </svg>
+      <div class="zikr-ring-text ${isDone ? 'done' : ''}" id="ring-text-${z.id}">
+        ${isDone ? '✓' : count}
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div class="zikr-body" onclick="openDetail('${z.id}')">
+      <div class="zikr-title">${z.title}</div>
+      <div class="zikr-arabic-small">${z.arabic}</div>
+      <div class="zikr-progress-text ${isDone ? 'done' : ''}" id="prog-text-${z.id}">
+        ${isDone ? 'Done ✓' : count + ' / ' + target}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="zikr-actions">
+      <button class="zikr-menu-btn" onclick="openCtx('${z.id}',event)">⋮</button>
+      <button class="zikr-start-btn" onclick="openDetail('${z.id}')">▶</button>
+    </div>
+  `;
+
+  return div;
 }
 
-function closeDetail() {
-  document.getElementById('zikr-detail-page').classList.remove('show');
-  currentDetailId = null;
-  renderList();
-}
+// ══════════════════════════════
+// UPDATE SINGLE CARD UI
+// ══════════════════════════════
+function updateCardUI(id) {
+  const count  = getCount(id);
+  const target = getTarget(id);
+  const done   = getDone(id);
+  const pct    = Math.min(count / target, 1);
+  const circ   = 2 * Math.PI * 23;
+  const offset = circ - pct * circ;
+  const isDone = done || count >= target;
 
-// ── DETAIL TAP ──
-function detailTap() {
-  if (!currentDetailId) return;
-  const list = loadZikr();
-  const z = list.find(x => x.id === currentDetailId);
-  if (!z) return;
-  if (z.count < z.target) z.count++;
-  if (navigator.vibrate) navigator.vibrate(30);
-  saveZikr(list);
-  updateDetailCounter(z);
-}
+  const fill = document.getElementById('ring-fill-' + id);
+  const text = document.getElementById('ring-text-' + id);
+  const prog = document.getElementById('prog-text-' + id);
 
-function detailReset() {
-  if (!currentDetailId) return;
-  const list = loadZikr();
-  const z = list.find(x => x.id === currentDetailId);
-  if (!z) return;
-  z.count = 0;
-  saveZikr(list);
-  updateDetailCounter(z);
-}
-
-function updateDetailCounter(z) {
-  document.getElementById('detail-fraction').textContent = z.count + ' / ' + z.target;
-}
-
-// ── DELETE ZIKR ──
-function deleteZikr(id) {
-  if (!confirm('Remove this zikr?')) return;
-  const list = loadZikr().filter(x => x.id !== id);
-  saveZikr(list);
-  renderList();
-}
-
-// ── RESET ALL ──
-function resetAll() {
-  if (!confirm('Reset all zikr counts?')) return;
-  const list = loadZikr();
-  list.forEach(z => z.count = 0);
-  saveZikr(list);
-  renderList();
-  showToast('All counts reset ✓');
-}
-
-// ── ADD ZIKR ──
-function openAddModal() {
-  document.getElementById('add-modal-overlay').classList.add('show');
-}
-
-function closeAddModal(e) {
-  if (e.target === document.getElementById('add-modal-overlay')) {
-    document.getElementById('add-modal-overlay').classList.remove('show');
+  if (fill) fill.style.strokeDashoffset = isDone ? 0 : offset;
+  if (text) {
+    text.textContent = isDone ? '✓' : count;
+    text.className = 'zikr-ring-text' + (isDone ? ' done' : '');
+  }
+  if (prog) {
+    prog.textContent = isDone ? 'Done ✓' : count + ' / ' + target;
+    prog.className = 'zikr-progress-text' + (isDone ? ' done' : '');
   }
 }
 
-function addZikr() {
-  const name = document.getElementById('new-zikr-name').value.trim();
-  const arabic = document.getElementById('new-zikr-arabic').value.trim();
-  const urdu = document.getElementById('new-zikr-urdu').value.trim();
-  const target = parseInt(document.getElementById('new-zikr-target').value) || 33;
+// ══════════════════════════════
+// OPEN DETAIL
+// ══════════════════════════════
+function openDetail(id) {
+  const allZikr = [...BUILTIN, ...getCustomList().map(c => ({
+    id: c.id, title: c.name,
+    arabic: c.arabic || '', hadith: '',
+    arabicFull: c.arabic || '', meaning: '',
+    ref: 'Custom Zikr', defaultTarget: c.target || 33
+  }))];
+
+  const z = allZikr.find(x => x.id === id);
+  if (!z) return;
+
+  currentZikrId = id;
+  currentCount  = getCount(id);
+  currentTarget = getTarget(id);
+  continuePast  = currentCount > currentTarget;
+
+  document.getElementById('detail-header-title').textContent = z.title;
+  document.getElementById('d-title').textContent   = z.title;
+  document.getElementById('d-target').textContent  = 'Target ' + currentTarget;
+  document.getElementById('d-hadith').innerHTML    = z.hadith || '';
+  document.getElementById('d-arabic').innerHTML    = z.arabicFull
+    ? z.arabicFull.replace(/\n/g,'<br>') : '';
+  document.getElementById('d-meaning').innerHTML   = z.meaning || '';
+  document.getElementById('d-ref').innerHTML       = z.ref || '';
+
+  updateDetailCount();
+  showView('view-detail');
+}
+
+// ══════════════════════════════
+// DETAIL COUNT
+// ══════════════════════════════
+function updateDetailCount() {
+  document.getElementById('d-count').textContent = currentCount + ' / ' + currentTarget;
+}
+
+function tapCount() {
+  if (!currentZikrId) return;
+  currentCount++;
+  saveCount(currentZikrId, currentCount);
+  if (navigator.vibrate) navigator.vibrate(25);
+  updateDetailCount();
+  updateCardUI(currentZikrId);
+
+  if (!continuePast && currentCount >= currentTarget) {
+    openTargetSheet();
+  }
+}
+
+function resetCurrentZikr() {
+  if (!currentZikrId) return;
+  currentCount = 0;
+  continuePast = false;
+  saveCount(currentZikrId, 0);
+  saveDone(currentZikrId, false);
+  updateDetailCount();
+  updateCardUI(currentZikrId);
+  document.getElementById('d-target').textContent = 'Target ' + currentTarget;
+}
+
+// ══════════════════════════════
+// TARGET REACHED SHEET
+// ══════════════════════════════
+function openTargetSheet() {
+  document.getElementById('target-reached-name').textContent =
+    document.getElementById('d-title').textContent + ' — ' + currentTarget;
+  document.getElementById('target-sheet').classList.add('show');
+}
+
+function continueAfterTarget() {
+  continuePast = true;
+  document.getElementById('target-sheet').classList.remove('show');
+}
+
+function resetAfterTarget() {
+  document.getElementById('target-sheet').classList.remove('show');
+  resetCurrentZikr();
+}
+
+// ══════════════════════════════
+// CONTEXT MENU
+// ══════════════════════════════
+function openCtx(id, e) {
+  ctxZikrId = id;
+  const bg  = document.getElementById('ctx-bg');
+  const box = document.getElementById('ctx-menu');
+
+  // Show/hide custom buttons
+  document.getElementById('ctx-edit-btn').classList.toggle('hidden', !isCustom(id));
+  document.getElementById('ctx-delete-btn').classList.toggle('hidden', !isCustom(id));
+
+  // Done button label
+  const count  = getCount(id);
+  const target = getTarget(id);
+  const done   = getDone(id);
+  const doneBtn = document.getElementById('ctx-done-btn');
+  if (count >= target) {
+    doneBtn.textContent = '🔄 Reset Count';
+  } else if (done) {
+    doneBtn.textContent = '✕ Remove Done Mark';
+  } else {
+    doneBtn.textContent = '✅ Mark as Done';
+  }
+
+  bg.style.display = 'block';
+
+  const x = e.clientX || 220;
+  const y = e.clientY || 140;
+  box.style.left = Math.max(12, Math.min(x - 160, window.innerWidth - 200)) + 'px';
+  box.style.top  = Math.max(70, Math.min(y + 8,   window.innerHeight - 220)) + 'px';
+}
+
+function closeCtx() {
+  document.getElementById('ctx-bg').style.display = 'none';
+}
+
+function ctxEditTarget() {
+  closeCtx();
+  targetEditId = ctxZikrId;
+  document.getElementById('target-modal-sub').textContent =
+    'Set target for: ' + getZikrTitle(ctxZikrId);
+  document.getElementById('custom-target-input').value = '';
+  openModal('target-modal');
+}
+
+function ctxMarkDone() {
+  closeCtx();
+  doneEditId = ctxZikrId;
+  const count  = getCount(ctxZikrId);
+  const target = getTarget(ctxZikrId);
+  const done   = getDone(ctxZikrId);
+  const title  = document.getElementById('done-modal-title');
+  const text   = document.getElementById('done-modal-text');
+  const btn    = document.getElementById('done-modal-btn');
+
+  if (count >= target) {
+    title.textContent = 'Reset this zikr?';
+    text.textContent  = 'This will reset the count to 0.';
+    btn.textContent   = 'Reset';
+    btn.className     = 'modal-btn-danger';
+  } else if (done) {
+    title.textContent = 'Remove done mark?';
+    text.textContent  = 'This will remove the checkmark.';
+    btn.textContent   = 'Remove';
+    btn.className     = 'modal-btn-danger';
+  } else {
+    title.textContent = 'Mark as Done for today?';
+    text.textContent  = 'Adds a checkmark. Your count stays the same.';
+    btn.textContent   = 'Mark as Done';
+    btn.className     = 'modal-btn-green';
+  }
+  openModal('done-modal');
+}
+
+function ctxEditCustom() {
+  closeCtx();
+  editingId = ctxZikrId;
+  const custom = getCustomList().find(c => c.id === editingId);
+  if (!custom) return;
+  document.getElementById('edit-name').value   = custom.name || '';
+  document.getElementById('edit-arabic').value = custom.arabic || '';
+  document.getElementById('edit-target').value = getTarget(editingId);
+  openModal('edit-modal');
+}
+
+function ctxDeleteCustom() {
+  closeCtx();
+  const custom = getCustomList().find(c => c.id === ctxZikrId);
+  if (!custom) return;
+  if (!confirm('Delete "' + custom.name + '"?')) return;
+  const list = getCustomList().filter(c => c.id !== ctxZikrId);
+  saveCustomList(list);
+  localStorage.removeItem(key.count(ctxZikrId));
+  localStorage.removeItem(key.target(ctxZikrId));
+  localStorage.removeItem(key.done(ctxZikrId));
+  renderList();
+  showToast('Zikr deleted');
+}
+
+function getZikrTitle(id) {
+  const b = BUILTIN.find(x => x.id === id);
+  if (b) return b.title;
+  const c = getCustomList().find(x => x.id === id);
+  return c ? c.name : id;
+}
+
+// ══════════════════════════════
+// TARGET MODAL
+// ══════════════════════════════
+function setTarget(val) {
+  if (!targetEditId) return;
+  saveTarget(targetEditId, val);
+  updateCardUI(targetEditId);
+  if (currentZikrId === targetEditId) {
+    currentTarget = val;
+    document.getElementById('d-target').textContent = 'Target ' + val;
+    updateDetailCount();
+  }
+  closeModal('target-modal');
+  showToast('Target set to ' + val);
+}
+
+function setCustomTarget() {
+  const val = parseInt(document.getElementById('custom-target-input').value);
+  if (!val || val < 1) { showToast('Enter a valid number'); return; }
+  setTarget(val);
+}
+
+// ══════════════════════════════
+// DONE MODAL
+// ══════════════════════════════
+function confirmDone() {
+  if (!doneEditId) return;
+  const count  = getCount(doneEditId);
+  const target = getTarget(doneEditId);
+  const done   = getDone(doneEditId);
+
+  if (count >= target) {
+    saveCount(doneEditId, 0);
+    saveDone(doneEditId, false);
+    showToast('Count reset');
+  } else if (done) {
+    saveDone(doneEditId, false);
+    showToast('Done mark removed');
+  } else {
+    saveDone(doneEditId, true);
+    showToast('Marked as done ✓');
+  }
+
+  updateCardUI(doneEditId);
+  closeModal('done-modal');
+}
+
+// ══════════════════════════════
+// RESET ALL
+// ══════════════════════════════
+function openResetAllModal() { openModal('reset-modal'); }
+
+function confirmResetAll() {
+  const allIds = [
+    ...BUILTIN.map(z => z.id),
+    ...getCustomList().map(c => c.id)
+  ];
+  allIds.forEach(id => {
+    saveCount(id, 0);
+    saveDone(id, false);
+  });
+  if (currentZikrId) {
+    currentCount = 0;
+    updateDetailCount();
+  }
+  renderList();
+  closeModal('reset-modal');
+  showToast('All counts reset ✓');
+}
+
+// ══════════════════════════════
+// ADD ZIKR
+// ══════════════════════════════
+function openAddModal() {
+  document.getElementById('add-name').value   = '';
+  document.getElementById('add-arabic').value = '';
+  document.getElementById('add-target').value = '33';
+  openModal('add-modal');
+}
+
+function saveNewZikr() {
+  const name   = document.getElementById('add-name').value.trim();
+  const arabic = document.getElementById('add-arabic').value.trim();
+  const target = parseInt(document.getElementById('add-target').value) || 33;
 
   if (!name) { showToast('Please enter a name'); return; }
 
-  const list = loadZikr();
-  list.push({
-    id: 'z_' + Date.now(),
-    name, arabic, urdu,
-    reference: '',
-    target,
-    count: 0
-  });
-  saveZikr(list);
-  renderList();
+  const id = 'custom_' + Date.now();
+  const list = getCustomList();
+  list.push({ id, name, arabic, target });
+  saveCustomList(list);
+  saveTarget(id, target);
 
-  document.getElementById('new-zikr-name').value = '';
-  document.getElementById('new-zikr-arabic').value = '';
-  document.getElementById('new-zikr-urdu').value = '';
-  document.getElementById('new-zikr-target').value = '';
-  document.getElementById('add-modal-overlay').classList.remove('show');
+  closeModal('add-modal');
+  renderList();
   showToast('Zikr added ✓');
 }
 
-// ── TOAST ──
+// ══════════════════════════════
+// EDIT ZIKR
+// ══════════════════════════════
+function saveEditZikr() {
+  if (!editingId) return;
+  const name   = document.getElementById('edit-name').value.trim();
+  const arabic = document.getElementById('edit-arabic').value.trim();
+  const target = parseInt(document.getElementById('edit-target').value) || 33;
+
+  if (!name) { showToast('Please enter a name'); return; }
+
+  const list = getCustomList().map(c => {
+    if (c.id === editingId) return { ...c, name, arabic, target };
+    return c;
+  });
+  saveCustomList(list);
+  saveTarget(editingId, target);
+
+  closeModal('edit-modal');
+  renderList();
+  showToast('Updated ✓');
+}
+
+// ══════════════════════════════
+// MODAL HELPERS
+// ══════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id, e) {
+  if (!e || e.target === document.getElementById(id)) {
+    document.getElementById(id).classList.remove('show');
+  }
+}
+
+// ══════════════════════════════
+// TOAST
+// ══════════════════════════════
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -663,7 +1253,9 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// ── INIT ──
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
 renderList();
 </script>
 </body>
