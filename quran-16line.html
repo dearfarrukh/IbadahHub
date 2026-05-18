@@ -498,7 +498,7 @@ function loadPage(p) {
   document.getElementById('loading').classList.remove('hidden');
 
   const padded = String(page).padStart(3, '0');
-  img.src = `https://static.quran.com/images/quran/pages/page${padded}.png`;
+  img.src = `https://archive.org/download/ALQURANPERPAGEFORMATPNG/page${padded}.png`;
 
   updateBmBtn();
 }
@@ -513,7 +513,7 @@ function onImgError() {
   const img = document.getElementById('quran-img');
   const padded = String(page).padStart(3, '0');
   if (!img.src.includes('qurancdn')) {
-    img.src = `https://qurancdn.com/images/quran/pages/page${padded}.png`;
+    img.src = `https://archive.org/download/ALQURANPERPAGEFORMATPNG/page${padded}.png`;
   } else {
     document.getElementById('loading').innerHTML =
       `<div style="color:rgba(255,255,255,0.4);text-align:center;padding:30px;font-size:14px;">
