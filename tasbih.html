@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <title>Tasbih – IbadahHub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body {
+      background: linear-gradient(170deg, #0d1b3e 0%, #1a3a6b 50%, #0d2744 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .tasbih-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      padding-top: calc(env(safe-area-inset-top, 16px) + 10px);
+    }
+
+    .tasbih-header-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* Title card */
+    .tasbih-title-card {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      text-align: center;
+      margin: 0 16px 14px;
+    }
+
+    .tasbih-title-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Goal selector */
+    .goal-card {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      margin: 0 16px 16px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .goal-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Inter', sans-serif;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .goal-btn.active {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 4px 12px rgba(52,199,89,0.4);
+    }
+
+    .goal-btn:active { transform: scale(0.95); }
+
+    /* Counter area */
+    .counter-card {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: var(--radius-lg);
+      margin: 0 16px 16px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      flex: 1;
+    }
+
+    .counter-card:active {
+      background: rgba(255,255,255,0.18);
+    }
+
+    /* Number display */
+    .counter-number-box {
+      background: rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 12px 40px;
+      font-size: 52px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -2px;
+      min-width: 140px;
+      text-align: center;
+    }
+
+    /* SVG ring */
+    .ring-wrap {
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+
+    .ring-wrap svg {
+      transform: rotate(-90deg);
+      width: 200px;
+      height: 200px;
+    }
+
+    .ring-track {
+      fill: none;
+      stroke: rgba(255,255,255,0.15);
+      stroke-width: 10;
+    }
+
+    .ring-fill {
+      fill: none;
+      stroke: var(--green);
+      stroke-width: 10;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.3s ease;
+    }
+
+    .ring-center-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .ring-fraction {
+      font-size: 28px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+
+    /* Tick marks on ring */
+    .ring-ticks {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+    }
+
+    /* Reset button */
+    .reset-btn {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 50px;
+      padding: 13px 40px;
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      margin: 0 16px 32px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.15s ease;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .reset-btn:active {
+      background: rgba(255,255,255,0.25);
+      transform: scale(0.96);
+    }
+
+    /* Dhikr name selector */
+    .dhikr-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    /* Completion flash */
+    @keyframes completePulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .pulse { animation: completePulse 0.4s ease; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="tasbih-header">
+  <button class="back-btn" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2);" onclick="location.href='more.html'">
+    <span style="color:white;">←</span>
+  </button>
+  <div class="tasbih-header-center">
+    <span>📿</span>
+    <span>Tasbih</span>
+  </div>
+  <button class="header-action-btn" style="background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2);" onclick="location.href='settings.html'">
+    <span>⚙️</span>
+  </button>
+</div>
+
+<!-- TITLE CARD -->
+<div class="tasbih-title-card">
+  <div class="tasbih-title-text">📿 Tasbih Counter</div>
+</div>
+
+<!-- GOAL SELECTOR -->
+<div class="goal-card">
+  <button class="goal-btn active" id="goal-33" onclick="setGoal(33)">33</button>
+  <button class="goal-btn" id="goal-100" onclick="setGoal(100)">100</button>
+  <button class="goal-btn" id="goal-inf" onclick="setGoal(0)">∞</button>
+</div>
+
+<!-- COUNTER CARD — tap anywhere to count -->
+<div class="counter-card" id="counter-card" onclick="tap()">
+
+  <!-- Number box -->
+  <div class="counter-number-box" id="counter-num">0</div>
+
+  <!-- Ring -->
+  <div class="ring-wrap" id="ring-wrap">
+    <svg viewBox="0 0 200 200">
+      <!-- Tick marks -->
+      <g id="ticks"></g>
+      <!-- Track -->
+      <circle class="ring-track" cx="100" cy="100" r="85"/>
+      <!-- Fill -->
+      <circle class="ring-fill" id="ring-fill" cx="100" cy="100" r="85"
+        stroke-dasharray="534"
+        stroke-dashoffset="534"/>
+    </svg>
+    <div class="ring-center-text">
+      <div class="ring-fraction" id="ring-fraction">0 / 33</div>
+      <div class="dhikr-name" id="dhikr-name">SubhanAllah</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- RESET -->
+<button class="reset-btn" onclick="resetCounter()">Reset</button>
+
+<script>
+const CIRCUMFERENCE = 2 * Math.PI * 85; // ~534
+
+let count = 0;
+let goal = 33;
+
+const dhikrList = [
+  'SubhanAllah',
+  'Alhamdulillah',
+  'AllahuAkbar',
+  'La ilaha illallah',
+  'Astaghfirullah',
+  'SubhanAllahi wa bihamdihi'
+];
+
+let currentDhikr = localStorage.getItem('tasbihDhikr') || dhikrList[0];
+
+// ── DRAW TICK MARKS ──
+function drawTicks() {
+  const g = document.getElementById('ticks');
+  const total = 33;
+  const r = 85;
+  for (let i = 0; i < total; i++) {
+    const angle = (i / total) * 2 * Math.PI - Math.PI / 2;
+    const x1 = 100 + (r - 6) * Math.cos(angle);
+    const y1 = 100 + (r - 6) * Math.sin(angle);
+    const x2 = 100 + (r + 6) * Math.cos(angle);
+    const y2 = 100 + (r + 6) * Math.sin(angle);
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke', 'rgba(255,255,255,0.2)');
+    line.setAttribute('stroke-width', '1.5');
+    g.appendChild(line);
+  }
+}
+
+// ── SET GOAL ──
+function setGoal(g) {
+  goal = g;
+  ['33','100','inf'].forEach(k => {
+    document.getElementById('goal-' + k).classList.remove('active');
+  });
+  if (g === 33) document.getElementById('goal-33').classList.add('active');
+  else if (g === 100) document.getElementById('goal-100').classList.add('active');
+  else document.getElementById('goal-inf').classList.add('active');
+  count = 0;
+  localStorage.setItem('tasbihGoal', goal);
+  updateDisplay();
+}
+
+// ── TAP ──
+function tap() {
+  count++;
+  // Vibrate if supported
+  if (navigator.vibrate) navigator.vibrate(30);
+
+  if (goal > 0 && count >= goal) {
+    count = 0;
+    // Flash pulse
+    const card = document.getElementById('counter-card');
+    card.classList.add('pulse');
+    setTimeout(() => card.classList.remove('pulse'), 400);
+  }
+
+  localStorage.setItem('tasbihCount', count);
+  updateDisplay();
+}
+
+// ── RESET ──
+function resetCounter() {
+  count = 0;
+  localStorage.setItem('tasbihCount', 0);
+  updateDisplay();
+}
+
+// ── UPDATE DISPLAY ──
+function updateDisplay() {
+  document.getElementById('counter-num').textContent = count;
+
+  const effectiveGoal = goal > 0 ? goal : 100;
+  const progress = Math.min(count / effectiveGoal, 1);
+  const offset = CIRCUMFERENCE - progress * CIRCUMFERENCE;
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+
+  if (goal === 0) {
+    document.getElementById('ring-fraction').textContent = count + ' / ∞';
+  } else {
+    document.getElementById('ring-fraction').textContent = count + ' / ' + goal;
+  }
+
+  document.getElementById('dhikr-name').textContent = currentDhikr;
+
+  // Change ring color near completion
+  const fill = document.getElementById('ring-fill');
+  if (goal > 0 && count >= goal * 0.8) {
+    fill.style.stroke = '#34c759';
+  } else {
+    fill.style.stroke = '#34c759';
+  }
+}
+
+// ── INIT ──
+drawTicks();
+goal = parseInt(localStorage.getItem('tasbihGoal') || '33');
+count = parseInt(localStorage.getItem('tasbihCount') || '0');
+
+// Set active goal button
+['33','100','inf'].forEach(k => {
+  document.getElementById('goal-' + k).classList.remove('active');
+});
+if (goal === 33) document.getElementById('goal-33').classList.add('active');
+else if (goal === 100) document.getElementById('goal-100').classList.add('active');
+else document.getElementById('goal-inf').classList.add('active');
+
+updateDisplay();
+</script>
+</body>
+</html>
