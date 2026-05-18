@@ -7,400 +7,596 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <title>15 Line Quran – IbadahHub</title>
   <link rel="stylesheet" href="css/style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); min-height:100vh; font-family:'Inter',sans-serif; }
 
-    body {
-      background: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+    .view { display:none; }
+    .view.active { display:block; }
+
+    /* ══ LANDING ══ */
+    .landing-wrap { padding-bottom:40px; }
+
+    .land-header {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 10px);
+      background:var(--bg);
     }
 
-    /* TOP BAR */
-    .topbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      background: rgba(0,0,0,0.88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 10px 16px;
-      padding-top: calc(env(safe-area-inset-top,16px) + 8px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+    .hero-card {
+      background:linear-gradient(135deg,#2d5016,#1a3a0a);
+      border-radius:var(--radius-lg);
+      padding:28px 20px;
+      text-align:center;
+      margin:0 16px 16px;
+      position:relative; overflow:hidden;
     }
 
-    .topbar.hidden {
-      transform: translateY(-100%);
-      opacity: 0;
-      pointer-events: none;
+    .hero-card::before {
+      content:'📗';
+      position:absolute;
+      font-size:110px; opacity:0.05;
+      right:-10px; bottom:-10px;
     }
 
-    .topbar-center { text-align: center; flex: 1; }
+    .hero-icon { font-size:48px; margin-bottom:12px; }
 
-    .topbar-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: white;
+    .hero-title {
+      font-size:24px; font-weight:800;
+      color:white; margin-bottom:6px;
+      letter-spacing:-0.5px;
     }
 
-    .topbar-sub {
-      font-size: 11px;
-      color: rgba(255,255,255,0.5);
-      margin-top: 2px;
+    .hero-sub { font-size:14px; color:rgba(255,255,255,0.6); }
+
+    .resume-card {
+      background:white;
+      border-radius:var(--radius-lg);
+      padding:18px 20px;
+      box-shadow:var(--shadow);
+      margin:0 16px 12px;
+      display:flex; align-items:center; gap:14px;
+      cursor:pointer; transition:transform 0.15s;
+      border-left:4px solid var(--green);
+      -webkit-user-select:none; user-select:none;
     }
 
-    .topbar-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-      border: none;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      -webkit-user-select: none;
-      user-select: none;
-      transition: background 0.15s;
+    .resume-card:active { transform:scale(0.98); }
+
+    .resume-icon {
+      font-size:28px; width:52px; height:52px;
+      background:#e6f9ec; border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
     }
 
-    .topbar-btn:active { background: rgba(255,255,255,0.25); }
+    .resume-body { flex:1; }
 
-    /* PAGE AREA */
-    .page-area {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      min-height: 100vh;
-      padding: 0;
-      cursor: pointer;
-      position: relative;
-      background: #fff;
+    .resume-label {
+      font-size:11px; font-weight:700;
+      color:var(--green);
+      text-transform:uppercase; letter-spacing:0.5px;
+      margin-bottom:4px;
+    }
+
+    .resume-title {
+      font-size:17px; font-weight:800;
+      color:var(--text); margin-bottom:2px;
+    }
+
+    .resume-sub { font-size:13px; color:var(--text-secondary); }
+
+    .action-btn {
+      background:white;
+      border-radius:var(--radius-lg);
+      padding:18px 20px;
+      box-shadow:var(--shadow);
+      margin:0 16px 12px;
+      display:flex; align-items:center; gap:16px;
+      cursor:pointer; transition:transform 0.15s;
+      -webkit-user-select:none; user-select:none;
+      border:none; width:calc(100% - 32px);
+      text-align:left; font-family:'Inter',sans-serif;
+    }
+
+    .action-btn:active { transform:scale(0.98); }
+
+    .action-icon {
+      width:52px; height:52px; border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:26px; flex-shrink:0;
+    }
+
+    .action-body { flex:1; }
+    .action-title { font-size:16px; font-weight:700; color:var(--text); margin-bottom:3px; }
+    .action-sub { font-size:13px; color:var(--text-secondary); }
+    .action-arrow { font-size:20px; color:var(--text-light); }
+
+    /* ══ READER ══ */
+    #view-reader {
+      position:fixed; inset:0;
+      background:#fff; z-index:50;
+      display:none;
+    }
+
+    #view-reader.active { display:block; }
+
+    .reader-page-area {
+      width:100%; height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      cursor:pointer; position:relative; background:#fff;
     }
 
     .quran-img {
-      width: 100%;
-      height: 100vh;
-      object-fit: contain;
-      display: block;
-      -webkit-user-select: none;
-      user-select: none;
-      -webkit-user-drag: none;
-      background: #fff;
+      width:100%; height:100vh;
+      object-fit:contain; display:block;
+      -webkit-user-select:none; user-select:none;
+      background:#fff;
     }
 
-    .quran-img.hidden { display: none; }
+    .quran-img.hidden { display:none; }
 
-    /* Loading */
-    .loading-screen {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      background: #fff;
+    .reader-loading {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      gap:16px; background:#fff;
     }
 
-    .loading-screen.hidden { display: none; }
+    .reader-loading.hidden { display:none; }
 
-    .loading-spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid rgba(0,0,0,0.15);
-      border-top-color: #333;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    .r-spinner {
+      width:36px; height:36px;
+      border:3px solid rgba(0,0,0,0.12);
+      border-top-color:#2d5016;
+      border-radius:50%;
+      animation:spin 0.8s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .r-loading-text { font-size:14px; color:rgba(0,0,0,0.4); }
 
-    .loading-text {
-      font-size: 14px;
-      color: rgba(0,0,0,0.4);
+    .reader-topbar {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      background:rgba(30,60,15,0.92);
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      padding:10px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 8px);
+      display:flex; align-items:center; justify-content:space-between;
+      transition:transform 0.3s ease, opacity 0.3s ease;
     }
 
-    /* BOTTOM BAR */
-    .bottombar {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 100;
-      background: rgba(0,0,0,0.88);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 10px 20px;
-      padding-bottom: calc(env(safe-area-inset-bottom,12px) + 10px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+    .reader-topbar.hidden {
+      transform:translateY(-100%); opacity:0; pointer-events:none;
     }
 
-    .bottombar.hidden {
-      transform: translateY(100%);
-      opacity: 0;
-      pointer-events: none;
+    .r-topbar-center { text-align:center; flex:1; }
+    .r-topbar-title { font-size:15px; font-weight:700; color:white; }
+    .r-topbar-sub { font-size:11px; color:rgba(255,255,255,0.5); margin-top:2px; }
+
+    .r-topbar-btn {
+      width:36px; height:36px; border-radius:50%;
+      background:rgba(255,255,255,0.12);
+      border:none; color:white; font-size:16px;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      flex-shrink:0; transition:background 0.15s;
+      -webkit-user-select:none; user-select:none;
     }
 
-    .nav-btn {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.12);
-      border: none;
-      color: white;
-      font-size: 24px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      -webkit-user-select: none;
-      user-select: none;
-      transition: background 0.15s;
+    .r-topbar-btn:active { background:rgba(255,255,255,0.25); }
+
+    .reader-bottombar {
+      position:fixed; bottom:0; left:0; right:0; z-index:100;
+      background:rgba(30,60,15,0.92);
+      backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      padding:10px 20px;
+      padding-bottom:calc(env(safe-area-inset-bottom,12px) + 10px);
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      transition:transform 0.3s ease, opacity 0.3s ease;
     }
 
-    .nav-btn:active { background: rgba(255,255,255,0.25); }
-    .nav-btn:disabled { opacity: 0.25; pointer-events: none; }
-
-    .page-info {
-      flex: 1;
-      text-align: center;
+    .reader-bottombar.hidden {
+      transform:translateY(100%); opacity:0; pointer-events:none;
     }
 
-    .page-num {
-      font-size: 20px;
-      font-weight: 800;
-      color: white;
-      letter-spacing: -0.5px;
+    .r-nav-btn {
+      width:50px; height:50px; border-radius:50%;
+      background:rgba(255,255,255,0.12);
+      border:none; color:white; font-size:24px; font-weight:700;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      flex-shrink:0; -webkit-user-select:none; user-select:none;
+      transition:background 0.15s;
     }
 
-    .page-of {
-      font-size: 11px;
-      color: rgba(255,255,255,0.4);
-      margin-top: 2px;
+    .r-nav-btn:active { background:rgba(255,255,255,0.25); }
+    .r-nav-btn:disabled { opacity:0.25; pointer-events:none; }
+
+    .r-page-info { flex:1; text-align:center; }
+    .r-page-num { font-size:20px; font-weight:800; color:white; letter-spacing:-0.5px; }
+    .r-page-of { font-size:11px; color:rgba(255,255,255,0.4); margin-top:2px; }
+
+    .r-bm-btn {
+      position:fixed; right:14px;
+      top:calc(env(safe-area-inset-top,16px) + 60px);
+      z-index:99; width:40px; height:40px;
+      border-radius:50%;
+      background:rgba(0,0,0,0.5);
+      border:1px solid rgba(255,255,255,0.15);
+      color:white; font-size:18px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:all 0.2s;
     }
 
-    /* Bookmark button */
-    .bm-btn {
-      position: fixed;
-      right: 14px;
-      z-index: 99;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.15);
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      top: calc(env(safe-area-inset-top,16px) + 60px);
+    .r-bm-btn.on { background:#ff9500; border-color:#ff9500; }
+    .r-bm-btn:active { transform:scale(0.88); }
+
+    .r-surah-ind {
+      position:fixed; left:14px;
+      top:calc(env(safe-area-inset-top,16px) + 60px);
+      background:rgba(0,0,0,0.5);
+      border:1px solid rgba(255,255,255,0.15);
+      border-radius:10px; padding:6px 10px; z-index:99;
+      transition:opacity 0.3s;
     }
 
-    .bm-btn.on { background: #ff9500; border-color: #ff9500; }
-    .bm-btn:active { transform: scale(0.88); }
+    .r-surah-ind-text { font-size:11px; color:rgba(255,255,255,0.8); font-weight:600; }
 
-    /* Surah indicator */
-    .surah-indicator {
-      position: fixed;
-      top: calc(env(safe-area-inset-top,16px) + 60px);
-      left: 14px;
-      background: rgba(0,0,0,0.5);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 10px;
-      padding: 6px 10px;
-      z-index: 99;
+    /* ══ BOOKMARKS ══ */
+    .bm-header {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 16px;
+      padding-top:calc(env(safe-area-inset-top,16px) + 10px);
+      background:var(--bg);
+      position:sticky; top:0; z-index:10;
     }
 
-    .surah-indicator-text {
-      font-size: 11px;
-      color: rgba(255,255,255,0.8);
-      font-weight: 600;
+    .bm-count-badge {
+      background:var(--green); color:white;
+      font-size:12px; font-weight:700;
+      padding:3px 10px; border-radius:50px;
     }
 
-    /* Go to page modal */
-    .modal-bg {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      z-index: 200;
-      display: flex;
-      align-items: flex-end;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s;
+    .bm-item {
+      background:white; border-radius:var(--radius);
+      padding:16px 18px; box-shadow:var(--shadow);
+      margin:0 16px 10px;
+      display:flex; align-items:center; gap:14px;
+      cursor:pointer; transition:transform 0.15s;
+      -webkit-user-select:none; user-select:none;
     }
 
-    .modal-bg.show {
-      opacity: 1;
-      pointer-events: all;
+    .bm-item:active { transform:scale(0.98); }
+
+    .bm-page-badge {
+      width:52px; height:52px; border-radius:14px;
+      background:linear-gradient(135deg,#2d5016,#1a3a0a);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center; flex-shrink:0;
     }
 
-    .modal-box {
-      background: #1c1c1e;
-      border-radius: 24px 24px 0 0;
-      padding: 20px;
-      padding-bottom: calc(env(safe-area-inset-bottom,20px) + 20px);
-      width: 100%;
-      transform: translateY(100%);
-      transition: transform 0.3s ease;
+    .bm-page-label { font-size:10px; color:rgba(255,255,255,0.6); font-weight:600; }
+    .bm-page-num { font-size:18px; font-weight:800; color:white; line-height:1; }
+
+    .bm-item-body { flex:1; }
+
+    .bm-surah-name { font-size:15px; font-weight:700; color:var(--text); margin-bottom:4px; }
+
+    .bm-datetime {
+      font-size:12px; color:var(--text-secondary);
+      display:flex; align-items:center; gap:6px; flex-wrap:wrap;
     }
 
-    .modal-bg.show .modal-box { transform: translateY(0); }
-
-    .modal-handle {
-      width: 36px;
-      height: 4px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 50px;
-      margin: 0 auto 18px;
+    .bm-delete-btn {
+      width:32px; height:32px; border-radius:50%;
+      background:var(--bg); border:none; color:var(--red);
+      font-size:16px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.15s; flex-shrink:0;
     }
 
-    .modal-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: white;
-      text-align: center;
-      margin-bottom: 16px;
+    .bm-delete-btn:active { background:#ffe8e8; }
+
+    .bm-empty {
+      text-align:center; padding:60px 24px;
+      color:var(--text-secondary);
     }
 
-    .modal-input {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: rgba(255,255,255,0.1);
-      color: white;
-      font-size: 20px;
-      font-weight: 700;
-      text-align: center;
-      font-family: 'Inter', sans-serif;
-      outline: none;
-      margin-bottom: 12px;
+    .bm-empty-icon { font-size:56px; margin-bottom:16px; opacity:0.4; }
+    .bm-empty-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:8px; }
+    .bm-empty-text { font-size:14px; line-height:1.6; }
+
+    /* ══ MODALS ══ */
+    .slide-modal {
+      position:fixed; inset:0;
+      background:rgba(0,0,0,0.5); z-index:200;
+      display:flex; align-items:flex-end;
+      opacity:0; pointer-events:none; transition:opacity 0.3s;
     }
 
-    .modal-input::placeholder { color: rgba(255,255,255,0.3); }
+    .slide-modal.show { opacity:1; pointer-events:all; }
 
-    /* Toast */
+    .slide-modal-box {
+      background:white; border-radius:24px 24px 0 0;
+      width:100%; max-height:82vh; overflow-y:auto;
+      transform:translateY(100%); transition:transform 0.3s ease;
+      padding-bottom:calc(env(safe-area-inset-bottom,20px) + 20px);
+    }
+
+    .slide-modal.show .slide-modal-box { transform:translateY(0); }
+
+    .slide-modal-sticky {
+      position:sticky; top:0; background:white;
+      padding:16px 20px 12px;
+      border-bottom:1px solid var(--border); z-index:1;
+    }
+
+    .slide-handle {
+      width:36px; height:4px; background:var(--border);
+      border-radius:50px; margin:0 auto 14px;
+    }
+
+    .slide-title { font-size:18px; font-weight:700; text-align:center; margin-bottom:12px; }
+
+    .slide-search {
+      width:100%; padding:10px 14px; border-radius:10px;
+      border:1px solid var(--border); font-size:15px;
+      background:var(--bg); outline:none; font-family:'Inter',sans-serif;
+    }
+
+    .surah-row {
+      display:flex; align-items:center;
+      padding:14px 20px; border-bottom:1px solid var(--border);
+      cursor:pointer; transition:background 0.15s; gap:14px;
+    }
+
+    .surah-row:active { background:var(--bg); }
+
+    .surah-num {
+      width:36px; height:36px; border-radius:10px;
+      background:var(--bg);
+      display:flex; align-items:center; justify-content:center;
+      font-size:13px; font-weight:700; color:var(--text-secondary); flex-shrink:0;
+    }
+
+    .surah-info { flex:1; }
+    .surah-name-en { font-size:15px; font-weight:700; color:var(--text); }
+
+    .surah-name-ar {
+      font-size:14px; color:var(--text-secondary);
+      font-family:'Scheherazade New',serif;
+    }
+
+    .surah-page-lbl { font-size:12px; color:var(--green); font-weight:600; }
+
+    .juz-row {
+      display:flex; align-items:center;
+      padding:16px 20px; border-bottom:1px solid var(--border);
+      cursor:pointer; transition:background 0.15s; gap:14px;
+    }
+
+    .juz-row:active { background:var(--bg); }
+
+    .juz-num {
+      width:46px; height:46px; border-radius:12px;
+      background:linear-gradient(135deg,#2d5016,#1a3a0a);
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; font-weight:800; color:white; flex-shrink:0;
+    }
+
+    .juz-info { flex:1; }
+    .juz-title { font-size:15px; font-weight:700; color:var(--text); }
+    .juz-sub { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+    .juz-page-lbl { font-size:13px; font-weight:700; color:var(--green); }
+
+    .goto-modal-bg {
+      position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:300;
+      display:flex; align-items:flex-end;
+      opacity:0; pointer-events:none; transition:opacity 0.3s;
+    }
+
+    .goto-modal-bg.show { opacity:1; pointer-events:all; }
+
+    .goto-modal-box {
+      background:#1c1c1e; border-radius:24px 24px 0 0;
+      padding:20px;
+      padding-bottom:calc(env(safe-area-inset-bottom,20px) + 20px);
+      width:100%; transform:translateY(100%); transition:transform 0.3s ease;
+    }
+
+    .goto-modal-bg.show .goto-modal-box { transform:translateY(0); }
+
+    .goto-handle {
+      width:36px; height:4px; background:rgba(255,255,255,0.2);
+      border-radius:50px; margin:0 auto 18px;
+    }
+
+    .goto-title { font-size:17px; font-weight:700; color:white; text-align:center; margin-bottom:16px; }
+
+    .goto-input {
+      width:100%; padding:14px; border-radius:12px; border:none;
+      background:rgba(255,255,255,0.1); color:white;
+      font-size:20px; font-weight:700; text-align:center;
+      font-family:'Inter',sans-serif; outline:none; margin-bottom:12px;
+    }
+
+    .goto-input::placeholder { color:rgba(255,255,255,0.3); }
+
     .toast {
-      position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: rgba(28,28,30,0.95);
-      color: white;
-      padding: 12px 22px;
-      border-radius: 50px;
-      font-size: 14px;
-      font-weight: 500;
-      z-index: 9999;
-      opacity: 0;
-      transition: all 0.3s ease;
-      white-space: nowrap;
-      pointer-events: none;
+      position:fixed; bottom:90px; left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:rgba(28,28,30,0.95); color:white;
+      padding:12px 22px; border-radius:50px;
+      font-size:14px; font-weight:500; z-index:9999;
+      opacity:0; transition:all 0.3s ease;
+      white-space:nowrap; pointer-events:none;
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 
-    /* Swipe hint */
     .swipe-hint {
-      position: fixed;
-      bottom: 90px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.7);
-      color: rgba(255,255,255,0.9);
-      padding: 8px 18px;
-      border-radius: 50px;
-      font-size: 12px;
-      font-weight: 500;
-      z-index: 50;
-      pointer-events: none;
-      white-space: nowrap;
-      opacity: 0;
-      animation: hintShow 4s ease 1.5s forwards;
+      position:fixed; bottom:90px; left:50%;
+      transform:translateX(-50%);
+      background:rgba(0,0,0,0.7); color:rgba(255,255,255,0.9);
+      padding:8px 18px; border-radius:50px;
+      font-size:12px; font-weight:500; z-index:51;
+      pointer-events:none; white-space:nowrap; opacity:0;
+      animation:hintShow 4s ease 1.5s forwards;
     }
 
     @keyframes hintShow {
-      0%   { opacity: 0; }
-      15%  { opacity: 1; }
-      75%  { opacity: 1; }
-      100% { opacity: 0; }
+      0%{opacity:0;}15%{opacity:1;}75%{opacity:1;}100%{opacity:0;}
     }
   </style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="topbar" id="topbar">
-  <button class="topbar-btn" onclick="location.href='quran.html'">←</button>
-  <div class="topbar-center">
-    <div class="topbar-title">15 Line Quran</div>
-    <div class="topbar-sub" id="topbar-sub">Page 1 of 604</div>
+<!-- ══ VIEW: LANDING ══ -->
+<div class="view active" id="view-landing">
+  <div class="landing-wrap">
+    <div class="land-header">
+      <button class="back-btn" onclick="location.href='quran.html'">←</button>
+      <div style="font-size:17px;font-weight:700;">15 Line Quran</div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-icon">📗</div>
+      <div class="hero-title">15 Line Quran</div>
+      <div class="hero-sub">Pakistani Mushaf — 15 Lines per Page</div>
+    </div>
+
+    <div class="resume-card" id="resume-card" style="display:none;" onclick="resumeReading()">
+      <div class="resume-icon">▶️</div>
+      <div class="resume-body">
+        <div class="resume-label">▶ Resume Reading</div>
+        <div class="resume-title" id="resume-title">Page 1</div>
+        <div class="resume-sub" id="resume-sub">Tap to continue</div>
+      </div>
+      <div style="font-size:22px;color:var(--text-light);">›</div>
+    </div>
+
+    <button class="action-btn" id="start-btn" onclick="openReader(1)" style="display:none;">
+      <div class="action-icon" style="background:#e6f9ec;">📗</div>
+      <div class="action-body">
+        <div class="action-title">Start Reading</div>
+        <div class="action-sub">Begin from Page 1</div>
+      </div>
+      <div class="action-arrow">›</div>
+    </button>
+
+    <button class="action-btn" onclick="openSurahModal()">
+      <div class="action-icon" style="background:#e6f9ec;">🔍</div>
+      <div class="action-body">
+        <div class="action-title">Open by Surah</div>
+        <div class="action-sub">Jump to any Surah directly</div>
+      </div>
+      <div class="action-arrow">›</div>
+    </button>
+
+    <button class="action-btn" onclick="openJuzModal()">
+      <div class="action-icon" style="background:#f0f9e8;">📋</div>
+      <div class="action-body">
+        <div class="action-title">Juz List</div>
+        <div class="action-sub">Navigate by Juz (Para)</div>
+      </div>
+      <div class="action-arrow">›</div>
+    </button>
+
+    <button class="action-btn" onclick="showView('view-bookmarks'); renderBookmarks();">
+      <div class="action-icon" style="background:#f3e8ff;">🔖</div>
+      <div class="action-body">
+        <div class="action-title">Bookmarks</div>
+        <div class="action-sub" id="bm-sub-text">No bookmarks yet</div>
+      </div>
+      <div class="action-arrow">›</div>
+    </button>
+
+    <div style="height:30px;"></div>
   </div>
-  <button class="topbar-btn" onclick="openGoto()">⊞</button>
 </div>
 
-<!-- BOOKMARK BTN -->
-<button class="bm-btn" id="bm-btn" onclick="toggleBookmark()">🔖</button>
+<!-- ══ VIEW: READER ══ -->
+<div id="view-reader" class="view">
+  <div class="reader-topbar" id="r-topbar">
+    <button class="r-topbar-btn" onclick="closeReader()">←</button>
+    <div class="r-topbar-center">
+      <div class="r-topbar-title">15 Line Quran</div>
+      <div class="r-topbar-sub" id="r-topbar-sub">Page 1 of 604</div>
+    </div>
+    <button class="r-topbar-btn" onclick="openGoto()">⊞</button>
+  </div>
 
-<!-- SURAH INDICATOR -->
-<div class="surah-indicator" id="surah-indicator">
-  <div class="surah-indicator-text" id="surah-text">Al-Fatihah</div>
+  <button class="r-bm-btn" id="r-bm-btn" onclick="toggleBookmark()">🔖</button>
+
+  <div class="r-surah-ind" id="r-surah-ind">
+    <div class="r-surah-ind-text" id="r-surah-text">Al-Fatihah</div>
+  </div>
+
+  <div class="reader-page-area" onclick="toggleControls()">
+    <div class="reader-loading" id="r-loading">
+      <div class="r-spinner"></div>
+      <div class="r-loading-text">Loading page...</div>
+    </div>
+    <img class="quran-img hidden" id="r-img"
+      onload="onImgLoad()" onerror="onImgError()"/>
+  </div>
+
+  <div class="swipe-hint">← Swipe to turn pages</div>
+
+  <div class="reader-bottombar" id="r-bottombar">
+    <button class="r-nav-btn" id="r-btn-prev" onclick="prevPage()">›</button>
+    <div class="r-page-info">
+      <div class="r-page-num" id="r-page-num">1</div>
+      <div class="r-page-of">of 604</div>
+    </div>
+    <button class="r-nav-btn" id="r-btn-next" onclick="nextPage()">‹</button>
+  </div>
 </div>
 
-<!-- PAGE AREA -->
-<div class="page-area" id="page-area" onclick="toggleControls()">
-  <div class="loading-screen" id="loading">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">Loading page...</div>
+<!-- ══ VIEW: BOOKMARKS ══ -->
+<div class="view" id="view-bookmarks" style="min-height:100vh;padding-bottom:40px;">
+  <div class="bm-header">
+    <button class="back-btn" onclick="showView('view-landing'); checkResume();">←</button>
+    <div style="font-size:17px;font-weight:700;flex:1;">Bookmarks</div>
+    <div class="bm-count-badge" id="bm-count-badge">0</div>
   </div>
-  <img class="quran-img hidden" id="quran-img"
-    onload="onImgLoad()" onerror="onImgError()"/>
+  <div id="bm-list" style="padding-top:8px;"></div>
 </div>
 
-<!-- SWIPE HINT -->
-<div class="swipe-hint">← Swipe to turn pages</div>
-
-<!-- BOTTOM BAR -->
-<div class="bottombar" id="bottombar">
-  <button class="nav-btn" id="btn-prev" onclick="prevPage()">›</button>
-  <div class="page-info">
-    <div class="page-num" id="page-num">1</div>
-    <div class="page-of">of 604</div>
+<!-- SURAH MODAL -->
+<div class="slide-modal" id="surah-modal" onclick="closeSurahModal(event)">
+  <div class="slide-modal-box">
+    <div class="slide-modal-sticky">
+      <div class="slide-handle"></div>
+      <div class="slide-title">Select Surah</div>
+      <input class="slide-search" id="surah-search"
+        placeholder="🔍 Search surah..." oninput="filterSurahs()"/>
+    </div>
+    <div id="surah-list"></div>
   </div>
-  <button class="nav-btn" id="btn-next" onclick="nextPage()">‹</button>
+</div>
+
+<!-- JUZ MODAL -->
+<div class="slide-modal" id="juz-modal" onclick="closeJuzModal(event)">
+  <div class="slide-modal-box">
+    <div class="slide-modal-sticky">
+      <div class="slide-handle"></div>
+      <div class="slide-title">Select Juz (Para)</div>
+    </div>
+    <div id="juz-list"></div>
+  </div>
 </div>
 
 <!-- GOTO MODAL -->
-<div class="modal-bg" id="modal-bg" onclick="closeGoto(event)">
-  <div class="modal-box">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Go to Page</div>
-    <input class="modal-input" id="goto-input"
+<div class="goto-modal-bg" id="goto-modal" onclick="closeGoto(event)">
+  <div class="goto-modal-box">
+    <div class="goto-handle"></div>
+    <div class="goto-title">Go to Page</div>
+    <input class="goto-input" id="goto-input"
       type="number" min="1" max="604" placeholder="1 – 604"/>
     <button class="btn btn-primary btn-full" onclick="goToPage()">Go</button>
-    <button class="btn btn-gray btn-full" style="margin-top:8px;"
+    <button class="btn btn-gray btn-full" style="margin-top:8px;color:#333;"
       onclick="closeGoto()">Cancel</button>
   </div>
 </div>
@@ -410,153 +606,293 @@
 
 <script>
 const TOTAL = 604;
-let page = parseInt(localStorage.getItem('quran15line_page') || '1');
+let currentPage = 1;
 let controlsOn = true;
 let touchStartX = 0;
 let touchStartY = 0;
 
-// Surah start pages
-const surahPages = [
-  [1,1],[2,2],[3,50],[4,77],[5,106],[6,128],[7,151],[8,177],[9,187],
-  [10,208],[11,221],[12,235],[13,249],[14,255],[15,262],[16,267],
-  [17,282],[18,293],[19,305],[20,312],[21,322],[22,332],[23,342],
-  [24,350],[25,359],[26,367],[27,377],[28,385],[29,396],[30,404],
-  [31,411],[32,415],[33,418],[34,428],[35,434],[36,440],[37,446],
-  [38,453],[39,458],[40,467],[41,477],[42,483],[43,489],[44,496],
-  [45,499],[46,502],[47,507],[48,511],[49,515],[50,518],[51,520],
-  [52,523],[53,526],[54,528],[55,531],[56,534],[57,537],[58,542],
-  [59,545],[60,549],[61,551],[62,553],[63,554],[64,556],[65,558],
-  [66,560],[67,562],[68,564],[69,566],[70,568],[71,570],[72,572],
-  [73,574],[74,575],[75,577],[76,578],[77,580],[78,582],[79,583],
-  [80,585],[81,586],[82,587],[83,587],[84,589],[85,590],[86,591],
-  [87,591],[88,592],[89,593],[90,594],[91,595],[92,595],[93,596],
-  [94,596],[95,597],[96,597],[97,598],[98,598],[99,599],[100,599],
-  [101,600],[102,601],[103,601],[104,601],[105,602],[106,602],
-  [107,602],[108,603],[109,603],[110,603],[111,604],[112,604],
-  [113,604],[114,604]
+const surahData = [
+  {n:1,  en:'Al-Fatihah',     ar:'الفاتحة',      page:1},
+  {n:2,  en:'Al-Baqarah',     ar:'البقرة',        page:2},
+  {n:3,  en:'Ali Imran',      ar:'آل عمران',      page:50},
+  {n:4,  en:'An-Nisa',        ar:'النساء',        page:77},
+  {n:5,  en:'Al-Maidah',      ar:'المائدة',       page:106},
+  {n:6,  en:'Al-Anam',        ar:'الأنعام',       page:128},
+  {n:7,  en:'Al-Araf',        ar:'الأعراف',       page:151},
+  {n:8,  en:'Al-Anfal',       ar:'الأنفال',       page:177},
+  {n:9,  en:'At-Tawbah',      ar:'التوبة',        page:187},
+  {n:10, en:'Yunus',          ar:'يونس',          page:208},
+  {n:11, en:'Hud',            ar:'هود',           page:221},
+  {n:12, en:'Yusuf',          ar:'يوسف',          page:235},
+  {n:13, en:'Ar-Rad',         ar:'الرعد',         page:249},
+  {n:14, en:'Ibrahim',        ar:'إبراهيم',       page:255},
+  {n:15, en:'Al-Hijr',        ar:'الحجر',         page:262},
+  {n:16, en:'An-Nahl',        ar:'النحل',         page:267},
+  {n:17, en:'Al-Isra',        ar:'الإسراء',       page:282},
+  {n:18, en:'Al-Kahf',        ar:'الكهف',         page:293},
+  {n:19, en:'Maryam',         ar:'مريم',          page:305},
+  {n:20, en:'Ta-Ha',          ar:'طه',            page:312},
+  {n:21, en:'Al-Anbiya',      ar:'الأنبياء',      page:322},
+  {n:22, en:'Al-Hajj',        ar:'الحج',          page:332},
+  {n:23, en:'Al-Muminun',     ar:'المؤمنون',      page:342},
+  {n:24, en:'An-Nur',         ar:'النور',         page:350},
+  {n:25, en:'Al-Furqan',      ar:'الفرقان',       page:359},
+  {n:26, en:'Ash-Shuara',     ar:'الشعراء',       page:367},
+  {n:27, en:'An-Naml',        ar:'النمل',         page:377},
+  {n:28, en:'Al-Qasas',       ar:'القصص',         page:385},
+  {n:29, en:'Al-Ankabut',     ar:'العنكبوت',      page:396},
+  {n:30, en:'Ar-Rum',         ar:'الروم',         page:404},
+  {n:31, en:'Luqman',         ar:'لقمان',         page:411},
+  {n:32, en:'As-Sajdah',      ar:'السجدة',        page:415},
+  {n:33, en:'Al-Ahzab',       ar:'الأحزاب',       page:418},
+  {n:34, en:'Saba',           ar:'سبأ',           page:428},
+  {n:35, en:'Fatir',          ar:'فاطر',          page:434},
+  {n:36, en:'Ya-Sin',         ar:'يس',            page:440},
+  {n:37, en:'As-Saffat',      ar:'الصافات',       page:446},
+  {n:38, en:'Sad',            ar:'ص',             page:453},
+  {n:39, en:'Az-Zumar',       ar:'الزمر',         page:458},
+  {n:40, en:'Ghafir',         ar:'غافر',          page:467},
+  {n:41, en:'Fussilat',       ar:'فصلت',          page:477},
+  {n:42, en:'Ash-Shura',      ar:'الشورى',        page:483},
+  {n:43, en:'Az-Zukhruf',     ar:'الزخرف',        page:489},
+  {n:44, en:'Ad-Dukhan',      ar:'الدخان',        page:496},
+  {n:45, en:'Al-Jathiyah',    ar:'الجاثية',       page:499},
+  {n:46, en:'Al-Ahqaf',       ar:'الأحقاف',       page:502},
+  {n:47, en:'Muhammad',       ar:'محمد',          page:507},
+  {n:48, en:'Al-Fath',        ar:'الفتح',         page:511},
+  {n:49, en:'Al-Hujurat',     ar:'الحجرات',       page:515},
+  {n:50, en:'Qaf',            ar:'ق',             page:518},
+  {n:51, en:'Adh-Dhariyat',   ar:'الذاريات',      page:520},
+  {n:52, en:'At-Tur',         ar:'الطور',         page:523},
+  {n:53, en:'An-Najm',        ar:'النجم',         page:526},
+  {n:54, en:'Al-Qamar',       ar:'القمر',         page:528},
+  {n:55, en:'Ar-Rahman',      ar:'الرحمن',        page:531},
+  {n:56, en:'Al-Waqiah',      ar:'الواقعة',       page:534},
+  {n:57, en:'Al-Hadid',       ar:'الحديد',        page:537},
+  {n:58, en:'Al-Mujadila',    ar:'المجادلة',      page:542},
+  {n:59, en:'Al-Hashr',       ar:'الحشر',         page:545},
+  {n:60, en:'Al-Mumtahanah',  ar:'الممتحنة',      page:549},
+  {n:61, en:'As-Saf',         ar:'الصف',          page:551},
+  {n:62, en:'Al-Jumuah',      ar:'الجمعة',        page:553},
+  {n:63, en:'Al-Munafiqun',   ar:'المنافقون',     page:554},
+  {n:64, en:'At-Taghabun',    ar:'التغابن',       page:556},
+  {n:65, en:'At-Talaq',       ar:'الطلاق',        page:558},
+  {n:66, en:'At-Tahrim',      ar:'التحريم',       page:560},
+  {n:67, en:'Al-Mulk',        ar:'الملك',         page:562},
+  {n:68, en:'Al-Qalam',       ar:'القلم',         page:564},
+  {n:69, en:'Al-Haqqah',      ar:'الحاقة',        page:566},
+  {n:70, en:'Al-Maarij',      ar:'المعارج',       page:568},
+  {n:71, en:'Nuh',            ar:'نوح',           page:570},
+  {n:72, en:'Al-Jinn',        ar:'الجن',          page:572},
+  {n:73, en:'Al-Muzzammil',   ar:'المزمل',        page:574},
+  {n:74, en:'Al-Muddaththir', ar:'المدثر',        page:575},
+  {n:75, en:'Al-Qiyamah',     ar:'القيامة',       page:577},
+  {n:76, en:'Al-Insan',       ar:'الإنسان',       page:578},
+  {n:77, en:'Al-Mursalat',    ar:'المرسلات',      page:580},
+  {n:78, en:'An-Naba',        ar:'النبأ',         page:582},
+  {n:79, en:'An-Naziat',      ar:'النازعات',      page:583},
+  {n:80, en:'Abasa',          ar:'عبس',           page:585},
+  {n:81, en:'At-Takwir',      ar:'التكوير',       page:586},
+  {n:82, en:'Al-Infitar',     ar:'الانفطار',      page:587},
+  {n:83, en:'Al-Mutaffifin',  ar:'المطففين',      page:587},
+  {n:84, en:'Al-Inshiqaq',    ar:'الانشقاق',      page:589},
+  {n:85, en:'Al-Buruj',       ar:'البروج',        page:590},
+  {n:86, en:'At-Tariq',       ar:'الطارق',        page:591},
+  {n:87, en:'Al-Ala',         ar:'الأعلى',        page:591},
+  {n:88, en:'Al-Ghashiyah',   ar:'الغاشية',       page:592},
+  {n:89, en:'Al-Fajr',        ar:'الفجر',         page:593},
+  {n:90, en:'Al-Balad',       ar:'البلد',         page:594},
+  {n:91, en:'Ash-Shams',      ar:'الشمس',         page:595},
+  {n:92, en:'Al-Layl',        ar:'الليل',         page:595},
+  {n:93, en:'Ad-Duhaa',       ar:'الضحى',         page:596},
+  {n:94, en:'Ash-Sharh',      ar:'الشرح',         page:596},
+  {n:95, en:'At-Tin',         ar:'التين',         page:597},
+  {n:96, en:'Al-Alaq',        ar:'العلق',         page:597},
+  {n:97, en:'Al-Qadr',        ar:'القدر',         page:598},
+  {n:98, en:'Al-Bayyinah',    ar:'البينة',        page:598},
+  {n:99, en:'Az-Zalzalah',    ar:'الزلزلة',       page:599},
+  {n:100,en:'Al-Adiyat',      ar:'العاديات',      page:599},
+  {n:101,en:'Al-Qariah',      ar:'القارعة',       page:600},
+  {n:102,en:'At-Takathur',    ar:'التكاثر',       page:601},
+  {n:103,en:'Al-Asr',         ar:'العصر',         page:601},
+  {n:104,en:'Al-Humazah',     ar:'الهمزة',        page:601},
+  {n:105,en:'Al-Fil',         ar:'الفيل',         page:602},
+  {n:106,en:'Quraysh',        ar:'قريش',          page:602},
+  {n:107,en:'Al-Maun',        ar:'الماعون',       page:602},
+  {n:108,en:'Al-Kawthar',     ar:'الكوثر',        page:603},
+  {n:109,en:'Al-Kafirun',     ar:'الكافرون',      page:603},
+  {n:110,en:'An-Nasr',        ar:'النصر',         page:603},
+  {n:111,en:'Al-Masad',       ar:'المسد',         page:604},
+  {n:112,en:'Al-Ikhlas',      ar:'الإخلاص',       page:604},
+  {n:113,en:'Al-Falaq',       ar:'الفلق',         page:604},
+  {n:114,en:'An-Nas',         ar:'الناس',         page:604}
 ];
 
-const surahNames = [
-  'Al-Fatihah','Al-Baqarah','Ali Imran','An-Nisa','Al-Maidah',
-  'Al-Anam','Al-Araf','Al-Anfal','At-Tawbah','Yunus','Hud',
-  'Yusuf','Ar-Rad','Ibrahim','Al-Hijr','An-Nahl','Al-Isra',
-  'Al-Kahf','Maryam','Ta-Ha','Al-Anbiya','Al-Hajj','Al-Muminun',
-  'An-Nur','Al-Furqan','Ash-Shuara','An-Naml','Al-Qasas',
-  'Al-Ankabut','Ar-Rum','Luqman','As-Sajdah','Al-Ahzab','Saba',
-  'Fatir','Ya-Sin','As-Saffat','Sad','Az-Zumar','Ghafir',
-  'Fussilat','Ash-Shura','Az-Zukhruf','Ad-Dukhan','Al-Jathiyah',
-  'Al-Ahqaf','Muhammad','Al-Fath','Al-Hujurat','Qaf','Adh-Dhariyat',
-  'At-Tur','An-Najm','Al-Qamar','Ar-Rahman','Al-Waqiah',
-  'Al-Hadid','Al-Mujadila','Al-Hashr','Al-Mumtahanah','As-Saf',
-  'Al-Jumuah','Al-Munafiqun','At-Taghabun','At-Talaq','At-Tahrim',
-  'Al-Mulk','Al-Qalam','Al-Haqqah','Al-Maarij','Nuh','Al-Jinn',
-  'Al-Muzzammil','Al-Muddaththir','Al-Qiyamah','Al-Insan',
-  'Al-Mursalat','An-Naba','An-Naziat','Abasa','At-Takwir',
-  'Al-Infitar','Al-Mutaffifin','Al-Inshiqaq','Al-Buruj','At-Tariq',
-  'Al-Ala','Al-Ghashiyah','Al-Fajr','Al-Balad','Ash-Shams',
-  'Al-Layl','Ad-Duhaa','Ash-Sharh','At-Tin','Al-Alaq','Al-Qadr',
-  'Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qariah','At-Takathur',
-  'Al-Asr','Al-Humazah','Al-Fil','Quraysh','Al-Maun','Al-Kawthar',
-  'Al-Kafirun','An-Nasr','Al-Masad','Al-Ikhlas','Al-Falaq','An-Nas'
+const juzData = [
+  {n:1,  title:'Juz 1',  starts:'Al-Fatihah 1',     page:1},
+  {n:2,  title:'Juz 2',  starts:'Al-Baqarah 142',   page:22},
+  {n:3,  title:'Juz 3',  starts:'Al-Baqarah 253',   page:42},
+  {n:4,  title:'Juz 4',  starts:'Ali Imran 92',      page:62},
+  {n:5,  title:'Juz 5',  starts:'An-Nisa 24',        page:82},
+  {n:6,  title:'Juz 6',  starts:'An-Nisa 148',       page:102},
+  {n:7,  title:'Juz 7',  starts:'Al-Maidah 83',      page:121},
+  {n:8,  title:'Juz 8',  starts:'Al-Anam 111',       page:142},
+  {n:9,  title:'Juz 9',  starts:'Al-Araf 88',        page:162},
+  {n:10, title:'Juz 10', starts:'Al-Anfal 41',       page:182},
+  {n:11, title:'Juz 11', starts:'At-Tawbah 93',      page:201},
+  {n:12, title:'Juz 12', starts:'Hud 6',             page:221},
+  {n:13, title:'Juz 13', starts:'Yusuf 53',          page:241},
+  {n:14, title:'Juz 14', starts:'Al-Hijr 1',         page:261},
+  {n:15, title:'Juz 15', starts:'Al-Isra 1',         page:282},
+  {n:16, title:'Juz 16', starts:'Al-Kahf 75',        page:302},
+  {n:17, title:'Juz 17', starts:'Al-Anbiya 1',       page:322},
+  {n:18, title:'Juz 18', starts:'Al-Muminun 1',      page:342},
+  {n:19, title:'Juz 19', starts:'Al-Furqan 21',      page:362},
+  {n:20, title:'Juz 20', starts:'An-Naml 56',        page:381},
+  {n:21, title:'Juz 21', starts:'Al-Ankabut 46',     page:401},
+  {n:22, title:'Juz 22', starts:'Al-Ahzab 31',       page:421},
+  {n:23, title:'Juz 23', starts:'Ya-Sin 28',         page:441},
+  {n:24, title:'Juz 24', starts:'Az-Zumar 32',       page:461},
+  {n:25, title:'Juz 25', starts:'Fussilat 47',       page:481},
+  {n:26, title:'Juz 26', starts:'Al-Ahqaf 1',        page:501},
+  {n:27, title:'Juz 27', starts:'Adh-Dhariyat 31',   page:521},
+  {n:28, title:'Juz 28', starts:'Al-Mujadila 1',     page:542},
+  {n:29, title:'Juz 29', starts:'Al-Mulk 1',         page:562},
+  {n:30, title:'Juz 30', starts:'An-Naba 1',         page:582}
 ];
+
+// ── VIEW MANAGEMENT ──
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── LANDING ──
+function checkResume() {
+  const saved = localStorage.getItem('quran15line_page');
+  const resumeCard = document.getElementById('resume-card');
+  const startBtn = document.getElementById('start-btn');
+
+  if (saved && parseInt(saved) > 1) {
+    resumeCard.style.display = 'flex';
+    startBtn.style.display = 'none';
+    const surah = getSurahForPage(parseInt(saved));
+    document.getElementById('resume-title').textContent = 'Page ' + saved + ' — ' + surah;
+    document.getElementById('resume-sub').textContent = 'Continue where you left off';
+  } else {
+    resumeCard.style.display = 'none';
+    startBtn.style.display = 'flex';
+  }
+
+  const bms = JSON.parse(localStorage.getItem('quran15bookmarks') || '[]');
+  document.getElementById('bm-sub-text').textContent = bms.length > 0
+    ? bms.length + ' saved bookmark' + (bms.length > 1 ? 's' : '')
+    : 'No bookmarks yet';
+}
+
+function resumeReading() {
+  const saved = parseInt(localStorage.getItem('quran15line_page') || '1');
+  openReader(saved);
+}
+
+// ── READER ──
+function openReader(p) {
+  showView('view-reader');
+  controlsOn = true;
+  loadPage(p);
+}
+
+function closeReader() {
+  showView('view-landing');
+  checkResume();
+}
 
 function getSurahForPage(p) {
   let idx = 0;
-  for (let i = 0; i < surahPages.length; i++) {
-    if (surahPages[i][1] <= p) idx = i;
+  for (let i = 0; i < surahData.length; i++) {
+    if (surahData[i].page <= p) idx = i;
     else break;
   }
-  return surahNames[idx] || 'Al-Fatihah';
+  return surahData[idx].en;
 }
 
-// ── LOAD PAGE ──
 function loadPage(p) {
   if (p < 1) p = 1;
   if (p > TOTAL) p = TOTAL;
-  page = p;
+  currentPage = p;
 
-  localStorage.setItem('quran15line_page', page);
-  localStorage.setItem('quranLastPage', page);
-  localStorage.setItem('quranLastType', '15line');
+  localStorage.setItem('quran15line_page', currentPage);
 
-  document.getElementById('page-num').textContent = page;
-  document.getElementById('topbar-sub').textContent = 'Page ' + page + ' of ' + TOTAL;
-  document.getElementById('surah-text').textContent = getSurahForPage(page);
+  document.getElementById('r-page-num').textContent = currentPage;
+  document.getElementById('r-topbar-sub').textContent = 'Page ' + currentPage + ' of ' + TOTAL;
+  document.getElementById('r-surah-text').textContent = getSurahForPage(currentPage);
+  document.getElementById('r-btn-next').disabled = currentPage <= 1;
+  document.getElementById('r-btn-prev').disabled = currentPage >= TOTAL;
 
-  document.getElementById('btn-next').disabled = page <= 1;
-  document.getElementById('btn-prev').disabled = page >= TOTAL;
-
-  const img = document.getElementById('quran-img');
+  const img = document.getElementById('r-img');
   img.classList.add('hidden');
-  document.getElementById('loading').classList.remove('hidden');
-
-  // Use jsdelivr CDN — free and reliable
-  img.src = `https://cdn.jsdelivr.net/npm/the-amazing-quran-images/images/${page}.png`;
-
+  document.getElementById('r-loading').classList.remove('hidden');
+  img.src = `https://cdn.jsdelivr.net/npm/the-amazing-quran-images/images/${currentPage}.png`;
   updateBmBtn();
 }
 
 function onImgLoad() {
-  document.getElementById('loading').classList.add('hidden');
-  document.getElementById('quran-img').classList.remove('hidden');
+  document.getElementById('r-loading').classList.add('hidden');
+  document.getElementById('r-img').classList.remove('hidden');
 }
 
 function onImgError() {
-  const img = document.getElementById('quran-img');
-  const padded = String(page).padStart(3, '0');
+  const img = document.getElementById('r-img');
+  const padded = String(currentPage).padStart(3,'0');
   if (!img.src.includes('archive.org')) {
     img.src = `https://archive.org/download/ALQURANPERPAGEFORMATPNG/page${padded}.png`;
   } else {
-    document.getElementById('loading').innerHTML =
+    document.getElementById('r-loading').innerHTML =
       `<div style="color:rgba(0,0,0,0.4);text-align:center;padding:30px;font-size:14px;">
-        Could not load page.<br>Check internet connection.
-      </div>`;
+        Could not load page.<br>Check internet connection.</div>`;
   }
 }
 
-// ── NAVIGATION ──
-function nextPage() { if (page > 1) loadPage(page - 1); }
-function prevPage() { if (page < TOTAL) loadPage(page + 1); }
+function nextPage() { if (currentPage > 1) loadPage(currentPage - 1); }
+function prevPage() { if (currentPage < TOTAL) loadPage(currentPage + 1); }
 
-// ── CONTROLS TOGGLE ──
 function toggleControls() {
   controlsOn = !controlsOn;
-  document.getElementById('topbar').classList.toggle('hidden', !controlsOn);
-  document.getElementById('bottombar').classList.toggle('hidden', !controlsOn);
-  document.getElementById('bm-btn').style.opacity = controlsOn ? '1' : '0';
-  document.getElementById('surah-indicator').style.opacity = controlsOn ? '1' : '0';
+  document.getElementById('r-topbar').classList.toggle('hidden', !controlsOn);
+  document.getElementById('r-bottombar').classList.toggle('hidden', !controlsOn);
+  document.getElementById('r-bm-btn').style.opacity = controlsOn ? '1' : '0';
+  document.getElementById('r-surah-ind').style.opacity = controlsOn ? '1' : '0';
 }
 
-// ── BOOKMARK ──
-function toggleBookmark() {
-  const bms = JSON.parse(localStorage.getItem('quran15bookmarks') || '[]');
-  const idx = bms.indexOf(page);
-  if (idx === -1) {
-    bms.push(page);
-    showToast('🔖 Page ' + page + ' bookmarked!');
-  } else {
-    if (!confirm('Remove bookmark for page ' + page + '?')) return;
-    bms.splice(idx, 1);
-    showToast('Bookmark removed');
+document.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive:true });
+
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  const dy = e.changedTouches[0].clientY - touchStartY;
+  if (document.getElementById('view-reader').classList.contains('active')) {
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
+      if (dx > 0) prevPage(); else nextPage();
+    }
   }
-  localStorage.setItem('quran15bookmarks', JSON.stringify(bms));
-  updateBmBtn();
-}
+}, { passive:true });
 
-function updateBmBtn() {
-  const bms = JSON.parse(localStorage.getItem('quran15bookmarks') || '[]');
-  document.getElementById('bm-btn').classList.toggle('on', bms.includes(page));
-}
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') nextPage();
+  if (e.key === 'ArrowRight') prevPage();
+});
 
-// ── GOTO PAGE ──
 function openGoto() {
-  document.getElementById('modal-bg').classList.add('show');
+  document.getElementById('goto-modal').classList.add('show');
   setTimeout(() => document.getElementById('goto-input').focus(), 350);
 }
 
 function closeGoto(e) {
-  if (!e || e.target === document.getElementById('modal-bg')) {
-    document.getElementById('modal-bg').classList.remove('show');
+  if (!e || e.target === document.getElementById('goto-modal')) {
+    document.getElementById('goto-modal').classList.remove('show');
   }
 }
 
@@ -571,26 +907,140 @@ function goToPage() {
   }
 }
 
-// ── SWIPE ──
-document.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-}, { passive: true });
-
-document.addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 50) {
-    if (dx > 0) prevPage();
-    else nextPage();
+// ── BOOKMARKS ──
+function toggleBookmark() {
+  const bms = JSON.parse(localStorage.getItem('quran15bookmarks') || '[]');
+  const idx = bms.findIndex(b => b.page === currentPage);
+  if (idx === -1) {
+    const now = new Date();
+    bms.push({
+      page: currentPage,
+      surah: getSurahForPage(currentPage),
+      date: now.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric', year:'numeric'}),
+      time: now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})
+    });
+    showToast('🔖 Page ' + currentPage + ' bookmarked!');
+  } else {
+    if (!confirm('Remove bookmark for page ' + currentPage + '?')) return;
+    bms.splice(idx, 1);
+    showToast('Bookmark removed');
   }
-}, { passive: true });
+  localStorage.setItem('quran15bookmarks', JSON.stringify(bms));
+  updateBmBtn();
+}
 
-// ── KEYBOARD ──
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft') nextPage();
-  if (e.key === 'ArrowRight') prevPage();
-});
+function updateBmBtn() {
+  const bms = JSON.parse(localStorage.getItem('quran15bookmarks') || '[]');
+  document.getElementById('r-bm-btn').classList.toggle('on', bms.some(b => b.page === currentPage));
+}
+
+function renderBookmarks() {
+  const bms = JSON.parse(localStorage.getItem('quran15bookmarks') || '[]');
+  const list = document.getElementById('bm-list');
+  document.getElementById('bm-count-badge').textContent = bms.length;
+
+  if (bms.length === 0) {
+    list.innerHTML = `
+      <div class="bm-empty">
+        <div class="bm-empty-icon">🔖</div>
+        <div class="bm-empty-title">No Bookmarks Yet</div>
+        <div class="bm-empty-text">Open the reader and tap 🔖 to save a page.</div>
+      </div>`;
+    return;
+  }
+
+  const sorted = [...bms].reverse();
+  list.innerHTML = sorted.map(b => `
+    <div class="bm-item" onclick="openReader(${b.page})">
+      <div class="bm-page-badge">
+        <div class="bm-page-label">PAGE</div>
+        <div class="bm-page-num">${b.page}</div>
+      </div>
+      <div class="bm-item-body">
+        <div class="bm-surah-name">${b.surah}</div>
+        <div class="bm-datetime">
+          <span>📅 ${b.date}</span>
+          <span>🕐 ${b.time}</span>
+        </div>
+      </div>
+      <button class="bm-delete-btn"
+        onclick="event.stopPropagation(); deleteBookmark(${b.page})">🗑</button>
+    </div>
+  `).join('');
+}
+
+function deleteBookmark(page) {
+  if (!confirm('Delete bookmark for page ' + page + '?')) return;
+  let bms = JSON.parse(localStorage.getItem('quran15bookmarks') || '[]');
+  bms = bms.filter(b => b.page !== page);
+  localStorage.setItem('quran15bookmarks', JSON.stringify(bms));
+  renderBookmarks();
+  showToast('Bookmark deleted');
+}
+
+// ── SURAH MODAL ──
+function openSurahModal() {
+  document.getElementById('surah-modal').classList.add('show');
+  renderSurahs(surahData);
+}
+
+function closeSurahModal(e) {
+  if (!e || e.target === document.getElementById('surah-modal')) {
+    document.getElementById('surah-modal').classList.remove('show');
+  }
+}
+
+function filterSurahs() {
+  const q = document.getElementById('surah-search').value.toLowerCase();
+  const filtered = surahData.filter(s =>
+    s.en.toLowerCase().includes(q) || s.ar.includes(q) || String(s.n).includes(q)
+  );
+  renderSurahs(filtered);
+}
+
+function renderSurahs(list) {
+  document.getElementById('surah-list').innerHTML = list.map(s => `
+    <div class="surah-row" onclick="selectSurah(${s.page})">
+      <div class="surah-num">${s.n}</div>
+      <div class="surah-info">
+        <div class="surah-name-en">${s.en}</div>
+        <div class="surah-name-ar">${s.ar}</div>
+      </div>
+      <div class="surah-page-lbl">P.${s.page}</div>
+    </div>
+  `).join('');
+}
+
+function selectSurah(page) {
+  document.getElementById('surah-modal').classList.remove('show');
+  openReader(page);
+}
+
+// ── JUZ MODAL ──
+function openJuzModal() {
+  document.getElementById('juz-modal').classList.add('show');
+  document.getElementById('juz-list').innerHTML = juzData.map(j => `
+    <div class="juz-row" onclick="selectJuz(${j.page})">
+      <div class="juz-num">${j.n}</div>
+      <div class="juz-info">
+        <div class="juz-title">${j.title}</div>
+        <div class="juz-sub">Starts: ${j.starts}</div>
+      </div>
+      <div class="juz-page-lbl">P.${j.page}</div>
+    </div>
+  `).join('');
+}
+
+function closeJuzModal(e) {
+  if (!e || e.target === document.getElementById('juz-modal')) {
+    document.getElementById('juz-modal').classList.remove('show');
+  }
+}
+
+function selectJuz(page) {
+  document.getElementById('juz-modal').classList.remove('show');
+  openReader(page);
+}
 
 // ── TOAST ──
 function showToast(msg) {
@@ -601,7 +1051,7 @@ function showToast(msg) {
 }
 
 // ── INIT ──
-loadPage(page);
+checkResume();
 </script>
 </body>
 </html>
