@@ -595,11 +595,41 @@ function onLocationFound() {
 
 // ── START COMPASS ──
 function startCompass() {
-  // iOS requires permission for DeviceOrientation
+  // iOS 13+ requires user gesture to request permission
   if (typeof DeviceOrientationEvent !== 'undefined' &&
       typeof DeviceOrientationEvent.requestPermission === 'function') {
-    // iOS 13+
-    DeviceOrientationEvent.requestPermission()
+    // Show button for iOS permission
+    showState('compass');
+    // Add permission button to compass view
+    document.getElementById('accuracy-badge').innerHTML =
+      '<button onclick="requestCompassPermission()" style="background:var(--primary);color:white;border:none;border-radius:50px;padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;">📍 Tap to Enable Compass</button>';
+  } else if (window.DeviceOrientationEvent) {
+    // Android — works without permission
+    window.addEventListener('deviceorientation', handleOrientation, true);
+    hasCompass = true;
+    showState('compass');
+  } else {
+    showState('no-compass');
+  }
+}
+
+function requestCompassPermission() {
+  DeviceOrientationEvent.requestPermission()
+    .then(response => {
+      if (response === 'granted') {
+        window.addEventListener('deviceorientation', handleOrientation, true);
+        hasCompass = true;
+        document.getElementById('accuracy-badge').textContent = '🔄 Calibrating...';
+      } else {
+        document.getElementById('accuracy-badge').textContent = '❌ Permission denied';
+        showToast('Compass permission denied');
+      }
+    })
+    .catch(() => {
+      document.getElementById('accuracy-badge').textContent = '❌ Could not access compass';
+      showState('no-compass');
+    });
+}
       .then(response => {
         if (response === 'granted') {
           window.addEventListener('deviceorientation', handleOrientation, true);
