@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="IbadahHub" />
+  <title>IbadahHub</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Arabic & Urdu Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Noto+Nastaliq+Urdu&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* Home page specific styles */
+    .home-greeting {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .home-date {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      -webkit-user-select: none;
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .feature-card:active {
+      transform: scale(0.95);
+      box-shadow: none;
+    }
+
+    .feature-icon-wrap {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .feature-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+
+    .feature-card-desc {
+      font-size: 11px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .quick-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+      text-decoration: none;
+    }
+
+    .quick-card:active {
+      transform: scale(0.98);
+    }
+
+    .quick-icon {
+      font-size: 28px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .quick-body {
+      flex: 1;
+    }
+
+    .quick-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .quick-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .quick-arrow {
+      font-size: 16px;
+      color: var(--text-light);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =====================
+       HOME PAGE
+       ===================== -->
+  <div class="page active" id="page-home">
+
+    <!-- Header -->
+    <div class="header safe-top">
+      <div class="header-left">
+        <div class="header-title">IbadahHub ☪️</div>
+        <div class="header-subtitle">Your daily worship companion</div>
+      </div>
+      <div style="font-size:24px; cursor:pointer;" onclick="navigateTo('settings.html')">⚙️</div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Greeting -->
+      <div class="home-greeting" id="greeting">Assalamu Alaikum 👋</div>
+      <div class="home-date" id="today-date"></div>
+
+      <!-- Daily Reminder Card -->
+      <div class="reminder-card">
+        <div class="reminder-title">✨ Daily Reminder</div>
+        <div class="reminder-text" id="daily-reminder">Loading...</div>
+        <div class="reminder-sub">Tap to read more duas</div>
+      </div>
+
+      <!-- Quick Access -->
+      <div class="section-label">Quick Access</div>
+
+      <a class="quick-card" onclick="navigateTo('prayer-times.html')">
+        <div class="quick-icon" style="background:#e8f0fe;">🕌</div>
+        <div class="quick-body">
+          <div class="quick-title">Prayer Times</div>
+          <div class="quick-sub" id="next-prayer">Loading next prayer...</div>
+        </div>
+        <div class="quick-arrow">›</div>
+      </a>
+
+      <a class="quick-card" onclick="navigateTo('quran.html')">
+        <div class="quick-icon" style="background:#e6f9ec;">📖</div>
+        <div class="quick-body">
+          <div class="quick-title">Continue Quran</div>
+          <div class="quick-sub" id="quran-continue">Start reading today</div>
+        </div>
+        <div class="quick-arrow">›</div>
+      </a>
+
+      <a class="quick-card" onclick="navigateTo('tasbih.html')">
+        <div class="quick-icon" style="background:#f3e8ff;">📿</div>
+        <div class="quick-body">
+          <div class="quick-title">Tasbih Counter</div>
+          <div class="quick-sub">SubhanAllah · Alhamdulillah · AllahuAkbar</div>
+        </div>
+        <div class="quick-arrow">›</div>
+      </a>
+
+      <!-- All Features -->
+      <div class="section-label">All Features</div>
+
+      <div class="card-grid">
+
+        <div class="feature-card" onclick="navigateTo('quran.html')">
+          <div class="feature-icon-wrap" style="background:#e6f9ec;">📖</div>
+          <div class="feature-card-title">Quran</div>
+          <div class="feature-card-desc">Read, listen & learn</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('prayer-times.html')">
+          <div class="feature-icon-wrap" style="background:#e8f0fe;">🕌</div>
+          <div class="feature-card-title">Prayer Times</div>
+          <div class="feature-card-desc">Daily salah times</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('tasbih.html')">
+          <div class="feature-icon-wrap" style="background:#f3e8ff;">📿</div>
+          <div class="feature-card-title">Tasbih</div>
+          <div class="feature-card-desc">Digital counter</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('dua.html')">
+          <div class="feature-icon-wrap" style="background:#fff3e0;">🤲</div>
+          <div class="feature-card-title">Duas</div>
+          <div class="feature-card-desc">Daily supplications</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('azkar.html')">
+          <div class="feature-icon-wrap" style="background:#e6f9ec;">☀️</div>
+          <div class="feature-card-title">Daily Azkar</div>
+          <div class="feature-card-desc">Morning & evening</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('qaza.html')">
+          <div class="feature-icon-wrap" style="background:#ffe8e8;">📋</div>
+          <div class="feature-card-title">Qaza Tracker</div>
+          <div class="feature-card-desc">Missed prayers</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('qibla.html')">
+          <div class="feature-icon-wrap" style="background:#e8f0fe;">🧭</div>
+          <div class="feature-card-title">Qibla</div>
+          <div class="feature-card-desc">Find direction</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('books.html')">
+          <div class="feature-icon-wrap" style="background:#fff3e0;">📚</div>
+          <div class="feature-card-title">Islamic Books</div>
+          <div class="feature-card-desc">Read & learn</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('tajweed.html')">
+          <div class="feature-icon-wrap" style="background:#f3e8ff;">🎓</div>
+          <div class="feature-card-title">Noorani Qaida</div>
+          <div class="feature-card-desc">Tajweed lessons</div>
+        </div>
+
+        <div class="feature-card" onclick="navigateTo('settings.html')">
+          <div class="feature-icon-wrap" style="background:#e9e9ee;">⚙️</div>
+          <div class="feature-card-title">Settings</div>
+          <div class="feature-card-desc">App preferences</div>
+        </div>
+
+      </div>
+
+      <!-- Bottom spacing -->
+      <div style="height: 20px;"></div>
+
+    </div>
+  </div>
+
+  <!-- =====================
+       BOTTOM NAVBAR
+       ===================== -->
+  <nav class="navbar">
+    <div class="nav-item active" onclick="navigateTo('index.html')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Home</div>
+    </div>
+    <div class="nav-item" onclick="navigateTo('quran.html')">
+      <div class="nav-icon">📖</div>
+      <div class="nav-label">Quran</div>
+    </div>
+    <div class="nav-item" onclick="navigateTo('tasbih.html')">
+      <div class="nav-icon">📿</div>
+      <div class="nav-label">Tasbih</div>
+    </div>
+    <div class="nav-item" onclick="navigateTo('dua.html')">
+      <div class="nav-icon">🤲</div>
+      <div class="nav-label">Dua</div>
+    </div>
+    <div class="nav-item" onclick="navigateTo('azkar.html')">
+      <div class="nav-icon">☀️</div>
+      <div class="nav-label">Azkar</div>
+    </div>
+  </nav>
+
+  <!-- =====================
+       JAVASCRIPT
+       ===================== -->
+  <script>
+    // --- NAVIGATION ---
+    function navigateTo(page) {
+      window.location.href = page;
+    }
+
+    // --- GREETING ---
+    function setGreeting() {
+      const hour = new Date().getHours();
+      let greeting = 'Assalamu Alaikum 👋';
+      if (hour >= 5 && hour < 12) greeting = 'Good Morning 🌅';
+      else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon ☀️';
+      else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌆';
+      else greeting = 'Good Night 🌙';
+      document.getElementById('greeting').textContent = greeting;
+    }
+
+    // --- DATE ---
+    function setDate() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('today-date').textContent = now.toLocaleDateString('en-US', options);
+    }
+
+    // --- DAILY REMINDERS ---
+    const reminders = [
+      'إِنَّ مَعَ الْعُسْرِ يُسْرًا — Indeed, with hardship comes ease.',
+      'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ — Whoever relies on Allah, He is sufficient.',
+      'فَاذْكُرُونِي أَذْكُرْكُمْ — Remember Me, and I will remember you.',
+      'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ — Indeed, Allah is with the patient.',
+      'وَاللَّهُ يُحِبُّ الْمُطَّهِّرِينَ — Allah loves those who purify themselves.',
+      'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ — Allah is sufficient for us, and He is the best guardian.',
+    ];
+
+    function setReminder() {
+      const day = new Date().getDay();
+      document.getElementById('daily-reminder').textContent = reminders[day % reminders.length];
+    }
+
+    // --- QURAN CONTINUE ---
+    function setQuranContinue() {
+      const saved = localStorage.getItem('quranLastPage');
+      if (saved) {
+        document.getElementById('quran-continue').textContent = 'Continue from Page ' + saved;
+      }
+    }
+
+    // --- NEXT PRAYER (simple placeholder) ---
+    function setNextPrayer() {
+      const hour = new Date().getHours();
+      let next = '';
+      if (hour < 5) next = 'Next: Fajr';
+      else if (hour < 12) next = 'Next: Dhuhr';
+      else if (hour < 15) next = 'Next: Asr';
+      else if (hour < 18) next = 'Next: Maghrib';
+      else if (hour < 20) next = 'Next: Isha';
+      else next = 'Next: Fajr tomorrow';
+      document.getElementById('next-prayer').textContent = next;
+    }
+
+    // --- RUN ON LOAD ---
+    setGreeting();
+    setDate();
+    setReminder();
+    setQuranContinue();
+    setNextPrayer();
+  </script>
+
+</body>
+</html>
