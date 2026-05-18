@@ -1,361 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="IbadahHub" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="IbadahHub"/>
   <title>IbadahHub</title>
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css" />
-
-  <!-- Arabic & Urdu Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Noto+Nastaliq+Urdu&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
+  <link rel="stylesheet" href="css/style.css"/>
   <style>
-    /* Home page specific styles */
-    .home-greeting {
-      font-size: 26px;
+    /* ── HOME SPECIFIC ── */
+    body { padding-bottom: var(--navbar-height); }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(170deg, #0d1b3e 0%, #1a3a6b 45%, #0d2744 100%);
+      padding: 0 20px 28px;
+      padding-top: calc(env(safe-area-inset-top, 20px) + 14px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 70% 40%, rgba(100,160,255,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Mosque silhouette at bottom of hero */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 375 60' preserveAspectRatio='none'%3E%3Cpath d='M0,60 L0,40 Q20,20 40,38 L40,28 Q50,10 60,28 L60,38 Q80,20 100,40 L120,40 Q140,15 160,40 L215,40 Q235,15 255,40 L275,40 Q295,20 315,38 L315,28 Q325,10 335,28 L335,38 Q355,20 375,40 L375,60 Z' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E") no-repeat bottom;
+      background-size: 100% 100%;
+      pointer-events: none;
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .hero-location {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.3px;
+    }
+
+    .hero-hijri {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 3px;
+    }
+
+    .hero-date {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 2px;
+    }
+
+    .hero-bismillah {
+      font-family: 'Scheherazade New', serif;
+      font-size: 22px;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
+      margin-bottom: 20px;
+      direction: rtl;
+    }
+
+    .hero-prayer-card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 18px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hero-prayer-name {
+      font-size: 13px;
       font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: -0.5px;
+      color: rgba(255,255,255,0.7);
+      text-transform: uppercase;
+      letter-spacing: 1px;
       margin-bottom: 4px;
     }
 
-    .home-date {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-bottom: 20px;
+    .hero-prayer-time {
+      font-size: 36px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -1px;
+      line-height: 1;
     }
 
-    .feature-card {
-      background: var(--card);
+    .hero-view-all {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      margin-top: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hero-countdown-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: right;
+      margin-bottom: 4px;
+    }
+
+    .hero-countdown {
+      font-size: 28px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.5px;
+      text-align: right;
+    }
+
+    .hero-countdown-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* Quick 3 icons */
+    .quick-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+      background: white;
       border-radius: var(--radius);
-      padding: 18px 16px;
       box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .quick-3-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      text-align: center;
+      padding: 16px 8px;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: background 0.15s;
       -webkit-user-select: none;
       user-select: none;
-      text-decoration: none;
+      border-right: 1px solid var(--border);
     }
 
-    .feature-card:active {
-      transform: scale(0.95);
-      box-shadow: none;
-    }
+    .quick-3-item:last-child { border-right: none; }
+    .quick-3-item:active { background: var(--bg); }
 
-    .feature-icon-wrap {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .quick-3-icon {
       font-size: 28px;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
-    .feature-card-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 3px;
-    }
-
-    .feature-card-desc {
-      font-size: 11px;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-
-    .quick-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px 18px;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      transition: transform 0.15s ease;
-      text-decoration: none;
-    }
-
-    .quick-card:active {
-      transform: scale(0.98);
-    }
-
-    .quick-icon {
-      font-size: 28px;
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .quick-body {
-      flex: 1;
-    }
-
-    .quick-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 2px;
-    }
-
-    .quick-sub {
+    .quick-3-label {
       font-size: 12px;
-      color: var(--text-secondary);
+      font-weight: 600;
+      color: var(--primary);
     }
 
-    .quick-arrow {
+    /* Golden border card */
+    .golden-card {
+      border-radius: var(--radius);
+      padding: 3px;
+      background: linear-gradient(135deg, #c9a84c, #f0d060, #c9a84c, #a07830);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 14px;
+    }
+
+    .golden-inner {
+      background: white;
+      border-radius: calc(var(--radius) - 3px);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .golden-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 18px 8px;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      transition: background 0.15s;
+      border-right: 1px solid var(--border);
+    }
+
+    .golden-item:last-child { border-right: none; }
+    .golden-item:active { background: var(--bg); }
+
+    .golden-icon { font-size: 28px; margin-bottom: 6px; }
+    .golden-label { font-size: 12px; font-weight: 700; color: var(--text); }
+
+    /* Ayat card */
+    .ayat-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .ayat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .ayat-title {
       font-size: 16px;
-      color: var(--text-light);
+      font-weight: 700;
+    }
+
+    .ayat-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--green);
+      background: #e6f9ec;
+      padding: 3px 10px;
+      border-radius: 50px;
+    }
+
+    .ayat-arabic {
+      font-family: 'Scheherazade New', serif;
+      font-size: 22px;
+      line-height: 1.9;
+      text-align: right;
+      direction: rtl;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .ayat-urdu {
+      font-family: 'Noto Nastaliq Urdu', serif;
+      font-size: 15px;
+      line-height: 2.2;
+      text-align: right;
+      direction: rtl;
+      color: var(--text-secondary);
     }
   </style>
 </head>
-
 <body>
 
-  <!-- =====================
-       HOME PAGE
-       ===================== -->
-  <div class="page active" id="page-home">
+<!-- ═══════════════════════════
+     HOME PAGE
+════════════════════════════ -->
 
-    <!-- Header -->
-    <div class="header safe-top">
-      <div class="header-left">
-        <div class="header-title">IbadahHub ☪️</div>
-        <div class="header-subtitle">Your daily worship companion</div>
-      </div>
-      <div style="font-size:24px; cursor:pointer;" onclick="navigateTo('settings.html')">⚙️</div>
-    </div>
-
-    <!-- Content -->
-    <div class="content">
-
-      <!-- Greeting -->
-      <div class="home-greeting" id="greeting">Assalamu Alaikum 👋</div>
-      <div class="home-date" id="today-date"></div>
-
-      <!-- Daily Reminder Card -->
-      <div class="reminder-card">
-        <div class="reminder-title">✨ Daily Reminder</div>
-        <div class="reminder-text" id="daily-reminder">Loading...</div>
-        <div class="reminder-sub">Tap to read more duas</div>
-      </div>
-
-      <!-- Quick Access -->
-      <div class="section-label">Quick Access</div>
-
-      <a class="quick-card" onclick="navigateTo('prayer-times.html')">
-        <div class="quick-icon" style="background:#e8f0fe;">🕌</div>
-        <div class="quick-body">
-          <div class="quick-title">Prayer Times</div>
-          <div class="quick-sub" id="next-prayer">Loading next prayer...</div>
-        </div>
-        <div class="quick-arrow">›</div>
-      </a>
-
-      <a class="quick-card" onclick="navigateTo('quran.html')">
-        <div class="quick-icon" style="background:#e6f9ec;">📖</div>
-        <div class="quick-body">
-          <div class="quick-title">Continue Quran</div>
-          <div class="quick-sub" id="quran-continue">Start reading today</div>
-        </div>
-        <div class="quick-arrow">›</div>
-      </a>
-
-      <a class="quick-card" onclick="navigateTo('tasbih.html')">
-        <div class="quick-icon" style="background:#f3e8ff;">📿</div>
-        <div class="quick-body">
-          <div class="quick-title">Tasbih Counter</div>
-          <div class="quick-sub">SubhanAllah · Alhamdulillah · AllahuAkbar</div>
-        </div>
-        <div class="quick-arrow">›</div>
-      </a>
-
-      <!-- All Features -->
-      <div class="section-label">All Features</div>
-
-      <div class="card-grid">
-
-        <div class="feature-card" onclick="navigateTo('quran.html')">
-          <div class="feature-icon-wrap" style="background:#e6f9ec;">📖</div>
-          <div class="feature-card-title">Quran</div>
-          <div class="feature-card-desc">Read, listen & learn</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('prayer-times.html')">
-          <div class="feature-icon-wrap" style="background:#e8f0fe;">🕌</div>
-          <div class="feature-card-title">Prayer Times</div>
-          <div class="feature-card-desc">Daily salah times</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('tasbih.html')">
-          <div class="feature-icon-wrap" style="background:#f3e8ff;">📿</div>
-          <div class="feature-card-title">Tasbih</div>
-          <div class="feature-card-desc">Digital counter</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('dua.html')">
-          <div class="feature-icon-wrap" style="background:#fff3e0;">🤲</div>
-          <div class="feature-card-title">Duas</div>
-          <div class="feature-card-desc">Daily supplications</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('azkar.html')">
-          <div class="feature-icon-wrap" style="background:#e6f9ec;">☀️</div>
-          <div class="feature-card-title">Daily Azkar</div>
-          <div class="feature-card-desc">Morning & evening</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('qaza.html')">
-          <div class="feature-icon-wrap" style="background:#ffe8e8;">📋</div>
-          <div class="feature-card-title">Qaza Tracker</div>
-          <div class="feature-card-desc">Missed prayers</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('qibla.html')">
-          <div class="feature-icon-wrap" style="background:#e8f0fe;">🧭</div>
-          <div class="feature-card-title">Qibla</div>
-          <div class="feature-card-desc">Find direction</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('books.html')">
-          <div class="feature-icon-wrap" style="background:#fff3e0;">📚</div>
-          <div class="feature-card-title">Islamic Books</div>
-          <div class="feature-card-desc">Read & learn</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('tajweed.html')">
-          <div class="feature-icon-wrap" style="background:#f3e8ff;">🎓</div>
-          <div class="feature-card-title">Noorani Qaida</div>
-          <div class="feature-card-desc">Tajweed lessons</div>
-        </div>
-
-        <div class="feature-card" onclick="navigateTo('settings.html')">
-          <div class="feature-icon-wrap" style="background:#e9e9ee;">⚙️</div>
-          <div class="feature-card-title">Settings</div>
-          <div class="feature-card-desc">App preferences</div>
-        </div>
-
-      </div>
-
-      <!-- Bottom spacing -->
-      <div style="height: 20px;"></div>
-
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="hero-location" id="hero-location">📍 Loading...</div>
+      <div class="hero-hijri" id="hero-hijri">Loading Hijri date...</div>
+      <div class="hero-date" id="hero-date"></div>
     </div>
   </div>
 
-  <!-- =====================
-       BOTTOM NAVBAR
-       ===================== -->
-  <nav class="navbar">
-    <div class="nav-item active" onclick="navigateTo('index.html')">
-      <div class="nav-icon">🏠</div>
-      <div class="nav-label">Home</div>
+  <div class="hero-bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+
+  <div class="hero-prayer-card">
+    <div>
+      <div class="hero-prayer-name" id="current-prayer-name">DHUHR</div>
+      <div class="hero-prayer-time" id="current-prayer-time">--:--</div>
+      <div class="hero-view-all" onclick="location.href='salah.html'">
+        View all Salah times ›
+      </div>
     </div>
-    <div class="nav-item" onclick="navigateTo('quran.html')">
-      <div class="nav-icon">📖</div>
-      <div class="nav-label">Quran</div>
+    <div>
+      <div class="hero-countdown-label">TIME LEFT</div>
+      <div class="hero-countdown" id="countdown">--:--:--</div>
+      <div class="hero-countdown-sub">until next salah</div>
     </div>
-    <div class="nav-item" onclick="navigateTo('tasbih.html')">
-      <div class="nav-icon">📿</div>
-      <div class="nav-label">Tasbih</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content content-with-navbar" style="padding-top:16px;">
+
+  <!-- Quick 3 -->
+  <div class="quick-3">
+    <div class="quick-3-item" onclick="location.href='quran.html'">
+      <div class="quick-3-icon">📖</div>
+      <div class="quick-3-label">Quran</div>
     </div>
-    <div class="nav-item" onclick="navigateTo('dua.html')">
-      <div class="nav-icon">🤲</div>
-      <div class="nav-label">Dua</div>
+    <div class="quick-3-item" onclick="location.href='azkar.html'">
+      <div class="quick-3-icon">📿</div>
+      <div class="quick-3-label">Daily Zikr</div>
     </div>
-    <div class="nav-item" onclick="navigateTo('azkar.html')">
-      <div class="nav-icon">☀️</div>
-      <div class="nav-label">Azkar</div>
+    <div class="quick-3-item" onclick="location.href='qaza.html'">
+      <div class="quick-3-icon">📋</div>
+      <div class="quick-3-label">Qaza</div>
     </div>
-  </nav>
+  </div>
 
-  <!-- =====================
-       JAVASCRIPT
-       ===================== -->
-  <script>
-    // --- NAVIGATION ---
-    function navigateTo(page) {
-      window.location.href = page;
+  <!-- Golden card -->
+  <div class="golden-card">
+    <div class="golden-inner">
+      <div class="golden-item" onclick="location.href='tasbih.html'">
+        <div class="golden-icon">📿</div>
+        <div class="golden-label">Tasbih</div>
+      </div>
+      <div class="golden-item" onclick="location.href='qibla.html'">
+        <div class="golden-icon">🧭</div>
+        <div class="golden-label">Qibla</div>
+      </div>
+      <div class="golden-item" onclick="location.href='dua.html'">
+        <div class="golden-icon">🤲</div>
+        <div class="golden-label">Dua</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ayat of the Day -->
+  <div class="ayat-card">
+    <div class="ayat-header">
+      <div class="ayat-title">Quran Ayat of the Day</div>
+      <div class="ayat-badge">Online</div>
+    </div>
+    <div class="ayat-arabic" id="ayat-arabic">
+      وَوَصَّىٰ بِهَا إِبْرَٰهِۦمُ بَنِيهِ وَيَعْقُوبُ يَٰبَنِىَّ إِنَّ ٱللَّهَ ٱصْطَفَىٰ لَكُمُ ٱلدِّينَ فَلَا تَمُوتُنَّ إِلَّا وَأَنتُم مُّسْلِمُونَ
+    </div>
+    <div class="ayat-urdu" id="ayat-urdu">
+      اور ابراہیم نے اپنے بیٹوں کو اسی بات کی وصیت کی اور یعقوب نے بھی (اپنے فرزندوں سے یہی کہا) کہ بیٹا خدا نے تمہارے لیے یہی دین پسند فرمایا ہے تو مرنا تو مسلمان ہی مرنا
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════
+     BOTTOM NAVBAR
+════════════════════════════ -->
+<nav class="navbar">
+  <div class="nav-item active" onclick="location.href='index.html'">
+    <div class="nav-icon-box">🏠</div>
+    <div class="nav-label">Home</div>
+  </div>
+  <div class="nav-item" onclick="location.href='salah.html'">
+    <div class="nav-icon-box">🕌</div>
+    <div class="nav-label">Salah</div>
+  </div>
+  <div class="nav-item" onclick="location.href='tracker.html'">
+    <div class="nav-icon-box">📋</div>
+    <div class="nav-label">Tracker</div>
+  </div>
+  <div class="nav-item" onclick="location.href='more.html'">
+    <div class="nav-icon-box">•••</div>
+    <div class="nav-label">More</div>
+  </div>
+</nav>
+
+<script>
+// ── DATE & TIME ──
+function setDate() {
+  const now = new Date();
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('hero-date').textContent = now.toLocaleDateString('en-US', opts);
+}
+
+// ── HIJRI DATE ──
+function setHijriDate() {
+  try {
+    const hijri = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
+      day:'numeric', month:'long', year:'numeric'
+    }).format(new Date());
+    document.getElementById('hero-hijri').textContent = hijri;
+  } catch(e) {
+    document.getElementById('hero-hijri').textContent = 'Dhu\'l-Hijjah 1447 AH';
+  }
+}
+
+// ── LOCATION ──
+function setLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`)
+        .then(r => r.json())
+        .then(d => {
+          const city = d.address.city || d.address.town || d.address.village || 'Your Location';
+          document.getElementById('hero-location').textContent = '📍 ' + city;
+          localStorage.setItem('userLat', pos.coords.latitude);
+          localStorage.setItem('userLon', pos.coords.longitude);
+          loadPrayerTimes(pos.coords.latitude, pos.coords.longitude);
+        });
+    }, () => {
+      document.getElementById('hero-location').textContent = '📍 Location off';
+      loadFallbackPrayer();
+    });
+  } else {
+    loadFallbackPrayer();
+  }
+}
+
+// ── PRAYER TIMES ──
+const prayerNames = ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
+
+function loadPrayerTimes(lat, lon) {
+  const today = new Date();
+  const d = today.getDate(), m = today.getMonth()+1, y = today.getFullYear();
+  fetch(`https://api.aladhan.com/v1/timings/${d}-${m}-${y}?latitude=${lat}&longitude=${lon}&method=2`)
+    .then(r => r.json())
+    .then(data => {
+      const t = data.data.timings;
+      const times = {
+        Fajr: t.Fajr, Sunrise: t.Sunrise,
+        Dhuhr: t.Dhuhr, Asr: t.Asr,
+        Maghrib: t.Maghrib, Isha: t.Isha
+      };
+      localStorage.setItem('prayerTimes', JSON.stringify(times));
+      updatePrayerDisplay(times);
+      startCountdown(times);
+    })
+    .catch(() => loadFallbackPrayer());
+}
+
+function loadFallbackPrayer() {
+  const saved = localStorage.getItem('prayerTimes');
+  if (saved) {
+    const times = JSON.parse(saved);
+    updatePrayerDisplay(times);
+    startCountdown(times);
+  } else {
+    document.getElementById('current-prayer-name').textContent = 'DHUHR';
+    document.getElementById('current-prayer-time').textContent = '--:--';
+  }
+}
+
+function timeToMinutes(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function updatePrayerDisplay(times) {
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const prayers = Object.entries(times);
+  let current = prayers[prayers.length - 1];
+  let next = prayers[0];
+  for (let i = 0; i < prayers.length; i++) {
+    const pMin = timeToMinutes(prayers[i][1]);
+    if (nowMin >= pMin) { current = prayers[i]; }
+    if (nowMin < pMin) { next = prayers[i]; break; }
+  }
+  // Show next prayer
+  document.getElementById('current-prayer-name').textContent = next[0].toUpperCase();
+  const [h, m] = next[1].split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 || 12;
+  document.getElementById('current-prayer-time').textContent = `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function startCountdown(times) {
+  function tick() {
+    const now = new Date();
+    const nowMin = now.getHours() * 60 + now.getMinutes();
+    const prayers = Object.entries(times);
+    let nextMin = -1;
+    for (let p of prayers) {
+      const pm = timeToMinutes(p[1]);
+      if (pm > nowMin) { nextMin = pm; break; }
     }
+    if (nextMin === -1) nextMin = timeToMinutes(prayers[0][1]) + 1440;
+    const diff = (nextMin - nowMin) * 60 - now.getSeconds();
+    const hh = Math.floor(diff / 3600);
+    const mm = Math.floor((diff % 3600) / 60);
+    const ss = diff % 60;
+    document.getElementById('countdown').textContent =
+      `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+  }
+  tick();
+  setInterval(tick, 1000);
+}
 
-    // --- GREETING ---
-    function setGreeting() {
-      const hour = new Date().getHours();
-      let greeting = 'Assalamu Alaikum 👋';
-      if (hour >= 5 && hour < 12) greeting = 'Good Morning 🌅';
-      else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon ☀️';
-      else if (hour >= 17 && hour < 21) greeting = 'Good Evening 🌆';
-      else greeting = 'Good Night 🌙';
-      document.getElementById('greeting').textContent = greeting;
-    }
-
-    // --- DATE ---
-    function setDate() {
-      const now = new Date();
-      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById('today-date').textContent = now.toLocaleDateString('en-US', options);
-    }
-
-    // --- DAILY REMINDERS ---
-    const reminders = [
-      'إِنَّ مَعَ الْعُسْرِ يُسْرًا — Indeed, with hardship comes ease.',
-      'وَمَن يَتَوَكَّلْ عَلَى اللَّهِ فَهُوَ حَسْبُهُ — Whoever relies on Allah, He is sufficient.',
-      'فَاذْكُرُونِي أَذْكُرْكُمْ — Remember Me, and I will remember you.',
-      'إِنَّ اللَّهَ مَعَ الصَّابِرِينَ — Indeed, Allah is with the patient.',
-      'وَاللَّهُ يُحِبُّ الْمُطَّهِّرِينَ — Allah loves those who purify themselves.',
-      'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ — Allah is sufficient for us, and He is the best guardian.',
-    ];
-
-    function setReminder() {
-      const day = new Date().getDay();
-      document.getElementById('daily-reminder').textContent = reminders[day % reminders.length];
-    }
-
-    // --- QURAN CONTINUE ---
-    function setQuranContinue() {
-      const saved = localStorage.getItem('quranLastPage');
-      if (saved) {
-        document.getElementById('quran-continue').textContent = 'Continue from Page ' + saved;
-      }
-    }
-
-    // --- NEXT PRAYER (simple placeholder) ---
-    function setNextPrayer() {
-      const hour = new Date().getHours();
-      let next = '';
-      if (hour < 5) next = 'Next: Fajr';
-      else if (hour < 12) next = 'Next: Dhuhr';
-      else if (hour < 15) next = 'Next: Asr';
-      else if (hour < 18) next = 'Next: Maghrib';
-      else if (hour < 20) next = 'Next: Isha';
-      else next = 'Next: Fajr tomorrow';
-      document.getElementById('next-prayer').textContent = next;
-    }
-
-    // --- RUN ON LOAD ---
-    setGreeting();
-    setDate();
-    setReminder();
-    setQuranContinue();
-    setNextPrayer();
-  </script>
-
+// ── INIT ──
+setDate();
+setHijriDate();
+setLocation();
+</script>
 </body>
 </html>
