@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <title>More – IbadahHub</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    body { padding-bottom: var(--navbar-height); }
+
+    .more-header {
+      padding: 16px;
+      padding-top: calc(env(safe-area-inset-top, 16px) + 12px);
+      background: var(--bg);
+    }
+
+    /* Title card */
+    .title-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .title-card-icon { font-size: 40px; margin-bottom: 10px; }
+    .title-card-name {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+    .title-card-sub {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Grid */
+    .more-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .more-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s ease;
+      -webkit-user-select: none;
+      user-select: none;
+      min-height: 120px;
+    }
+
+    .more-card:active {
+      transform: scale(0.94);
+    }
+
+    .more-card-icon { font-size: 44px; line-height: 1; }
+    .more-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="more-header">
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+    <button class="back-btn" onclick="location.href='index.html'">←</button>
+    <div style="font-size:17px; font-weight:700;">More</div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content content-with-navbar" style="padding-top:0;">
+
+  <!-- Title Card -->
+  <div class="title-card">
+    <div class="title-card-icon">📗</div>
+    <div class="title-card-name">Ibadah Tracker</div>
+    <div class="title-card-sub">Your daily Islamic companion</div>
+  </div>
+
+  <!-- Grid -->
+  <div class="more-grid">
+
+    <div class="more-card" onclick="location.href='tasbih.html'">
+      <div class="more-card-icon">📿</div>
+      <div class="more-card-title">Tasbih</div>
+    </div>
+
+    <div class="more-card" onclick="location.href='dua.html'">
+      <div class="more-card-icon">🤲</div>
+      <div class="more-card-title">Dua</div>
+    </div>
+
+    <div class="more-card" onclick="location.href='azkar.html'">
+      <div class="more-card-icon">🕌</div>
+      <div class="more-card-title">Daily Dhikr</div>
+    </div>
+
+    <div class="more-card" onclick="location.href='quran.html'">
+      <div class="more-card-icon">📖</div>
+      <div class="more-card-title">Quran</div>
+    </div>
+
+    <div class="more-card" onclick="location.href='qaza.html'">
+      <div class="more-card-icon">🕋</div>
+      <div class="more-card-title">Qaza Tracker</div>
+    </div>
+
+    <div class="more-card" onclick="location.href='qibla.html'">
+      <div class="more-card-icon">🧭</div>
+      <div class="more-card-title">Qibla</div>
+    </div>
+
+    <div class="more-card" onclick="location.href='books.html'">
+      <div class="more-card-icon">📚</div>
+      <div class="more-card-title">Books</div>
+    </div>
+
+    <div class="more-card" onclick="location.href='settings.html'">
+      <div class="more-card-icon">⚙️</div>
+      <div class="more-card-title">Settings</div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- BOTTOM NAVBAR -->
+<nav class="navbar">
+  <div class="nav-item" onclick="location.href='index.html'">
+    <div class="nav-icon-box">🏠</div>
+    <div class="nav-label">Home</div>
+  </div>
+  <div class="nav-item" onclick="location.href='salah.html'">
+    <div class="nav-icon-box">🕌</div>
+    <div class="nav-label">Salah</div>
+  </div>
+  <div class="nav-item" onclick="location.href='tracker.html'">
+    <div class="nav-icon-box">📋</div>
+    <div class="nav-label">Tracker</div>
+  </div>
+  <div class="nav-item active" onclick="location.href='more.html'">
+    <div class="nav-icon-box">•••</div>
+    <div class="nav-label">More</div>
+  </div>
+</nav>
+
+</body>
+</html>
