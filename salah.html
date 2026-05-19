@@ -427,15 +427,46 @@
 <div class="month-picker" id="month-picker">
   <div class="month-picker-card" onclick="event.stopPropagation()">
     <div id="picker-title" style="font-size:18px;font-weight:800;margin-bottom:14px;text-align:center;">Select Month</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-      <select class="month-select" id="picker-month">
-        <option value="1">January</option><option value="2">February</option><option value="3">March</option>
-        <option value="4">April</option><option value="5">May</option><option value="6">June</option>
-        <option value="7">July</option><option value="8">August</option><option value="9">September</option>
-        <option value="10">October</option><option value="11">November</option><option value="12">December</option>
-      </select>
-      <select class="month-select" id="picker-year"></select>
+
+    <!-- Monthly section -->
+    <div id="monthly-section">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <select class="month-select" id="picker-month">
+          <option value="1">January</option><option value="2">February</option><option value="3">March</option>
+          <option value="4">April</option><option value="5">May</option><option value="6">June</option>
+          <option value="7">July</option><option value="8">August</option><option value="9">September</option>
+          <option value="10">October</option><option value="11">November</option><option value="12">December</option>
+        </select>
+        <select class="month-select" id="picker-year"></select>
+      </div>
     </div>
+
+    <!-- Ramadan section -->
+    <div id="ramadan-section" style="display:none;">
+      <select class="month-select" id="picker-year-ramadan"></select>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 4px;margin-bottom:8px;">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text);">Customize Days</div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">Use your own start/end dates</div>
+        </div>
+        <div class="s-toggle" id="ramadan-custom-toggle" onclick="toggleRamadanCustom()">
+          <div class="s-toggle-knob"></div>
+        </div>
+      </div>
+
+      <div id="ramadan-custom-dates" style="display:none;margin-bottom:8px;">
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:4px;">Start Date</div>
+        <input type="date" id="ramadan-start" class="month-select" style="margin-bottom:8px;"/>
+        <div style="font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:4px;">End Date</div>
+        <input type="date" id="ramadan-end" class="month-select"/>
+      </div>
+
+      <div id="ramadan-auto-info" style="font-size:12px;color:var(--text-secondary);padding:8px;background:var(--bg);border-radius:10px;margin-bottom:10px;text-align:center;">
+        Auto detects Ramadan from Hijri calendar
+      </div>
+    </div>
+
     <button class="modal-btn" style="background:#111;color:white;" onclick="generateTimetable()">Generate PDF</button>
     <button class="modal-btn" style="background:var(--bg);color:var(--text);" onclick="closeMonthPicker()">Cancel</button>
   </div>
@@ -689,25 +720,46 @@ function pickLocation(i) {
 function openMonthPicker(mode) {
   printMode = mode;
   const now = new Date();
-  const yearSel = document.getElementById('picker-year');
-  yearSel.innerHTML = '';
-  for (let y = now.getFullYear() - 1; y <= now.getFullYear() + 5; y++) {
-    const opt = document.createElement('option');
-    opt.value = y; opt.textContent = y;
-    if (y === now.getFullYear()) opt.selected = true;
-    yearSel.appendChild(opt);
-  }
+
+  // Populate years
+  const populateYears = (selId) => {
+    const sel = document.getElementById(selId);
+    sel.innerHTML = '';
+    for (let y = now.getFullYear() - 1; y <= now.getFullYear() + 5; y++) {
+      const opt = document.createElement('option');
+      opt.value = y; opt.textContent = y;
+      if (y === now.getFullYear()) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  };
+
+  populateYears('picker-year');
+  populateYears('picker-year-ramadan');
+
   if (mode === 'ramadan') {
     document.getElementById('picker-title').textContent = '🌙 Ramadan Timetable';
-    const ramadanMonths = { 2024:3, 2025:3, 2026:2, 2027:2, 2028:1 };
-    document.getElementById('picker-month').value = ramadanMonths[now.getFullYear()] || (now.getMonth() + 1);
+    document.getElementById('monthly-section').style.display = 'none';
+    document.getElementById('ramadan-section').style.display = 'block';
+    document.getElementById('ramadan-custom-toggle').classList.remove('on');
+    document.getElementById('ramadan-custom-dates').style.display = 'none';
+    document.getElementById('ramadan-auto-info').style.display = 'block';
   } else {
     document.getElementById('picker-title').textContent = '📄 Monthly Timetable';
+    document.getElementById('monthly-section').style.display = 'block';
+    document.getElementById('ramadan-section').style.display = 'none';
     document.getElementById('picker-month').value = now.getMonth() + 1;
   }
   document.getElementById('month-picker').classList.add('show');
 }
 
+function toggleRamadanCustom() {
+  const toggle = document.getElementById('ramadan-custom-toggle');
+  const dates = document.getElementById('ramadan-custom-dates');
+  const info = document.getElementById('ramadan-auto-info');
+  const isOn = toggle.classList.toggle('on');
+  dates.style.display = isOn ? 'block' : 'none';
+  info.style.display = isOn ? 'none' : 'block';
+}
 function closeMonthPicker() {
   document.getElementById('month-picker').classList.remove('show');
 }
@@ -715,6 +767,9 @@ function closeMonthPicker() {
 async function generateTimetable() {
   const month = parseInt(document.getElementById('picker-month').value);
   const year  = parseInt(document.getElementById('picker-year').value);
+  const isRamadan = printMode === 'ramadan';
+  const customRamadan = isRamadan && document.getElementById('ramadan-custom-toggle').classList.contains('on');
+
   closeMonthPicker();
 
   if (!userLat || !userLon) { alert('Please set your location first.'); return; }
@@ -722,25 +777,67 @@ async function generateTimetable() {
   const method = getMethodNumber(userLat, userLon);
   const school = getSchool();
   const city = localStorage.getItem('userCity') || 'My Location';
+  const asrLabel = asrMethod === 'hanafi' ? 'Hanafi' : 'Shafi';
+  const methodLabels = { auto:'Auto', isna:'ISNA', karachi:'Karachi', mwl:'MWL', ummalqura:'Umm al-Qura', '1815':'18°/15°' };
+  const methodName = methodLabels[calcMethod] || 'Auto';
+  const fajr18Note = (calcMethod === 'isna' && fajr18On) ? ' • Fajr 18°' : '';
+  const settingsLine = methodName + ' • ' + asrLabel + fajr18Note;
 
   let data;
-  try {
-    const r = await fetch('https://api.aladhan.com/v1/calendar?latitude=' + userLat + '&longitude=' + userLon + '&method=' + method + '&school=' + school + '&month=' + month + '&year=' + year);
-    const j = await r.json();
-    data = j.data;
-  } catch(e) { alert('Could not load timetable.'); return; }
+  let customStart = null, customEnd = null;
 
+  if (isRamadan && customRamadan) {
+    customStart = new Date(document.getElementById('ramadan-start').value);
+    customEnd = new Date(document.getElementById('ramadan-end').value);
+    if (isNaN(customStart) || isNaN(customEnd)) {
+      alert('Please pick valid start and end dates.');
+      return;
+    }
+    data = await fetchDateRange(customStart, customEnd, method, school);
+  } else if (isRamadan) {
+    // Auto-detect Ramadan dates from Hijri
+    data = await fetchRamadanAuto(year, method, school);
+  } else {
+    // Regular monthly
+    try {
+      const r = await fetch('https://api.aladhan.com/v1/calendar?latitude=' + userLat + '&longitude=' + userLon + '&method=' + method + '&school=' + school + '&month=' + month + '&year=' + year);
+      const j = await r.json();
+      data = j.data;
+    } catch(e) { alert('Could not load timetable.'); return; }
+  }
+
+  if (!data || !data.length) { alert('No data found.'); return; }
+
+  // Fajr 18 override
   if (calcMethod === 'isna' && fajr18On) {
     try {
-      const r2 = await fetch('https://api.aladhan.com/v1/calendar?latitude=' + userLat + '&longitude=' + userLon + '&method=13&school=' + school + '&month=' + month + '&year=' + year);
-      const j2 = await r2.json();
-      data.forEach((day, i) => { if (j2.data[i]) day.timings.Fajr = j2.data[i].timings.Fajr; });
+      let overrideData;
+      if (isRamadan && customRamadan) {
+        overrideData = await fetchDateRange(customStart, customEnd, 13, school);
+      } else if (isRamadan) {
+        overrideData = await fetchRamadanAuto(year, 13, school);
+      } else {
+        const r2 = await fetch('https://api.aladhan.com/v1/calendar?latitude=' + userLat + '&longitude=' + userLon + '&method=13&school=' + school + '&month=' + month + '&year=' + year);
+        const j2 = await r2.json();
+        overrideData = j2.data;
+      }
+      data.forEach((day, i) => { if (overrideData[i]) day.timings.Fajr = overrideData[i].timings.Fajr; });
     } catch(e) {}
   }
 
   const monthName = new Date(year, month-1, 1).toLocaleString('en-US', { month:'long' });
-  const isRamadan = printMode === 'ramadan';
-  const monthLabel = isRamadan ? '🌙 Ramadan ' + year : monthName + ' ' + year;
+  let title = isRamadan ? '🌙 Ramadan Timetable 🌙' : monthName + ' ' + year;
+
+  let dateRange = '';
+  if (isRamadan && data.length > 0) {
+    const first = data[0].date.gregorian.date.split('-');
+    const last = data[data.length-1].date.gregorian.date.split('-');
+    const firstDate = new Date(first[2], first[1]-1, first[0]);
+    const lastDate = new Date(last[2], last[1]-1, last[0]);
+    dateRange = firstDate.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' — ' + lastDate.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  } else {
+    dateRange = monthName + ' ' + year;
+  }
 
   let rowsHtml = '';
   data.forEach((day, idx) => {
@@ -749,58 +846,155 @@ async function generateTimetable() {
     const h = day.date.hijri;
     const parts = g.date.split('-');
     const jsDate = new Date(parts[2], parts[1]-1, parts[0]);
-    const dayName = jsDate.toLocaleDateString('en-US', { weekday:'long' });
+    const dayName = jsDate.toLocaleDateString('en-US', { weekday:'short' });
+    const dateLabel = jsDate.toLocaleDateString('en-US', { month:'short', day:'numeric' });
     const hijriMonth = h.month.en;
     const prevHijriMonth = idx > 0 ? data[idx-1].date.hijri.month.en : '';
     const bg = idx % 2 === 0 ? '#fafafa' : 'white';
 
-    rowsHtml += '<tr style="background:' + bg + ';">' +
-      '<td>' + dayName + '</td>' +
-      '<td>' + h.day + (hijriMonth !== prevHijriMonth ? '<br><small style="font-size:8px">' + hijriMonth + '</small>' : '') + '</td>' +
-      '<td>' + parts[0] + '</td>' +
-      '<td>' + cleanTime(t.Fajr) + '</td>' +
-      '<td>' + cleanTime(t.Sunrise) + '</td>' +
-      '<td>' + cleanTime(t.Dhuhr) + '</td>' +
-      '<td>' + cleanTime(t.Asr) + '</td>' +
-      '<td>' + cleanTime(t.Maghrib) + '</td>' +
-      '<td>' + cleanTime(t.Isha) + '</td>' +
-      '</tr>';
+    if (isRamadan) {
+      // Calculate fasting duration (Sehri to Iftar)
+      const fajrT = cleanTime(t.Fajr);
+      const magT = cleanTime(t.Maghrib);
+      const duration = calcDuration(fajrT, magT);
+
+      rowsHtml += '<tr style="background:' + bg + ';">' +
+        '<td>' + (idx+1) + '</td>' +
+        '<td>' + dayName + '</td>' +
+        '<td>' + h.day + (hijriMonth !== prevHijriMonth ? '<br><small style="font-size:7px">' + hijriMonth + '</small>' : '') + '</td>' +
+        '<td>' + dateLabel + '</td>' +
+        '<td style="background:#fff8e1;font-weight:700;">' + cleanTime(t.Fajr) + '</td>' +
+        '<td>' + cleanTime(t.Sunrise) + '</td>' +
+        '<td>' + cleanTime(t.Dhuhr) + '</td>' +
+        '<td>' + cleanTime(t.Asr) + '</td>' +
+        '<td style="background:#e8f5e9;font-weight:700;">' + cleanTime(t.Maghrib) + '</td>' +
+        '<td>' + cleanTime(t.Isha) + '</td>' +
+        '<td style="font-size:8px;color:#666;">' + duration + '</td>' +
+        '</tr>';
+    } else {
+      rowsHtml += '<tr style="background:' + bg + ';">' +
+        '<td>' + dayName + '</td>' +
+        '<td>' + h.day + (hijriMonth !== prevHijriMonth ? '<br><small style="font-size:7px">' + hijriMonth + '</small>' : '') + '</td>' +
+        '<td>' + parts[0] + '</td>' +
+        '<td>' + cleanTime(t.Fajr) + '</td>' +
+        '<td>' + cleanTime(t.Sunrise) + '</td>' +
+        '<td>' + cleanTime(t.Dhuhr) + '</td>' +
+        '<td>' + cleanTime(t.Asr) + '</td>' +
+        '<td>' + cleanTime(t.Maghrib) + '</td>' +
+        '<td>' + cleanTime(t.Isha) + '</td>' +
+        '</tr>';
+    }
   });
+
+  let tableHead;
+  if (isRamadan) {
+    tableHead = '<tr><th>#</th><th>Day</th><th>Hijri</th><th>Date</th>' +
+      '<th style="background:#5d4037;">Sehri</th>' +
+      '<th>Sunrise</th><th>Dhuhr</th><th>Asr</th>' +
+      '<th style="background:#2e7d32;">Iftar</th>' +
+      '<th>Isha</th><th>Hours</th></tr>';
+  } else {
+    tableHead = '<tr><th>Day</th><th>Hijri</th><th>Date</th>' +
+      '<th>Fajr</th><th>Sunrise</th><th>Dhuhr</th>' +
+      '<th>Asr</th><th>Maghrib</th><th>Isha</th></tr>';
+  }
+
+  const tableFont = isRamadan ? 8 : 9;
+  const tablePad  = isRamadan ? 2 : 3;
 
   const win = window.open('', '_blank');
   if (!win) { alert('Please allow popups.'); return; }
-  win.document.write('<!DOCTYPE html><html><head><title>Salah Timetable</title>' +
-    '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-    '<style>' +
-    'body{margin:0;padding:12px;font-family:Arial,sans-serif;background:#eee;}' +
-    '.top{max-width:210mm;margin:0 auto 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}' +
-    '.action-btn{border:none;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;}' +
-    '.page{width:100%;max-width:190mm;margin:0 auto;background:white;padding:5mm 6mm 8mm;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,0.1);border-radius:12px;}' +
-    'table{width:100%;border-collapse:collapse;font-size:11px;}' +
-    'th{background:#222;color:white;border:1px solid #666;padding:5px 2px;font-size:10px;}' +
-    'td{border:1px solid #999;padding:5px 2px;text-align:center;font-size:10px;}' +
-    '@media print{body{background:white;padding:0;}.top{display:none;}.page{box-shadow:none;border-radius:0;max-width:100%;}@page{size:A4 portrait;margin:8mm;}}' +
-    '</style></head><body>' +
-    '<div class="top">' +
-    '<div style="font-size:16px;font-weight:700;">Salah Timetable</div>' +
-    '<div>' +
-    '<button class="action-btn" style="background:#111;color:white;margin-right:8px;" onclick="window.print()">🖨️ Print</button>' +
-    '<button class="action-btn" style="background:#ddd;color:#111;" onclick="window.close()">✕ Close</button>' +
-    '</div></div>' +
-    '<div class="page">' +
-    '<div style="text-align:center;margin-bottom:8px;">' +
-    '<div style="font-size:22px;font-weight:700;">' + city + '</div>' +
-    '<div style="font-size:15px;color:#444;font-weight:600;">' + monthLabel + '</div>' +
-    '</div>' +
-    '<table><thead><tr>' +
-    '<th>Day</th><th>Hijri</th><th>Date</th>' +
-    '<th>Fajr</th><th>Sunrise</th><th>Dhuhr</th>' +
-    '<th>Asr</th><th>Maghrib</th><th>Isha</th>' +
-    '</tr></thead><tbody>' + rowsHtml + '</tbody></table>' +
-    '</div></body></html>');
+  win.document.write(
+'<!DOCTYPE html><html><head><title>Salah Timetable</title>' +
+'<meta name="viewport" content="width=device-width,initial-scale=1">' +
+'<style>' +
+'body{margin:0;padding:12px;font-family:Arial,sans-serif;background:#eee;}' +
+'.top{max-width:210mm;margin:0 auto 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}' +
+'.action-btn{border:none;border-radius:12px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;}' +
+'.page{width:100%;max-width:194mm;margin:0 auto;background:white;padding:6mm 6mm 6mm;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,0.1);border-radius:12px;}' +
+'.hdr{text-align:center;margin-bottom:8px;}' +
+'.hdr-title{font-size:' + (isRamadan ? '20' : '20') + 'px;font-weight:800;color:#111;margin-bottom:2px;}' +
+'.hdr-city{font-size:14px;font-weight:700;color:#333;}' +
+'.hdr-range{font-size:12px;color:#666;margin-top:2px;}' +
+'.hdr-settings{font-size:10px;color:#888;margin-top:3px;font-style:italic;}' +
+'table{width:100%;border-collapse:collapse;font-size:' + tableFont + 'px;table-layout:fixed;}' +
+'th{background:#222;color:white;border:1px solid #444;padding:' + tablePad + 'px 1px;font-size:' + tableFont + 'px;font-weight:700;}' +
+'td{border:1px solid #ccc;padding:' + tablePad + 'px 1px;text-align:center;font-size:' + tableFont + 'px;}' +
+'.foot{text-align:center;font-size:9px;color:#999;margin-top:5px;}' +
+'@media print{' +
+  'body{background:white;padding:0;margin:0;}' +
+  '.top{display:none;}' +
+  '.page{box-shadow:none;border-radius:0;max-width:100%;width:100%;padding:5mm;page-break-inside:avoid;}' +
+  '@page{size:A4 portrait;margin:5mm;}' +
+'}' +
+'</style></head><body>' +
+'<div class="top">' +
+'<div style="font-size:16px;font-weight:700;">Salah Timetable</div>' +
+'<div>' +
+'<button class="action-btn" style="background:#111;color:white;margin-right:8px;" onclick="window.print()">🖨️ Print</button>' +
+'<button class="action-btn" style="background:#ddd;color:#111;" onclick="window.close()">✕ Close</button>' +
+'</div></div>' +
+'<div class="page">' +
+'<div class="hdr">' +
+'<div class="hdr-title">' + title + '</div>' +
+'<div class="hdr-city">' + city + '</div>' +
+'<div class="hdr-range">' + dateRange + '</div>' +
+'<div class="hdr-settings">' + settingsLine + '</div>' +
+'</div>' +
+'<table><thead>' + tableHead + '</thead><tbody>' + rowsHtml + '</tbody></table>' +
+'<div class="foot">Generated by IbadahHub • Times based on ' + settingsLine + '</div>' +
+'</div></body></html>');
   win.document.close();
 }
 
+// Fetch a custom date range
+async function fetchDateRange(startDate, endDate, method, school) {
+  const data = [];
+  let current = new Date(startDate);
+  while (current <= endDate) {
+    const d = current.getDate();
+    const m = current.getMonth() + 1;
+    const y = current.getFullYear();
+    try {
+      const r = await fetch('https://api.aladhan.com/v1/timings/' + d + '-' + m + '-' + y + '?latitude=' + userLat + '&longitude=' + userLon + '&method=' + method + '&school=' + school);
+      const j = await r.json();
+      data.push(j.data);
+    } catch(e) {}
+    current.setDate(current.getDate() + 1);
+  }
+  return data;
+}
+
+// Fetch Ramadan automatically using Hijri calendar
+async function fetchRamadanAuto(year, method, school) {
+  // Get whole Hijri year and find Ramadan (month 9)
+  const data = [];
+  // Check 2 Gregorian months around expected Ramadan
+  const expectedMonths = { 2024:[3,4], 2025:[2,3], 2026:[2,3], 2027:[2,3], 2028:[1,2], 2029:[1,2], 2030:[1,2] };
+  const months = expectedMonths[year] || [(new Date()).getMonth()+1, (new Date()).getMonth()+2];
+
+  for (const m of months) {
+    try {
+      const r = await fetch('https://api.aladhan.com/v1/calendar?latitude=' + userLat + '&longitude=' + userLon + '&method=' + method + '&school=' + school + '&month=' + m + '&year=' + year);
+      const j = await r.json();
+      j.data.forEach(day => {
+        if (day.date.hijri.month.number === 9) {
+          data.push(day);
+        }
+      });
+    } catch(e) {}
+  }
+  return data;
+}
+
+function calcDuration(start, end) {
+  if (!start || !end || start === '-' || end === '-') return '-';
+  const [sh, sm] = start.split(':').map(Number);
+  const [eh, em] = end.split(':').map(Number);
+  let mins = (eh * 60 + em) - (sh * 60 + sm);
+  if (mins < 0) mins += 24 * 60;
+  return Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm';
+}
 function cleanTime(t) {
   if (!t) return '-';
   return t.split(' ')[0].replace(/\s*\(.*?\)/, '');
